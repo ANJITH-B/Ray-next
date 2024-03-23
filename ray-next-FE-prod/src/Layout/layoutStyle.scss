@@ -1,0 +1,15 @@
+.layout{
+    height: calc(100vh - 115px);
+}
+
+.menu-dropdown{
+
+    top: 120px !important;
+    .ant-dropdown-menu {
+        padding: 15px;
+        border-radius: 30px;
+    }
+    .ant-dropdown-menu-item {
+        padding: 15px !important;
+    }
+}

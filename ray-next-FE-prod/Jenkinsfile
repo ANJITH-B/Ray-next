@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    // environment {
+    //     DOCKER_COMPOSE_FILE = '/home/ashirnbasheer/raynext-de/docker-compose.yml'
+       
+    // }
+
+    stages {
+        stage('build') {
+            steps {
+                  script {
+                   sh "docker-compose down"
+                    }
+                }
+            }
+        
+
+        //  stage('Push to Docker Hub') {
+        //     steps {
+        //          script {
+                   
+        //             // sh "docker login -u ashcoder666 -p dckr_pat_ZfqnbwQdIdTXxNudnIUAiDCv0d4"
+        //             sh "echo hahahaa"
+                
+        //             // sh "docker push ashcoder666/raynext-front:raynextfront"
+        //         }
+        //     }
+        // }
+          stage('Run container') {
+            steps {
+                 script {
+                   
+                     // sh "docker run --name rayfrontt -d -p3000:80 raynextfront:latest"
+                      def dockerImageTag = "rayfront:${env.BUILD_NUMBER}"
+                       sh "docker-compose up -d"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+
+    stages {
+        stage('build') {
+            steps {
+                  script {
+                   sh "docker-compose down"
+                    }
+                }
+            }
+        
+
+     
+          stage('Run container') {
+            steps {
+                 script {
+                   
+                     // sh "docker run --name rayfrontt -d -p3000:80 raynextfront:latest"
+                      def dockerImageTag = "rayback:${env.BUILD_NUMBER}"
+                       sh "docker-compose up -d"
+                }
+            }
+
+            }
+        }
+
+        stage("deply_container"){
+            steps{
+            script{
+                    sh 'docker-compose up --build -d'
+                sh 'echo deploy stage'
+            }
+            }
+        }
+    }
+     post {
+        success {
+            // Clean up after a successful build
+            cleanWs()
+        }
+    }
+}

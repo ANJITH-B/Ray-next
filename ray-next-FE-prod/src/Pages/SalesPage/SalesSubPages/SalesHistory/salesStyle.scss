@@ -1,0 +1,17 @@
+.history-tab{
+    .ant-tabs-ink-bar-animated{
+        height: 4px !important;
+        background-color: black;
+        border-radius: 10px !important;
+    }
+    .ant-tabs-tab-btn{
+        font-size: 16px !important;
+        color: black !important;
+    }
+    .ant-tabs-tab-active{
+        color: rgb(50, 50, 50) !important;
+    }
+    .ant-tabs-nav::before{
+        border-bottom: none !important;
+    }
+}

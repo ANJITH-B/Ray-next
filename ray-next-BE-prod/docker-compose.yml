@@ -1,0 +1,17 @@
+version: '3'
+services: 
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: rayback:${BUILD_NUMBER}
+    container_name: backend_container
+    ports:
+      - "5001:5001"
+    # volumes:
+    #   - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    # networks:
+    #   - ray_next_network
+
+# networks:
+#   ray_next_network:

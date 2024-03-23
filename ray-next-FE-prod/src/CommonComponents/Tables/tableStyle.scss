@@ -1,0 +1,48 @@
+.borderless-table {
+  th {
+    font-size: 14px !important;
+    background-color: transparent !important;
+    font-weight: 400 !important;
+    color: #969696 !important;
+  }
+  .ant-table-cell {
+    padding: 15px 10px !important;
+  }
+  .ant-table-row {
+    vertical-align: text-top !important;
+  }
+  .ant-table-thead {
+    .ant-table-cell {
+      background: white !important;
+      padding: 10px 10px !important;
+      white-space: nowrap !important;
+    }
+  }
+}
+
+.borderd-table {
+  th {
+    font-size: 14px !important;
+    background-color: transparent !important;
+    font-weight: 400 !important;
+    color: #969696 !important;
+  }
+  .ant-table-thead {
+    .ant-table-cell {
+      background: white !important;
+      padding: 15px 20px !important;
+      white-space: nowrap !important;
+    }
+  }
+  .ant-table-cell {
+    // vertical-align: text-top;
+    padding: 10px 15px !important;
+    text-align: center !important ;
+    // &:first-child {
+    //   // padding: 10px 20px !important;
+    // }
+
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+}
