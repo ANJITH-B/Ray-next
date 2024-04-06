@@ -120,8 +120,8 @@ const Header = () => {
         <div>
           <nav>
             <ul className="flex gap-6 2xl:gap-8">
-              <li className={` ${path === '/home' || '/' ? 'border-black border-b-4':''}  text-sm 2xl:text-base   border-spacing-y-6`}>
-                <Link to="">Admin</Link>
+              <li className={` ${path === '/home' ? 'border-black border-b-4':''}  text-sm 2xl:text-base   border-spacing-y-6`}>
+                <Link to="/home">Accounts</Link>
               </li>
               <li className={` ${path === '/inventory' ? 'border-black border-b-4':''}  text-sm 2xl:text-base  border-spacing-y-6`}>
                 <Link to="/inventory">Inventory</Link>

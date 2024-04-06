@@ -31,7 +31,7 @@ const InvoiceTable = ({ formik, edit, setEdit, item, setItem , addItem ,typeStat
       title: "Account name",
       key: "Account name",
       dataIndex: "Account name",
-      className: "w-[15rem]",
+    className: "w-[15rem]",
       render: (item, record, index) => {
         return (
           <div className="w-full">

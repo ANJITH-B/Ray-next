@@ -1,22 +1,27 @@
 import { DatePicker } from "antd";
 import React, { useState } from "react";
 import "./otherComponentStyle.scss";
-const AllHeadSection = ({ name, head, formik, id }) => {
+import { SlidersOutlined } from "@ant-design/icons";
+const AllHeadSection = ({ name, head, formik, id ,isActive, toggleIsActive}) => {
+  // const [isActive, setIsActive] = useState(false);
+  // const handleClick = () => {
+  //   setIsActive(!isActive);
+  // };
   const [active, setActive] = useState({
     id: false,
     date: false,
   });
   return (
     <div className="mb-8">
-      <div className="flex items-baseline gap-2 ">
-        <p className="  text-xl 2xl:text-2xl text-dark-color font-semibold mr-3">{head}</p>
-        <div
-          className={`${
-            active.id ? "border-b-[1px] " : "border-none"
-          } transition-all border-blue border-opacity-25 flex gap-3`}
-        >
-          <p className=" text-[28px] 2xl:text-[32px]  text-blue font-semibold">{id}</p>
-          {/* <input
+      <div className="flex items-baseline justify-between">
+        <div className="flex items-baseline gap-2 ">
+          <p className="  text-xl 2xl:text-2xl text-dark-color font-semibold mr-3">{head}</p>
+          <div
+            className={`${active.id ? "border-b-[1px] " : "border-none"
+              } transition-all border-blue border-opacity-25 flex gap-3`}
+          >
+            <p className=" text-[28px] 2xl:text-[32px]  text-blue font-semibold">{id}</p>
+            {/* <input
             name={name}
             onChange={formik.handleChange}
             readOnly={true}
@@ -26,37 +31,43 @@ const AllHeadSection = ({ name, head, formik, id }) => {
              placeholder:text-blue placeholder:opacity-50 text-[32px]  text-blue font-semibold`}
           /> */}
 
-          <button
-            onClick={() => setActive((pre) => ({ ...pre, id: !active.id }))}
-            className={` p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-all`}
-            disabled
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+            <button
+              onClick={() => setActive((pre) => ({ ...pre, id: !active.id }))}
+              className={` p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-all`}
+              disabled
             >
-              <path
-                d="M11.05 3.00002L4.20829 10.2417C3.94996 10.5167 3.69996 11.0584 3.64996 11.4334L3.34162 14.1333C3.23329 15.1083 3.93329 15.775 4.89996 15.6084L7.58329 15.15C7.95829 15.0834 8.48329 14.8084 8.74162 14.525L15.5833 7.28335C16.7666 6.03335 17.3 4.60835 15.4583 2.86668C13.625 1.14168 12.2333 1.75002 11.05 3.00002Z"
-                stroke="#4A9CE8"
-                strokeWidth="1.5"
-                strokeMiterlimit="10"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M9.90833 4.20898C10.083 5.32636 10.6238 6.3541 11.4458 7.13086C12.2679 7.90762 13.3245 8.38943 14.45 8.50065M2.5 18.334H17.5"
-                stroke="#4A9CE8"
-                strokeWidth="1.5"
-                strokeMiterlimit="10"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M11.05 3.00002L4.20829 10.2417C3.94996 10.5167 3.69996 11.0584 3.64996 11.4334L3.34162 14.1333C3.23329 15.1083 3.93329 15.775 4.89996 15.6084L7.58329 15.15C7.95829 15.0834 8.48329 14.8084 8.74162 14.525L15.5833 7.28335C16.7666 6.03335 17.3 4.60835 15.4583 2.86668C13.625 1.14168 12.2333 1.75002 11.05 3.00002Z"
+                  stroke="#4A9CE8"
+                  strokeWidth="1.5"
+                  strokeMiterlimit="10"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M9.90833 4.20898C10.083 5.32636 10.6238 6.3541 11.4458 7.13086C12.2679 7.90762 13.3245 8.38943 14.45 8.50065M2.5 18.334H17.5"
+                  stroke="#4A9CE8"
+                  strokeWidth="1.5"
+                  strokeMiterlimit="10"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
+        <button
+          className={`p-1 px-1.5 mr-8 rounded-full border border-white text-gray ${isActive ? 'bg-blue border-white' : 'bg-'}`}
+          onClick={toggleIsActive}>
+          <SlidersOutlined className={`${isActive ? 'text-white' : ''} slider`}  />
+        </button>
       </div>
       <div className="flex items-baseline gap-2">
         <p className="text-base text-gray">Issuing date:</p>

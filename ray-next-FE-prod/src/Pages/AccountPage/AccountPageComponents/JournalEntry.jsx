@@ -28,6 +28,7 @@ import {
   useAddJournal,
   useGetJournalId,
 } from "../../../Queries/AccountQuery/AccountQuery";
+import InvoiceTableTwo from "./InvoiceTable2";
 
 const invoiceValidation = () => {
   return Yup.object().shape({
@@ -48,7 +49,7 @@ const JournalEntry = ({ open, setOpen }) => {
   const [otherCharges, setOtherCharges] = useState(false);
   const [settilment, setSettilement] = useState(false);
   const [item, setItem] = useState([]);
-  const [typeState,setTypeState] = useState("")
+  const [typeState, setTypeState] = useState("")
   const { data: id, refetch } = useGetJournalId();
 
   const initialValues = useCallback({
@@ -75,20 +76,20 @@ const JournalEntry = ({ open, setOpen }) => {
         credit: "",
         debit: "",
         // drcr: "",
-        drcr: item.length != 0 ? item[item.length-1].drcr.value == "DR"?{children:"Credit",value:"CR"}:{children:"Debit",value:"DR"} : "",
+        drcr: item.length != 0 ? item[item.length - 1].drcr.value == "DR" ? { children: "Credit", value: "CR" } : { children: "Debit", value: "DR" } : "",
       },
     ]);
     setEdit(item?.length);
-  
-  if(item.length != 0 ){
-if(item[item.length-1].drcr.value == "DR"){
-  setTypeState("CR")
-}else {
-  setTypeState("DR")
-}
+
+    if (item.length != 0) {
+      if (item[item.length - 1].drcr.value == "DR") {
+        setTypeState("CR")
+      } else {
+        setTypeState("DR")
+      }
+    }
+
   }
-    
-}
 
   const { mutateAsync: addJournal, isLoading } = useAddJournal();
   const [clear, setClear] = useState(false);
@@ -140,18 +141,29 @@ if(item[item.length-1].drcr.value == "DR"){
         toast.error("Something went wrong");
       });
   };
+  const [isActive, setIsActive] = useState(false);
+
+  // Toggle isActive state
+  const toggleIsActive = () => {
+    setIsActive(!isActive);
+  };
   return (
     <ModalLayout setOpen={setOpen} width={1100} open={open}>
       <div className="">
-        <div className=" p-3 max-w-[1512px]   h-auto m-auto">
+        <div className=" p-0 max-w-[1512px]   h-auto m-auto">
           <div>
             <AllHeadSection
+              isActive={isActive}
+              toggleIsActive={toggleIsActive}
               id={id?.data?.data?.product_id}
               formik={formik}
               head={"Journal"}
               name={"journal_id"}
             />
-            <div className="flex gap-6 2xl:gap-8 mb-8">
+            {/* //.. need to hide   */}
+            {!isActive && (
+            <div
+              className="flex gap-6 2xl:gap-8 mb-8">
               <div className="flex-[.6] ">
                 <IssueCard />
               </div>
@@ -187,8 +199,46 @@ if(item[item.length-1].drcr.value == "DR"){
                 </DetialsContainer>
               </div>
             </div>
+            )}
           </div>
 
+          {/* head ended */}
+
+          {/* need to hide  */}
+
+          {isActive && (
+          <div className="mb-12">
+
+            <div className="flex gap-2  items-baseline justify-between">
+            
+            </div>
+            <div className="flex gap-2  items-baseline justify-between">
+              <InvoiceTableTwo
+                edit={edit}
+                formik={formik}
+                item={item}
+                setEdit={setEdit}
+                setItem={setItem}
+                clear={clear}
+                addItem={addItem}
+                setTypeState={setTypeState}
+                typeState={typeState}
+              />
+              <InvoiceTableTwo
+                edit={edit}
+                formik={formik}
+                item={item}
+                setEdit={setEdit}
+                setItem={setItem}
+                clear={clear}
+                addItem={addItem}
+                setTypeState={setTypeState}
+                typeState={typeState}
+              />
+            </div>
+          </div>
+          )}
+          {!isActive && (
           <div className="mb-12">
             <div className="mb-2 flex w-full items-center justify-between">
               <p className=" text-xl 2xl:text-[24px] font-semibold">Items</p>
@@ -196,15 +246,14 @@ if(item[item.length-1].drcr.value == "DR"){
               <button
                 onClick={() => addItem()}
                 className=" px-4 2xl:px-6 py-2 2xl:py-3 text-sm 2xl:text-base rounded-full border hover:bg-light-gray transition-all"
-                // disabled={edit === false ? false : true}
+              // disabled={edit === false ? false : true}
               >
                 {formik.errors.transactions ? (
                   <div
-                    className={`${
-                      formik.errors.transactions
-                        ? "pointer-events-auto opacity-100"
-                        : "pointer-events-none opacity-0"
-                    } cursor-pointer `}
+                    className={`${formik.errors.transactions
+                      ? "pointer-events-auto opacity-100"
+                      : "pointer-events-none opacity-0"
+                      } cursor-pointer `}
                   >
                     <Tooltip
                       trigger={"hover"}
@@ -247,6 +296,11 @@ if(item[item.length-1].drcr.value == "DR"){
               typeState={typeState}
             />
           </div>
+          )}
+          
+          {/*hide end */}
+          
+          {!isActive && (
           <div>
             <div className="mb-6 ">
               <p className="text-xl 2xl:text-[20px] font-semibold">
@@ -268,7 +322,9 @@ if(item[item.length-1].drcr.value == "DR"){
               </div>
             </div>
           </div>
+          )}
         </div>
+        {/* footer */}
         <div className="border-t-[.5px]  py-6 sticky bottom-0 h-[116px]  border-border-gray w-full bg-white">
           <div className="flex items-center   max-w-[1512px]   h-full m-auto">
             <div className=" h-full flex-[.15]">
@@ -370,7 +426,7 @@ if(item[item.length-1].drcr.value == "DR"){
                       }
                     }
                   }}
-                  className="rounded-full flex items-center justify-center w-full px-3 h-[20px] 2xl:h-[50px] bg-blue"
+                  className="rounded-full flex items-center justify-center w-full px-0 py-5 h-[20px] 2xl:h-[50px] bg-blue"
                 >
                   {isLoading ? (
                     <LoadingSpinner />
