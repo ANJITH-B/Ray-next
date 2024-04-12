@@ -62,32 +62,35 @@ module.exports.createJournalEntry = async (req, res) => {
 
     // add current balnce and accoynt book transactio in a single for loop of transaction
 
-const CurrentBalanceUpdater = async(account_id,amount,crdr,account_name,cr,dr)=>{
-  console.log(account_id,amount,crdr,account_name,cr,dr)
-  const selectedRegularAccount = await regularAccountSchema.findOne({_id:account_id})
-  let amountVal= 0
-  if(crdr == "CR"){
-    amountVal = selectedRegularAccount.current_balance - amount
-  }else{
-    amountVal = selectedRegularAccount.current_balance + amount
-  }
+    const CurrentBalanceUpdater = async (account_id, amount, crdr, account_name, cr, dr) => {
+      console.log(account_id, amount, crdr, account_name, cr, dr)
+      const selectedRegularAccount = await regularAccountSchema.findOne({ _id: account_id })
+      const controlAcc = await controlAccountSchema.findOne({ _id: selectedRegularAccount?.parent_account_id })
 
-  await regularAccountSchema.updateOne({_id:account_id},{current_balance:amountVal})
-    await accountBookTransaction(account_id,Date.now(),_id,"",account_name,cr,dr,amountVal)
-}
+      let amountVal = 0
+      const curr_bal = selectedRegularAccount.current_balance
+      if (controlAcc.nature_of_account === 'ASSET' || controlAcc.nature_of_account === 'EXPENSE') {
+        amountVal = crdr == "CR" ? curr_bal - amount : curr_bal + amount
+      } else {
+        amountVal = crdr == "CR" ? curr_bal + amount : curr_bal - amount
+      }
 
-    transactions.map(item=>{
+      await regularAccountSchema.updateOne({ _id: account_id }, { current_balance: amountVal })
+      await accountBookTransaction(account_id, Date.now(), _id, "", account_name, cr, dr, amountVal)
+    }
+
+    transactions.map(item => {
       // add current balance
       let amount = 0
-      if(item.drcr == "CR"){
+      if (item.drcr == "CR") {
         amount = item.credit
-      }else{
+      } else {
         amount = item.debit
       }
-     
+
       // add account book transaction
 
-      CurrentBalanceUpdater(item.account_id,amount,item.drcr,item.account_name,item.credit,item.debit)
+      CurrentBalanceUpdater(item.account_id, amount, item.drcr, item.account_name, item.credit, item.debit)
     })
 
 
@@ -226,7 +229,7 @@ module.exports.createRegularAccounts = async (req, res) => {
       show_in_reports,
       user_id: _id,
       parent_account_id,
-      opening_balance:0,
+      opening_balance: 0,
       current_balance: 0,
       opening_balance_type,
     });
@@ -261,7 +264,7 @@ module.exports.getAllRegularAccounts = async (req, res) => {
           user_id: new ObjectId(_id),
         },
       },
-  
+
       {
         $lookup: {
           from: "chart_control_accounts",
