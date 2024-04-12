@@ -103,6 +103,7 @@ const ControlledAccountModal = ({ open, setOpen }) => {
                           { label: "Expense", value: "EXPENSE" },
                           { label: "Income", value: "INCOME" },
                           { label: "Liability", value: "LIABILITY" },
+                          { label: "Equity", value: "EQUITY" },
                         ]}
                       />
                     </div>

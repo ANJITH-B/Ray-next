@@ -15,7 +15,7 @@ const controlAccount = new mongoose.Schema({
   },
   nature_of_account: {
     type: String,
-    enum: ["ASSET", "LIABILITY", "EXPENSE", "INCOME"],
+    enum: ["ASSET", "LIABILITY", "EXPENSE", "INCOME","EQUITY"],
   },
   description: {
     type: String,
