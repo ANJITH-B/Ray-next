@@ -218,6 +218,7 @@ module.exports.createRegularAccounts = async (req, res) => {
     parent_account_id,
     opening_balance,
     opening_balance_type,
+    reference
   } = req.body;
   const _id = req.decoded._id;
   try {
@@ -229,9 +230,10 @@ module.exports.createRegularAccounts = async (req, res) => {
       show_in_reports,
       user_id: _id,
       parent_account_id,
-      opening_balance: 0,
+      opening_balance,
       current_balance: 0,
       opening_balance_type,
+      reference
     });
     console.log(newRegularAccount);
     return successResponse(res, 201, "successs");

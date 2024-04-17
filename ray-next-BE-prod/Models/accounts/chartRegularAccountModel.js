@@ -36,6 +36,9 @@ const regularAccount = new mongoose.Schema({
     required: true,
     ref: "users",
   },
+  reference: {
+    type: Array
+  },
   createdAt: {
     type: Date,
     default: Date.now,
