@@ -16,10 +16,13 @@ const InvoiceTableTwo = ({ formik, edit, setEdit, item, setItem, addItem, typeSt
   const { data, isloading } = useGetRegularAccount();
   const [values, setValues] = useState({ dirty: false, isError: [] });
 
-  const accountData = data?.data?.data?.map((e) => ({
+  const accountData = (data?.data?.data ?? [])
+  .filter(e => e.account_name !== "Difference in Openning Balance")
+  .map(e => ({
     value: e._id,
     label: e.account_name,
   }));
+
 
   const updateData = (rowIndex, key, value) => {
     const updatedData = [...item];
@@ -66,7 +69,7 @@ const InvoiceTableTwo = ({ formik, edit, setEdit, item, setItem, addItem, typeSt
       render: (text, record, index) => {
         return (
           <div className="maxw">
-           
+
             {edit === index ? (
               <BorderdInput
                 placeholder={"Amount"}
@@ -150,9 +153,9 @@ const InvoiceTableTwo = ({ formik, edit, setEdit, item, setItem, addItem, typeSt
   return (
     <div>
       <div className="mb-2 flex w-full items-center justify-between">
-              <p className=" text-xl 2xl:text-[24px] font-semibold">Credit</p>
+        <p className=" text-xl 2xl:text-[24px] font-semibold">Credit</p>
 
-              {/* <button
+        {/* <button
                 onClick={() => addItem()}
                 className=" px-4 2xl:px-6 py-2 2xl:py-3 text-sm 2xl:text-base rounded-full border hover:bg-light-gray transition-all"
               // disabled={edit === false ? false : true}
@@ -192,8 +195,8 @@ const InvoiceTableTwo = ({ formik, edit, setEdit, item, setItem, addItem, typeSt
                   " Add Items"
                 )}
               </button> */}
-            </div>
-      <CerditDebitTable className="" pagination={false} columns={columns} data={item || []} key={v4()}/>
+      </div>
+      <CerditDebitTable className="" pagination={false} columns={columns} data={item || []} key={v4()} />
     </div>
   );
 };

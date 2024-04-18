@@ -160,7 +160,7 @@ module.exports.verifySignup = async (req, res) => {
         );
 
         // add cash,credit,sales,purchase regular accounts
-          userr =  await userSchema.findOne({email})
+        userr = await userSchema.findOne({ email })
         const control = [
           {
             account_name: "Revenue from Operation",
@@ -174,6 +174,14 @@ module.exports.verifySignup = async (req, res) => {
             account_name: "Cost of Operation",
 
             nature_of_account: "EXPENSE",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Current Asset",
+
+            nature_of_account: "ASSET",
 
             user_id: userr._id,
             _id: "",
@@ -234,17 +242,21 @@ module.exports.verifySignup = async (req, res) => {
 
         // regular account creation
 
-     for(let j=0;j<regulars.length;j++){
-      const newRegularAccount = await regularAccountSchema.create({
-        account_name:regulars[j].account_name,
-        user_id: regulars[j].user_id,
-        parent_account_id:regulars[j].parent_account_id,
-        opening_balance:0,
-        opening_balance_type:regulars[j].opening_balance_type,
-        current_balance:0,
-      });
-     }
-
+        for (let j = 0; j < regulars.length; j++) {
+          const newRegularAccount = await regularAccountSchema.create({
+            account_name: regulars[j].account_name,
+            user_id: regulars[j].user_id,
+            parent_account_id: regulars[j].parent_account_id,
+            opening_balance: 0,
+            opening_balance_type: regulars[j].opening_balance_type,
+            current_balance: 0,
+          });
+        }
+        await regularAccountSchema.create({
+          account_name: "Difference in Openning Balance",
+          user_id: userr._id,
+          parent_account_id: control[2]._id,
+        })
         return successResponse(res, 201, "user verified succesfully", userr);
       }
     });

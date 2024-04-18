@@ -231,7 +231,7 @@ module.exports.createRegularAccounts = async (req, res) => {
       user_id: _id,
       parent_account_id,
       opening_balance,
-      current_balance: 0,
+      current_balance: opening_balance,
       opening_balance_type,
       reference
     });

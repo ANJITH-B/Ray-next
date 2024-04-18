@@ -13,12 +13,12 @@ const InvoiceTable = ({ formik, edit, setEdit, item, setItem , addItem ,typeStat
   // const [typeState,setTypeState] = useState("")
   const [accountNameState, setAccountNameState] = useState("");
 
-  const accountData = data?.data?.data?.map((e) => {
-    return {
-      value: e._id,
-      label: e.account_name,
-    };
-  });
+  const accountData = (data?.data?.data ?? [])
+  .filter(e => e.account_name !== "Difference in Openning Balance")
+  .map(e => ({
+    value: e._id,
+    label: e.account_name,
+  }));
 
   const updateData = (rowIndex, key, value) => {
     const updatedData = [...item];
