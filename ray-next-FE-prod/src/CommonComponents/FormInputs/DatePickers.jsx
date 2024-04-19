@@ -1,16 +1,32 @@
 import React from "react";
 import { DatePicker } from "antd";
+import moment from "moment";
 import "./formInputStyle.scss";
-export const DateRangePicker = ({ type = "month",...rest }) => {
+
+export const DateRangePicker = ({ type = "month", ...rest }) => {
+  const storedDate = JSON.parse(localStorage.getItem('accstartdate')) ?? false
+  const isDate = storedDate ? moment(storedDate) : null;
+
+  console.log("Stored Date:", storedDate);
+  console.log("Is Date:", isDate);
+
+  const disabledDate = (current) => {
+    console.log("Current Date:", current);
+    if (type === "day") {
+      console.log("Day Picker");
+      return isDate && current && current.isBefore(isDate, 'day');
+    } else {
+      console.log("Month Picker");
+      return isDate && current && current.isBefore(isDate, 'month');
+    }
+  };
+
   return (
     <div>
       <div>
         <DatePicker.RangePicker
-      
-        {...rest}
-
-       
-        format='MMM-YYYY'
+          {...rest}
+          format="MMM-YYYY"
           suffixIcon={
             <svg
               width="10"
@@ -29,8 +45,9 @@ export const DateRangePicker = ({ type = "month",...rest }) => {
               />
             </svg>
           }
-          className="custom-range-picker   border-none hover:border-2 px-4"
+          className="custom-range-picker border-none hover:border-2 px-4"
           picker={type}
+          disabledDate={disabledDate}
         />
       </div>
     </div>

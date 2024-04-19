@@ -7,7 +7,12 @@ import Pagination from "../../../../CommonComponents/OtherComponent/Pagination";
 import { useGetCustomer } from "../../../../Queries/CustomerQuery/CustomerQuery";
 import { useGetAccountBook } from "../../../../Queries/AccountQuery/AccountQuery";
 import dayjs from "dayjs";
-const AccountBookTable = ({ filter, setFilter }) => {
+import moment from "moment";
+
+const AccountBookTable = ({ filter, setFilter, accountData }) => {
+  const acc = accountData?.filter(x=>x.value === filter.account)
+  const storedDate = JSON.parse(localStorage.getItem('accstartdate')) ?? false
+  const isDate = storedDate ? moment(storedDate) : null;
   const { data: bookData, isLoading } = useGetAccountBook(filter);
   const InvoiceColumns = [
     {
@@ -16,6 +21,9 @@ const AccountBookTable = ({ filter, setFilter }) => {
       key: "Date",
       className: "text-base w-[10rem]",
       width: 200,
+      render: (item, record) => {
+        return acc?.[0]?.label === 'Difference in Openning Balance' ? isDate?.format('DD-MM-YYYY') : item
+      },
     },
     // {
     //   title: "Particular",
@@ -59,25 +67,41 @@ const AccountBookTable = ({ filter, setFilter }) => {
       width: 150,
     },
     {
-      title: "Balance",
+      title: "Openning Balance",
+      className: "text-base",
+      key: "Openning Balance",
+      dataIndex: "OpeningBalance",
+      width: 150,
+    },
+    {
+      title: "Current Balance",
       className: "text-base",
       key: "Balance",
       dataIndex: "Balance",
-      className: "text-gray",
       width: 150,
     },
   ];
  
-  const invoiceData = bookData?.data?.data?.map((e) => ({
-    Date:dayjs(e.date).format('DD-MMM-YYYY') ,
-    Discription: e.description !== ''? e.description : '-',
-    "Voucher Type": e.voucher_type,
-    Debit: e.debit,
-    Credit: e.credit,
-    Balance: e.balance,
-
-    Action: "",
-  }));
+  const invoiceData = bookData?.data?.data?.map((e, index, array) => {
+    let openingBalance = 0;
+    for (let i = index - 1; i >= 0; i--) {
+      if (dayjs(array[i].date).isBefore(dayjs(e.date), 'day')) {
+        openingBalance = array[i].balance;
+        break;
+      }
+    }
+    return {
+      Date: dayjs(e.date).format('DD-MMM-YYYY'),
+      Description: e.description !== '' ? e.description : '-',
+      "Voucher Type": e.voucher_type,
+      Debit: e.debit,
+      Credit: e.credit,
+      OpeningBalance: openingBalance,
+      Balance: e.balance,
+      Action: "",
+    };
+  });
+  
   //   const invoiceData = data?.data?.data?.data?.map((e) => [
   //     {
   //       Name: e.invoice_id,

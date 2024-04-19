@@ -55,10 +55,14 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
     };
     if (datas.account_name === '' ||
       datas.account_code === '' ||
-      datas.opening_balance === '' ||
-      datas.opening_balance_type === '' ||
       datas.parent_account_id === '') {
       return
+    }
+    if (datas.opening_balance) {
+      if (datas.opening_balance_type === '') return
+    }else{
+      datas.opening_balance = 0
+      datas.opening_balance_type = ''
     }
     if (isCotrolled) {
       addControlledAccount(datas)

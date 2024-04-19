@@ -173,7 +173,7 @@ const AccountBookPage = () => {
               />
             </div>
             <div className="flex-1">
-              <BordedDateRangePicker />
+              <BordedDateRangePicker type="day"/>
             </div>
           </div>
 
@@ -262,7 +262,7 @@ const AccountBookPage = () => {
           </div>
         </div>
         <div>
-          <AccountBookTable filter={filter} setFilter={setFilter} />
+          <AccountBookTable filter={filter} setFilter={setFilter} accountData={accountData}/>
         </div>
       </div>
     </div>

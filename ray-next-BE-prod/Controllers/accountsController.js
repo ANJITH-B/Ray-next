@@ -230,12 +230,33 @@ module.exports.createRegularAccounts = async (req, res) => {
       show_in_reports,
       user_id: _id,
       parent_account_id,
-      opening_balance,
       current_balance: opening_balance,
-      opening_balance_type,
-      reference
+      ...(opening_balance !== 0 && {
+        opening_balance,
+        opening_balance_type,
+        reference
+      }),
     });
     console.log(newRegularAccount);
+    const CurrentBalanceUpdater = async (amount, crdr, account_name) => {
+      const diff_in_openning_bal = await regularAccountSchema.findOne({
+        account_name: "Difference in Openning Balance",
+        user_id: _id
+      })
+      const controlAcc = await controlAccountSchema.findOne({ _id: parent_account_id })
+
+      let amountVal = 0
+      const curr_bal = diff_in_openning_bal.current_balance
+      if (controlAcc.nature_of_account === 'ASSET' || controlAcc.nature_of_account === 'EXPENSE') {
+        amountVal = crdr == "CR" ? curr_bal - amount : curr_bal + amount
+      } else {
+        amountVal = crdr == "CR" ? curr_bal + amount : curr_bal - amount
+      }
+      
+      await regularAccountSchema.updateOne({ _id: diff_in_openning_bal._id }, { current_balance: amountVal })
+      await accountBookTransaction(diff_in_openning_bal._id, Date.now(), _id, "", account_name, crdr == "CR" ? amount:0, crdr == "DR" ? amount:0, amountVal)
+    }
+    await CurrentBalanceUpdater(opening_balance, opening_balance_type, account_name)
     return successResponse(res, 201, "successs");
   } catch (error) {
     return errorResponse(res, 500, error.message);
