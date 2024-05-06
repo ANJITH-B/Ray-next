@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter as Router } from "react-router-dom";
+import { HashRouter as Router } from "react-router-dom";
 import IndexRoutes from "./Routes/IndexRoutes";
 import CustomToast from "./CommonComponents/UtilComponent/CustomToast";
 

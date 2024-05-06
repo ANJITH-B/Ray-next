@@ -25,8 +25,8 @@ const Dashboard = () => {
     <div className="w-full  p-6 mb-6 max-w-[1512px] overflow-hidden h-full  m-auto">
       <div className="flex overflow-hidden   relative gap-6 2xl:gap-8">
         <div className=" fixed max-w-[320px] 2xl:max-w-[394px]">
-          <div className="mb-6">
-            <DateSelect />
+          <div className="mb-6 w-400px">
+            {/* <DateSelect /> */}
           </div>
           <div className=" grid grid-cols-2 max-w-[320px] 2xl:max-w-[394px]  gap-3">
             <BalanceCard

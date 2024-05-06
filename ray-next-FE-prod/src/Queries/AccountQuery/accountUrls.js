@@ -107,7 +107,7 @@ const getAccountGroup= async (data) => {
 
 const getAccountBook= async (data) => {
   try {
-    const response = await axiosInstance.get(`/account-book?account=${data?.account}`);
+    const response = await axiosInstance.get(`/account-book?account=${data?.account}&period=${data?.date}`);
     return response;
   } catch (error) {
     if (!error.response) {

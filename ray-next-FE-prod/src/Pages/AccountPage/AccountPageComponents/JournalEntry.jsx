@@ -190,6 +190,11 @@ const JournalEntry = ({ open, setOpen }) => {
                               onChange={formik.handleChange}
                               name="reference_number"
                               value={formik.values.reference_number}
+                              onFocus={(e) => {
+                                e.target.style.border = '1px solid';
+                                e.target.style.borderRadius = '5px';
+                              }}
+                              onBlur={(e) => e.target.style.border = '1px solid transparent'}
                             />
                           </div>
                         </div>
@@ -247,6 +252,7 @@ const JournalEntry = ({ open, setOpen }) => {
                 onClick={() => addItem()}
                 className=" px-4 2xl:px-6 py-2 2xl:py-3 text-sm 2xl:text-base rounded-full border hover:bg-light-gray transition-all"
               // disabled={edit === false ? false : true}
+              // tabIndex={3}
               >
                 {formik.errors.transactions ? (
                   <div

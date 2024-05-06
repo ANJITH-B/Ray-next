@@ -83,10 +83,12 @@ const Filter = ({ setFilter, tabIndex }) => {
 };
 
 const AccountBookPage = () => {
+  const date = JSON.parse(localStorage.getItem('peroid_date')) || null
   const [filter, setFilter] = useState({
     pageNo: 1,
     pageCount: 10,
     account: "",
+    date
   });
   const [pageFilter, setPageFilter] = useState([]);
   const [tabIndex, setTabIndex] = useState("1");
@@ -172,9 +174,9 @@ const AccountBookPage = () => {
                 }}
               />
             </div>
-            <div className="flex-1">
+            {/* <div className="flex-1">
               <BordedDateRangePicker type="day"/>
-            </div>
+            </div> */}
           </div>
 
           <div className="w-[1px] h-[56px] mx-3 bg-border-gray"></div>

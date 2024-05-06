@@ -8,58 +8,25 @@ import trash from "../../../Assets/CommonImages/trash.svg";
 import BorderLessTable from "../../../CommonComponents/Tables/BorderLessTable";
 import { useGetRegularAccount } from "../../../Queries/AccountQuery/AccountQuery";
 
-const InvoiceTable = ({ formik, edit, setEdit, item, setItem , addItem ,typeState,setTypeState}) => {
+const InvoiceTable = ({ formik, edit, setEdit, item, setItem, addItem, typeState, setTypeState }) => {
   const { data, isloading } = useGetRegularAccount();
   // const [typeState,setTypeState] = useState("")
   const [accountNameState, setAccountNameState] = useState("");
 
   const accountData = (data?.data?.data ?? [])
-  .filter(e => e.account_name !== "Difference in Openning Balance")
-  .map(e => ({
-    value: e._id,
-    label: e.account_name,
-  }));
+    .filter(e => e.account_name !== "Difference in Openning Balance")
+    .map(e => ({
+      value: e._id,
+      label: e.account_name,
+    }));
 
   const updateData = (rowIndex, key, value) => {
     const updatedData = [...item];
-  
+
     return (updatedData[rowIndex][key] = value);
   };
   const [values, setValues] = useState({ dirty: false, isError: [] });
   const columns = [
-    {
-      title: "Account name",
-      key: "Account name",
-      dataIndex: "Account name",
-    className: "w-[15rem]",
-      render: (item, record, index) => {
-        return (
-          <div className="w-full">
-            {edit === index ? (
-              <BorderdSelect
-                name="account_name"
-                showSearch={true}
-                items={accountData}
-                error={
-                  !values?.isError?.includes("account_name") && values.dirty
-                    ? "Please select units"
-                    : false
-                }
-                defaultValue={record["account_name"]?.value}
-                onChange={(_, i) => {
-                  setAccountNameState(i.value);
-                  updateData(index, "account_name", i);
-                }}
-                placeholder="Account name"
-              />
-            ) : (
-              <p>{record["account_name"]?.children}</p>
-            )}
-          </div>
-        );
-      },
-    },
-
     {
       title: "Type",
       key: "Type",
@@ -95,71 +62,100 @@ const InvoiceTable = ({ formik, edit, setEdit, item, setItem , addItem ,typeStat
         );
       },
     },
+    {
+      title: "Account name",
+      key: "Account name",
+      dataIndex: "Account name",
+      className: "w-[15rem]",
+      render: (item, record, index) => {
+        return (
+          <div className="w-full">
+            {edit === index ? (
+              <BorderdSelect
+                name="account_name"
+                showSearch={true}
+                items={accountData}
+                error={
+                  !values?.isError?.includes("account_name") && values.dirty
+                    ? "Please select units"
+                    : false
+                }
+                defaultValue={record["account_name"]?.value}
+                onChange={(_, i) => {
+                  setAccountNameState(i.value);
+                  updateData(index, "account_name", i);
+                }}
+                placeholder="Account name"
+              />
+            ) : (
+              <p>{record["account_name"]?.children}</p>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      title: "Debit",
+      key: "Debit",
+      dataIndex: "Debit",
+      className: "w-[9rem]",
+      render: (item, record, index) => {
+        return (
+          <div className="maxw">
+            {/* {console.log(record)} */}
+            {edit === index ? (
+              <BorderdInput
+                placeholder={"Debit"}
+                disabled={typeState === "CR"} // Disable when "Credit" is selected
+                error={
+                  !values?.isError?.includes("Debit") && values.dirty
+                    ? "Please enter Debit"
+                    : false
+                }
+                defaultValue={record["Debit"] !== null ? record["Debit"] : 0}
 
-// ... (previous code)
+                onChange={(e) => updateData(index, "Debit", typeState === "CR" ? 0 : e.target.value)}
+                onInput={onlyNumbers}
+              />
+            ) : (
+              <p>{record["Debit"]}</p>
+            )}
+          </div>
+        );
+      },
+    },
 
-{
-  title: "Debit",
-  key: "Debit",
-  dataIndex: "Debit",
-  className: "w-[9rem]",
-  render: (item, record, index) => {
-    return (
-      <div className="maxw">
-        {/* {console.log(record)} */}
-        {edit === index ? (
-          <BorderdInput
-            placeholder={"Debit"}
-            disabled={typeState === "CR"} // Disable when "Credit" is selected
-            error={
-              !values?.isError?.includes("Debit") && values.dirty
-                ? "Please enter Debit"
-                : false
-            }
-            defaultValue={record["Debit"] !== null ? record["Debit"] : 0}
+    {
+      title: "Credit",
+      key: "Credit",
+      dataIndex: "Credit",
+      className: "w-[9rem]",
+      render: (item, record, index) => {
+        return (
+          <div className="maxw">
+            {edit === index ? (
+              <BorderdInput
+                placeholder={"Credit"}
+                disabled={typeState === "DR"}// Disable when "Debit" is selected
+                error={
+                  !values?.isError?.includes("Credit") && values.dirty
+                    ? "Please enter Credit"
+                    : false
+                }
+                defaultValue={record["Credit"] !== null ? record["Credit"] : 0}
 
-            onChange={(e) => updateData(index, "Debit", typeState === "CR"? 0: e.target.value)}
-            onInput={onlyNumbers}
-          />
-        ) : (
-          <p>{record["Debit"]}</p>
-        )}
-      </div>
-    );
-  },
-},
+                onChange={(e) => updateData(index, "Credit", typeState === "DR" ? 0 : e.target.value)}
+                onInput={onlyNumbers}
+              />
+            ) : (
+              <p>{record["Credit"]}</p>
+            )}
+          </div>
+        );
+      },
+    },
 
-{
-  title: "Credit",
-  key: "Credit",
-  dataIndex: "Credit",
-  className: "w-[9rem]",
-  render: (item, record, index) => {
-    return (
-      <div className="maxw">
-        {edit === index ? (
-          <BorderdInput
-            placeholder={"Credit"}
-            disabled={typeState === "DR"}// Disable when "Debit" is selected
-            error={
-              !values?.isError?.includes("Credit") && values.dirty
-                ? "Please enter Credit"
-                : false
-            }
-            defaultValue={record["Credit"] !== null ? record["Credit"] : 0}
-
-            onChange={(e) => updateData(index, "Credit", typeState === "DR"? 0: e.target.value)}
-            onInput={onlyNumbers}
-          />
-        ) : (
-          <p>{record["Credit"]}</p>
-        )}
-      </div>
-    );
-  },
-},
-
-// ... (remaining code)
+    // ... (remaining code)
 
     {
       title: "Remarks",
@@ -247,8 +243,8 @@ const InvoiceTable = ({ formik, edit, setEdit, item, setItem , addItem ,typeStat
                             index: index,
                             account_name: record["account_name"].children,
                             account_id: record["account_name"].value,
-                            credit:record["Credit"] != null ? Number(record["Credit"]):0,
-                            debit: record["Debit"] != null  ?Number(record["Debit"]):0,
+                            credit: record["Credit"] != null ? Number(record["Credit"]) : 0,
+                            debit: record["Debit"] != null ? Number(record["Debit"]) : 0,
                             drcr: record["drcr"]?.value,
                           },
                         ]);
@@ -259,8 +255,8 @@ const InvoiceTable = ({ formik, edit, setEdit, item, setItem , addItem ,typeStat
                             index: index,
                             account_name: record["account_name"].children,
                             account_id: record["account_name"].value,
-                            credit:record["Credit"] != null ? Number(record["Credit"]):0,
-                            debit: record["Debit"] != null ?Number(record["Debit"]):0,
+                            credit: record["Credit"] != null ? Number(record["Credit"]) : 0,
+                            debit: record["Debit"] != null ? Number(record["Debit"]) : 0,
                             drcr: record["drcr"]?.value,
                           },
                         ]);

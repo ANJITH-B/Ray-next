@@ -46,6 +46,7 @@ const LoginPage = () => {
             username: res?.data?.data?.current_user?.username,
             email: res?.data?.data?.current_user?.email,
             company: res?.data?.data?.current_user?.company,
+            company_id: res?.data?.data?.current_user?.company_id,
             phone: res?.data?.data?.current_user?.phone,
             state: res?.data?.data?.current_user?.state,
             region: res?.data?.data?.current_user?.region,
