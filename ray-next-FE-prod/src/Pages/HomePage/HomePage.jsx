@@ -21,7 +21,7 @@ const HomePage = () => {
     }
   })
   
-  return user?.company_id ? <></> : (
+  return isDate ? <></> : (
     <div className="w-full h-full bg-home-two bg-no-repeat">
       <div className="bg-home-one bg-no-repeat w-full h-full bg-right-bottom	 ">
         <div className="py-6 px-24 flex justify-between items-center h-full gap-2">
