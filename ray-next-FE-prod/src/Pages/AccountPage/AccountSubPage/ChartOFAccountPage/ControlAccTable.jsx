@@ -81,7 +81,7 @@ const ControlAccTable = ({ tabIndex }) => {
     pageNo: 1,
     pageCount: 10,
   });
-  const { data, isLoading } = useGetControlAccount();
+  const { data, isLoading } = useGetControlAccount(filter);
   const InvoiceColumns = [
     {
       title: "Account name",
@@ -271,7 +271,7 @@ const ControlAccTable = ({ tabIndex }) => {
         columns={InvoiceColumns}
         data={invoiceData}
       />
-      <Pagination setFilter={setFilter} />
+      <Pagination setFilter={setFilter} filter={filter}/>
     </div>
   );
 };

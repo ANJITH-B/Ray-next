@@ -26,7 +26,7 @@ const AccountGroupModal = ({ open, setOpen }) => {
 
   const { mutateAsync: addGroup, isLoading } = useAddAccountGroup();
 
-  const { data } = useGetRegularAccount();
+  const { data } = useGetRegularAccount({ pageNo: 1, pageCount: 100 });
  
   const parrentData = data?.data?.data?.map((e) => {
     return {

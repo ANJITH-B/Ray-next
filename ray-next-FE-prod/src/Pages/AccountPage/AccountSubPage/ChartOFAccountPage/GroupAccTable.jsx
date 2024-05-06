@@ -81,7 +81,7 @@ const GroupAccTable = ({ tabIndex }) => {
     pageNo: 1,
     pageCount: 10,
   });
-  const { data, isLoading } = useGetAccountGroup();
+  const { data, isLoading } = useGetAccountGroup(filter);
   
   const InvoiceColumns = [
     {
@@ -247,7 +247,7 @@ const GroupAccTable = ({ tabIndex }) => {
         columns={InvoiceColumns}
         data={invoiceData}
       />
-      <Pagination setFilter={setFilter} />
+      <Pagination setFilter={setFilter} filter={filter}/>
     </div>
   );
 };

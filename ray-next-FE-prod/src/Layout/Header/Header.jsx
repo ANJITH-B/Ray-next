@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import menu from "../../Assets/CommonImages/menu.svg";
 import logo from "../../Assets/CommonImages/RayNext.svg";
 import avtar from "../../Assets/CommonImages/avtar.png";
@@ -141,8 +141,7 @@ const Header = () => {
         </div>
       </div>
       <div className="flex gap-3 2xl:gap-4 items-center">
-        <DateSelect />
-        {/* <div className="flex max-w-[261px] items-center gap-3 bg-light-gray rounded-full overflow-hidden  py-2 px-6">
+        {path === '/home' ? <div className="flex max-w-[261px] items-center gap-3 bg-light-gray rounded-full overflow-hidden  py-2 px-6">
           <input
             type="text"
             placeholder="Search"
@@ -164,7 +163,9 @@ const Header = () => {
               strokeLinejoin="round"
             />
           </svg>
-        </div> */}
+        </div> :
+        <DateSelect />
+        }
         <div className="flex items-center gap-3   bg-light-gray rounded-full overflow-hidden  w-[40px] h-[40px] 2xl:w-[56px] 2xl:h-[56px] py-2 px-3 2xl:px-4">
           <svg
             width="24"

@@ -9,7 +9,7 @@ import BorderLessTable from "../../../CommonComponents/Tables/BorderLessTable";
 import { useGetRegularAccount } from "../../../Queries/AccountQuery/AccountQuery";
 
 const InvoiceTable = ({ formik, edit, setEdit, item, setItem, addItem, typeState, setTypeState }) => {
-  const { data, isloading } = useGetRegularAccount();
+  const { data, isloading } = useGetRegularAccount({ pageNo: 1, pageCount: 100 });
   // const [typeState,setTypeState] = useState("")
   const [accountNameState, setAccountNameState] = useState("");
 

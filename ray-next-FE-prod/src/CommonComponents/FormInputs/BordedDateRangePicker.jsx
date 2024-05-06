@@ -1,16 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { DatePicker } from "antd";
 import "./formInputStyle.scss";
-export const BordedDateRangePicker = ({ type = "month",...rest }) => {
+import dayjs from "dayjs";
+
+export const BordedDateRangePicker = ({ onChange, ...rest }) => {
+
+  const date = JSON.parse(localStorage.getItem('peroid_date')) ?? false
+  const [value, setValue] = useState(date ? [dayjs(date?.[0]), dayjs(date?.[1])] : null);
+  const handleChange = (dates) => {
+    setValue(dates);
+    if (onChange) {
+      onChange(dates);
+    }
+  };
+  const disabledDate = (current) => {
+    return (
+      (current && current.isBefore(date?.[0], 'day')) ||
+      (current && current.isAfter(date?.[1], 'day'))
+    );
+  };
+
   return (
     <div>
       <div>
         <DatePicker.RangePicker
-      
-        {...rest}
-
-       
-        format='MMM-YYYY'
+          {...rest}
+          format='MMM-YYYY'
           suffixIcon={
             <svg
               width="10"
@@ -30,7 +45,9 @@ export const BordedDateRangePicker = ({ type = "month",...rest }) => {
             </svg>
           }
           className="custom-range-picker-borderd   border-none hover:border-2 px-4"
-          picker={type}
+          disabledDate={disabledDate}
+          value={value}
+          onChange={handleChange}
         />
       </div>
     </div>

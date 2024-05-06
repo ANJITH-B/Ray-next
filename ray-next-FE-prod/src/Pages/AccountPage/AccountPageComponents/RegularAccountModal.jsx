@@ -33,7 +33,7 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
   const { mutateAsync: addControlledAccount, isLoading: controlledLoading } =
     useAddControlledAccount();
 
-  const { data } = useGetControlAccount();
+  const { data } = useGetControlAccount({ pageNo: 1, pageCount: 100 });
 
   const parrentData = data?.data?.data?.map((e) => {
     return {

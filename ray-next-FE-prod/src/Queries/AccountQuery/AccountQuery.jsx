@@ -19,23 +19,23 @@ const useGetJournalId = () => {
   });
 };
 
-const useGetRegularAccount = () => {
-  return useQuery(["get_regular_account"], () => getAllRegularAccounts(), {
+const useGetRegularAccount = (data) => {
+  return useQuery(["get_regular_account",data], () => getAllRegularAccounts(data), {
     // staleTime: 30000,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
 };
-const useGetAccountGroup = () => {
-  return useQuery(["get_group_account"], () => getAccountGroup(), {
+const useGetAccountGroup = (data) => {
+  return useQuery(["get_group_account",data], () => getAccountGroup(data), {
     // staleTime: 30000,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
 };
 
-const useGetControlAccount = () => {
-  return useQuery(["get_controll_account"], () => getControllAccounts(), {
+const useGetControlAccount = (data) => {
+  return useQuery(["get_controll_account",data], () => getControllAccounts(data), {
     // staleTime: 30000,
     keepPreviousData: true,
     refetchOnWindowFocus: false,

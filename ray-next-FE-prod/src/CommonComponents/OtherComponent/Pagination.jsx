@@ -1,7 +1,7 @@
 import React from "react";
 import BorderdSelectRounded from "../FormInputs/BorderdSelectRounded";
 
-const Pagination = ({ setFilter,filter }) => {
+const Pagination = ({ setFilter, filter }) => {
   return (
     <div className="flex justify-end w-full gap-10 mt-6 ">
       <div className="flex w-[12rem] items-center gap-3">
@@ -10,13 +10,15 @@ const Pagination = ({ setFilter,filter }) => {
           onChange={(e) => {
             setFilter((pre) => ({ ...pre, pageCount: e }));
           }}
-          value={filter?.pageCount}
-          items={[10, 20]}
+          defaultValue={{ value: filter?.pageCount ?? 10, label: filter?.pageCount ?? 10 }}
+          items={[{ value: 10, label: 10 }, { value: 20, label: 20 }]}
         />
       </div>
       <div className="flex gap-3">
+        {console.log(filter)}
         <button
-          onClick={()=>setFilter((pre) => ({ ...pre, pageNo: pre.pageNo - 1 }))}
+          disabled={filter?.pageNo <= 1}
+          onClick={() => setFilter((pre) => ({ ...pre, pageNo: pre.pageNo - 1 }))}
           className="2xl:px-5 2xl:py-4 px-4 py-3 border-[1px] rounded-3xl border-border-gray"
         >
           <svg
@@ -37,7 +39,7 @@ const Pagination = ({ setFilter,filter }) => {
           </svg>
         </button>
         <button
-          onClick={()=>setFilter((pre) => ({ ...pre, pageNo: pre.pageNo + 1 }))}
+          onClick={() => setFilter((pre) => ({ ...pre, pageNo: pre.pageNo + 1 }))}
           className="2xl:px-5 2xl:py-4 px-4 py-3 border-[1px] rounded-3xl border-border-gray"
         >
           <svg

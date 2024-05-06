@@ -13,9 +13,9 @@ const getJournalId = async () => {
   }
 };
 
-const getAllRegularAccounts = async () => {
+const getAllRegularAccounts = async (data) => {
   try {
-    const response = await axiosInstance.get("coa/regular-account");
+    const response = await axiosInstance.get(`coa/regular-account?page=${data?.pageNo}&perpageitems=${data?.pageCount}`);
     return response;
   } catch (error) {
     if (!error.response) {
@@ -26,9 +26,9 @@ const getAllRegularAccounts = async () => {
   }
 };
 
-const getControllAccounts = async () => {
+const getControllAccounts = async (data) => {
   try {
-    const response = await axiosInstance.get("coa/control-account");
+    const response = await axiosInstance.get(`coa/control-account?page=${data?.pageNo}&perpageitems=${data?.pageCount}`);
     return response;
   } catch (error) {
     if (!error.response) {
@@ -93,7 +93,7 @@ const addAccountGroup= async (data) => {
 
 const getAccountGroup= async (data) => {
   try {
-    const response = await axiosInstance.get(`coa/account-group`);
+    const response = await axiosInstance.get(`coa/account-group?page=${data?.pageNo}&perpageitems=${data?.pageCount}`);
     return response;
   } catch (error) {
     if (!error.response) {

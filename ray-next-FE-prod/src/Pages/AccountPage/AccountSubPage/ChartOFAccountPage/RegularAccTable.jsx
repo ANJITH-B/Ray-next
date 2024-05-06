@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BordedTable from "../../../../CommonComponents/Tables/BorderdTabel";
 import avrt from "../../../../Assets/CommonImages/avtr.png";
 import flag from "../../../../Assets/CommonImages/flag.svg";
@@ -82,7 +82,7 @@ const RegularAccTable = ({ tabIndex }) => {
     pageNo: 1,
     pageCount: 10,
   });
-  const { data, isLoading } = useGetRegularAccount();
+  const { data, isLoading } = useGetRegularAccount(filter);
   const InvoiceColumns = [
     {
       title: "Account name",
@@ -275,7 +275,7 @@ const RegularAccTable = ({ tabIndex }) => {
         columns={InvoiceColumns}
         data={invoiceData}
       />
-      <Pagination setFilter={setFilter} />
+      <Pagination setFilter={setFilter} filter={filter}/>
     </div>
   );
 };

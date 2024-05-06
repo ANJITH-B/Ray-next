@@ -16,6 +16,7 @@ import {
   useGetAccountBook,
   useGetRegularAccount,
 } from "../../../../Queries/AccountQuery/AccountQuery";
+import dayjs from "dayjs";
 const Filter = ({ setFilter, tabIndex }) => {
   const [date, seDate] = useState();
   const [under, setUnder] = useState();
@@ -93,8 +94,15 @@ const AccountBookPage = () => {
   const [pageFilter, setPageFilter] = useState([]);
   const [tabIndex, setTabIndex] = useState("1");
   const [open, setOpen] = useState(false);
-  const { data, isSuccess } = useGetRegularAccount();
+  const { data, isSuccess } = useGetRegularAccount({ pageNo: 1, pageCount: 100 });
 
+  const handleChange = (e) => {
+    const date = JSON.stringify(e)
+    setFilter((pre) => ({
+      ...pre,
+      date: JSON.parse(date)
+    }));
+  }
   useEffect(() => {
     if (isSuccess) {
       setFilter((pre) => ({
@@ -174,9 +182,9 @@ const AccountBookPage = () => {
                 }}
               />
             </div>
-            {/* <div className="flex-1">
-              <BordedDateRangePicker type="day"/>
-            </div> */}
+            <div className="flex-1">
+              <BordedDateRangePicker onChange={handleChange} />
+            </div>
           </div>
 
           <div className="w-[1px] h-[56px] mx-3 bg-border-gray"></div>

@@ -1,5 +1,4 @@
 import { Select, Tooltip } from "antd";
-import { Option } from "antd/es/mentions";
 import React from "react";
 import "./formInputStyle.scss";
 const BorderdSelectRounded = ({ items = null, ...rest }) => {
@@ -67,7 +66,7 @@ const BorderdSelectRounded = ({ items = null, ...rest }) => {
         {...rest}
       >
         {items?.map((item) => {
-          return <Option value={item?.value}>{item?.label}</Option>;
+          return <Select.Option key={item?.value} value={item?.value}>{item?.label}</Select.Option>;
         })}
       </Select>
     </div>
