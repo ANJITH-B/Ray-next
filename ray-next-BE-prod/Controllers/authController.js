@@ -158,20 +158,78 @@ module.exports.verifySignup = async (req, res) => {
           },
           { secret_code, verified: true }
         );
-
-        // add cash,credit,sales,purchase regular accounts
+        
         userr = await userSchema.findOne({ email })
+        // add cash,credit,sales,purchase regular accounts
+
+        // control account creation
         const control = [
           {
             account_name: "Revenue from Operation",
 
-            nature_of_account: "ASSET",
+            nature_of_account: "INCOME",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Income from other sources",
+
+            nature_of_account: "INCOME",
 
             user_id: userr._id,
             _id: "",
           },
           {
             account_name: "Cost of Operation",
+
+            nature_of_account: "EXPENSE",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Direct Expenses",
+
+            nature_of_account: "EXPENSE",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Indirect Expenses",
+
+            nature_of_account: "EXPENSE",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Depreciation",
+
+            nature_of_account: "EXPENSE",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Tax",
+
+            nature_of_account: "EXPENSE",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Finance cost",
+
+            nature_of_account: "EXPENSE",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Management cost",
 
             nature_of_account: "EXPENSE",
 
@@ -186,10 +244,57 @@ module.exports.verifySignup = async (req, res) => {
             user_id: userr._id,
             _id: "",
           },
+          {
+            account_name: "Fixed Asset",
+
+            nature_of_account: "ASSET",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Current Liability",
+
+            nature_of_account: "LIABILITY",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Non-Current Liability",
+
+            nature_of_account: "LIABILITY",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Share holders Current Account",
+
+            nature_of_account: "CAPITAL",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Share Capital",
+
+            nature_of_account: "CAPITAL",
+
+            user_id: userr._id,
+            _id: "",
+          },
+          {
+            account_name: "Drawings",
+
+            nature_of_account: "CAPITAL",
+
+            user_id: userr._id,
+            _id: "",
+          },
         ];
 
         for (let i = 0; i < control.length; i++) {
-          // control account creation
           const newControlAccount = await controlAccountSchema.create({
             account_name: control[i].account_name,
             nature_of_account: control[i].nature_of_account,
@@ -198,49 +303,69 @@ module.exports.verifySignup = async (req, res) => {
 
           control[i]._id = newControlAccount._id;
         }
+        // const control = [
+        //   {
+        //     account_name: "Revenue from Operation",
 
+        //     nature_of_account: "ASSET",
+
+        //     user_id: userr._id,
+        //     _id: "",
+        //   },
+        //   {
+        //     account_name: "Cost of Operation",
+
+        //     nature_of_account: "EXPENSE",
+
+        //     user_id: userr._id,
+        //     _id: "",
+        //   },
+        //   {
+        //     account_name: "Current Asset",
+
+        //     nature_of_account: "ASSET",
+
+        //     user_id: userr._id,
+        //     _id: "",
+        //   },
+        // ];
+
+        // for (let i = 0; i < control.length; i++) {
+        //   const newControlAccount = await controlAccountSchema.create({
+        //     account_name: control[i].account_name,
+        //     nature_of_account: control[i].nature_of_account,
+        //     user_id: control[i].user_id,
+        //   });
+
+        //   control[i]._id = newControlAccount._id;
+        // }
 
         console.log(control)
+        
+        // regular account creation
 
         const regulars = [
           {
-            account_name: "Customer cash",
-            user_id: userr._id,
-            parent_account_id: control[1]._id,
-            opening_balance: 0,
-            opening_balance_type: "CR",
-          },
-          {
-            account_name: "Credit",
+            account_name: "Online Sales",
             user_id: userr._id,
             parent_account_id: control[0]._id,
-            opening_balance: 0,
-            opening_balance_type: "DR",
           },
           {
-            account_name: "Cash account",
+            account_name: "Talabat",
             user_id: userr._id,
             parent_account_id: control[0]._id,
-            opening_balance: 0,
-            opening_balance_type: "DR",
           },
           {
-            account_name: "Sales account",
+            account_name: "Delivery",
             user_id: userr._id,
             parent_account_id: control[0]._id,
-            opening_balance: 0,
-            opening_balance_type: "DR",
           },
           {
-            account_name: "Purchase account",
+            account_name: "Retail Sale",
             user_id: userr._id,
-            parent_account_id: control[1]._id,
-            opening_balance: 0,
-            opening_balance_type: "CR",
+            parent_account_id: control[0]._id,
           },
         ];
-
-        // regular account creation
 
         for (let j = 0; j < regulars.length; j++) {
           const newRegularAccount = await regularAccountSchema.create({
@@ -248,15 +373,68 @@ module.exports.verifySignup = async (req, res) => {
             user_id: regulars[j].user_id,
             parent_account_id: regulars[j].parent_account_id,
             opening_balance: 0,
-            opening_balance_type: regulars[j].opening_balance_type,
             current_balance: 0,
           });
         }
-        await regularAccountSchema.create({
-          account_name: "Difference in Openning Balance",
-          user_id: userr._id,
-          parent_account_id: control[2]._id,
-        })
+        // await regularAccountSchema.create({
+        //   account_name: "Difference in Openning Balance",
+        //   user_id: userr._id,
+        //   parent_account_id: control[2]._id,
+        // })
+        // const regulars = [
+        //   {
+        //     account_name: "Customer cash",
+        //     user_id: userr._id,
+        //     parent_account_id: control[1]._id,
+        //     opening_balance: 0,
+        //     opening_balance_type: "CR",
+        //   },
+        //   {
+        //     account_name: "Credit",
+        //     user_id: userr._id,
+        //     parent_account_id: control[0]._id,
+        //     opening_balance: 0,
+        //     opening_balance_type: "DR",
+        //   },
+        //   {
+        //     account_name: "Cash account",
+        //     user_id: userr._id,
+        //     parent_account_id: control[0]._id,
+        //     opening_balance: 0,
+        //     opening_balance_type: "DR",
+        //   },
+        //   {
+        //     account_name: "Sales account",
+        //     user_id: userr._id,
+        //     parent_account_id: control[0]._id,
+        //     opening_balance: 0,
+        //     opening_balance_type: "DR",
+        //   },
+        //   {
+        //     account_name: "Purchase account",
+        //     user_id: userr._id,
+        //     parent_account_id: control[1]._id,
+        //     opening_balance: 0,
+        //     opening_balance_type: "CR",
+        //   },
+        // ];
+
+        // for (let j = 0; j < regulars.length; j++) {
+        //   const newRegularAccount = await regularAccountSchema.create({
+        //     account_name: regulars[j].account_name,
+        //     user_id: regulars[j].user_id,
+        //     parent_account_id: regulars[j].parent_account_id,
+        //     opening_balance: 0,
+        //     opening_balance_type: regulars[j].opening_balance_type,
+        //     current_balance: 0,
+        //   });
+        // }
+        // await regularAccountSchema.create({
+        //   account_name: "Difference in Openning Balance",
+        //   user_id: userr._id,
+        //   parent_account_id: control[2]._id,
+        // })
+
         return successResponse(res, 201, "user verified succesfully", userr);
       }
     });

@@ -518,11 +518,14 @@ module.exports.getAllAccountGroups = async (req, res) => {
 module.exports.getAccountBooks = async (req, res) => {
   const _id = req.decoded._id;
   const accountId = req.query.account;
+  const period = req.query.period;
+  const [startDate, endDate] = period.split(',').map(dateString => new Date(dateString));
 
   try {
     const allTransactions = await accountBookTransactionSchema.find({
       user_id: _id,
       account_id: accountId,
+      date: { $gte: startDate, $lte: endDate }
     });
     return successResponse(res, 201, "successs", allTransactions);
   } catch (error) {
