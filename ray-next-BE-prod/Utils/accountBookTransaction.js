@@ -1,7 +1,7 @@
 const { accountBookTransactionSchema } = require("../Models/accounts/accountBookTransaction")
 
 
-const accountBookTransaction = async (account_id, date, user_id, description, voucher_type, cr, dr, balance) => {
+const accountBookTransaction = async (account_id, date, user_id, description, voucher_type, cr, dr, balance, opening_balance) => {
 
   // using this args create a data for model with balance calculation( for now keep it empty or 0)
 
@@ -13,7 +13,8 @@ const accountBookTransaction = async (account_id, date, user_id, description, vo
     voucher_type,
     debit: dr,
     credit: cr,
-    balance: balance
+    balance,
+    opening_balance
   })
 
 

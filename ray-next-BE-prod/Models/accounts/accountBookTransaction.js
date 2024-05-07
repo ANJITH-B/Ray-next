@@ -28,6 +28,9 @@ const accountBookTrans = new mongoose.Schema({
     credit:{
         type:Number,
     },
+    opening_balance:{
+        type:Number,
+    },
     balance:{
         type:Number,
     },
