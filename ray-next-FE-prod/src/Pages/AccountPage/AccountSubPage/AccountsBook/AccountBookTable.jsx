@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 import moment from "moment";
 
 const AccountBookTable = ({ filter, setFilter, accountData }) => {
-  const acc = accountData?.filter(x=>x.value === filter.account)
+  // const acc = accountData?.filter(x => x.value === filter.account)
   const storedDate = JSON.parse(localStorage.getItem('accstartdate')) ?? false
   const isDate = storedDate ? moment(storedDate) : null;
   const { data: bookData, isLoading } = useGetAccountBook(filter);
@@ -21,9 +21,9 @@ const AccountBookTable = ({ filter, setFilter, accountData }) => {
       key: "Date",
       className: "text-base w-[10rem]",
       width: 200,
-      render: (item, record) => {
-        return acc?.[0]?.label === 'Difference in Openning Balance' ? isDate?.format('DD-MM-YYYY') : item
-      },
+      // render: (item, record) => {
+      //   return acc?.[0]?.label === 'Difference in Openning Balance' ? isDate?.format('DD-MM-YYYY') : item
+      // },
     },
     // {
     //   title: "Particular",
@@ -33,9 +33,9 @@ const AccountBookTable = ({ filter, setFilter, accountData }) => {
     //   className: "text-base font-semibold w-[6rem]",
     // },
     {
-      title: "Discription",
-      dataIndex: "Discription",
-      key: "Discription",
+      title: "Description",
+      dataIndex: "Description",
+      key: "Description",
       width: 120,
     },
     {
@@ -81,7 +81,7 @@ const AccountBookTable = ({ filter, setFilter, accountData }) => {
       width: 150,
     },
   ];
- 
+
   const invoiceData = bookData?.data?.data?.map((e, index, array) => {
     let openingBalance = 0;
     for (let i = index - 1; i >= 0; i--) {
@@ -91,17 +91,17 @@ const AccountBookTable = ({ filter, setFilter, accountData }) => {
       }
     }
     return {
-      Date: dayjs(e.date).format('DD-MMM-YYYY'),
+      Date: e.opening_balance ? isDate?.format('DD-MM-YYYY') : dayjs(e.date).format('DD-MMM-YYYY'),
       Description: e.description !== '' ? e.description : '-',
       "Voucher Type": e.voucher_type,
       Debit: e.debit,
       Credit: e.credit,
-      OpeningBalance: openingBalance,
+      OpeningBalance: e.opening_balance ?? openingBalance,
       Balance: e.balance,
       Action: "",
     };
   });
-  
+
   //   const invoiceData = data?.data?.data?.data?.map((e) => [
   //     {
   //       Name: e.invoice_id,
@@ -126,7 +126,7 @@ const AccountBookTable = ({ filter, setFilter, accountData }) => {
       />
       <div>
 
-      <Pagination setFilter={setFilter} filter={filter} />
+        <Pagination setFilter={setFilter} filter={filter} />
       </div>
     </div>
   );
