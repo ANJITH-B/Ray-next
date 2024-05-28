@@ -76,7 +76,7 @@ module.exports.createJournalEntry = async (req, res) => {
       }
 
       await regularAccountSchema.updateOne({ _id: account_id }, { current_balance: amountVal })
-      await accountBookTransaction(account_id, new Date(date), _id, "", account_name, cr, dr, amountVal)
+      await accountBookTransaction(account_id, Date.now(), _id, "", account_name, cr, dr, amountVal)
     }
 
     transactions.map(item => {
@@ -253,9 +253,9 @@ module.exports.createRegularAccounts = async (req, res) => {
       } else {
         amountVal = crdr == "CR" ? curr_bal + amount : curr_bal - amount
       }
-      
+
       await regularAccountSchema.updateOne({ _id: diff_in_openning_bal._id }, { current_balance: amountVal })
-      await accountBookTransaction(diff_in_openning_bal._id, Date.now(), _id, "", account_name, crdr == "CR" ? amount:0, crdr == "DR" ? amount:0, amountVal)
+      await accountBookTransaction(diff_in_openning_bal._id, Date.now(), _id, "", account_name, crdr == "CR" ? amount : 0, crdr == "DR" ? amount : 0, amountVal)
     }
     opening_balance !== 0 && await CurrentBalanceUpdater(opening_balance, opening_balance_type, account_name)
     return successResponse(res, 201, "successs");
@@ -405,8 +405,11 @@ module.exports.getAllControlAccounts = async (req, res) => {
     //   },
     // ];
 
-
-
+    const perPageItems = req.query.perpageitems
+      ? parseInt(req.query.perpageitems)
+      : 10;
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const skipCount = (page - 1) * perPageItems;
 
     const pipeline = [
       // Match control accounts by user_id
@@ -454,11 +457,9 @@ module.exports.getAllControlAccounts = async (req, res) => {
           },
         },
       },
-      // Sort by createdAt in descending order
       { $sort: { createdAt: -1 } },
-      // Pagination: Limit and Skip based on page number and page size
-      { $limit: 10 }, // Adjust the limit based on your pagination requirements
-      { $skip: 0 }, // Adjust the skip based on your pagination requirements
+      { $limit: perPageItems },
+      { $skip: skipCount },
     ];
 
     const allControlAccounts = await controlAccountSchema
