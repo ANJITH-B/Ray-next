@@ -78,6 +78,19 @@ const addControlledAccount = async (data) => {
   }
 };
 
+const updateControlAccount = async (data) => {
+  try {
+    const response = await axiosInstance.patch(`coa/control-account`, data);
+    return response;
+  } catch (error) {
+    if (!error.response) {
+      throw error;
+    } else {
+      throw error.response.data;
+    }
+  }
+};
+
 const addAccountGroup= async (data) => {
   try {
     const response = await axiosInstance.post(`coa/account-group`, data);
@@ -123,6 +136,7 @@ export {
   addJournal,
   addRegularAccount,
   addControlledAccount,
+  updateControlAccount,
   getControllAccounts,
   addAccountGroup,
   getAccountGroup,

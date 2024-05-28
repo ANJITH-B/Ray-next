@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BordedTable from "../../../../CommonComponents/Tables/BorderdTabel";
 import avrt from "../../../../Assets/CommonImages/avtr.png";
 import flag from "../../../../Assets/CommonImages/flag.svg";
-
+import editsvg from "../../../../Assets/CommonImages/edit.svg";
 import Pagination from "../../../../CommonComponents/OtherComponent/Pagination";
 import { useGetCustomer } from "../../../../Queries/CustomerQuery/CustomerQuery";
-import { Dropdown } from "antd";
+import { Button, Dropdown } from "antd";
 import BorderdSelect from "../../../../CommonComponents/FormInputs/BorderdSelect";
 import { v4 } from "uuid";
 import BorderdInput from "../../../../CommonComponents/FormInputs/BorderdInput";
-import { useGetControlAccount } from "../../../../Queries/AccountQuery/AccountQuery";
+import { useGetControlAccount, useUpdateControlAccount } from "../../../../Queries/AccountQuery/AccountQuery";
+import toast from "react-hot-toast";
 
 const Filter = ({ setFilter, tabIndex }) => {
   const [date, seDate] = useState();
@@ -77,11 +78,51 @@ const Filter = ({ setFilter, tabIndex }) => {
   );
 };
 const ControlAccTable = ({ tabIndex }) => {
+  const [edit, setEdit] = useState(false)
+  const [natureOfAcc, setNatureOfAcc] = useState('')
   const [filter, setFilter] = useState({
     pageNo: 1,
     pageCount: 10,
   });
   const { data, isLoading } = useGetControlAccount(filter);
+  const { mutateAsync: updateControlAccount } = useUpdateControlAccount();
+  const invoiceData = data?.data?.data?.map((e) => ({
+    _id: e._id,
+    "Account name": e.account_name,
+    "Nature of account": e.nature_of_account,
+    "Parent account": e.parent_account_name,
+    Description: e.description ? e.description : '-',
+    "Opening balance": e.total_opening_balance,
+    "Current balance": e.total_current_balance,
+
+    Action: "",
+  }));
+
+  const handleEdit = (index) => {
+    setEdit(index)
+    setNatureOfAcc(invoiceData?.[edit]?.nature_of_account)
+  }
+  const handleUpdate = () => {
+    console.log(natureOfAcc);
+    console.log(invoiceData?.[edit]?.["Nature of account"]);
+    if (natureOfAcc === invoiceData?.[edit]?.nature_of_account) {
+      setEdit(false)
+      setNatureOfAcc('')
+      return
+    }
+    updateControlAccount({ data: invoiceData?.[edit], natureOfAcc })
+      .then((res) => {
+        if (res.status === 500) {
+          toast.error("Something went wrong");
+        }
+        toast.success(`nature of acc changed to ${natureOfAcc}`)
+      })
+      .catch((err) => {
+        toast.error("Something went wrong");
+      });
+    setNatureOfAcc('')
+    setEdit(false)
+  }
   const InvoiceColumns = [
     {
       title: "Account name",
@@ -96,27 +137,32 @@ const ControlAccTable = ({ tabIndex }) => {
       key: "Nature of account",
       width: 120,
 
-      render: (item, record) => {
+      render: (item, record, index) => {
         return (
-          <div className=" flex justify-center ">
-            <h1
-              className={`px-3 bg-opacity-20 text-xs font-medium rounded-xl py-1 ${
-                item === "EXPENSE" && "bg-[#D7261B] text-[#D7261B]"
-              } ${item === "ASSET" && "bg-[#12B13F] text-[#12B13F]"}`}
-            >
-              {item}
-            </h1>
-          </div>
+          edit === index ? <BorderdSelect
+            onChange={(e) => setNatureOfAcc(e)}
+            id="name"
+            placeholder="Nature of account"
+            defaultValue={item}
+            items={[
+              { label: "Asset", value: "ASSET" },
+              { label: "Expense", value: "EXPENSE" },
+              { label: "Income", value: "INCOME" },
+              { label: "Liability", value: "LIABILITY" },
+              { label: "Equity", value: "EQUITY" },
+            ]}
+          /> :
+            <div className=" flex justify-center ">
+              <h1
+                className={`px-3 bg-opacity-20 text-xs font-medium rounded-xl py-1 ${item === "EXPENSE" && "bg-[#D7261B] text-[#D7261B]"
+                  } ${item === "ASSET" && "bg-[#12B13F] text-[#12B13F]"}`}
+              >
+                {item}
+              </h1>
+            </div>
         );
       },
     },
-    // {
-    //   title: "Parent account",
-    //   key: "Parent account",
-    //   className: "text-base",
-    //   dataIndex: "Parent account",
-    //   width: 170,
-    // },
     {
       title: "Description",
       key: "Description",
@@ -137,6 +183,38 @@ const ControlAccTable = ({ tabIndex }) => {
       key: "Current balance",
       dataIndex: "Current balance",
       width: 150,
+    },
+    {
+      title: null,
+      key: "action",
+      dataIndex: "action",
+      width: 100,
+      render: (text, record, index) => {
+        return (
+          edit === index ?
+            <button
+              onClick={handleUpdate}>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.99996 0.666992C4.40829 0.666992 0.666626 4.40866 0.666626 9.00033C0.666626 13.592 4.40829 17.3337 8.99996 17.3337C13.5916 17.3337 17.3333 13.592 17.3333 9.00033C17.3333 4.40866 13.5916 0.666992 8.99996 0.666992ZM12.9833 7.08366L8.25829 11.8087C8.1411 11.9257 7.98225 11.9914 7.81663 11.9914C7.651 11.9914 7.49215 11.9257 7.37496 11.8087L5.01663 9.45033C4.90039 9.33271 4.83521 9.17402 4.83521 9.00866C4.83521 8.8433 4.90039 8.68461 5.01663 8.56699C5.25829 8.32533 5.65829 8.32533 5.89996 8.56699L7.81663 10.4837L12.1 6.20033C12.3416 5.95866 12.7416 5.95866 12.9833 6.20033C13.225 6.44199 13.225 6.83366 12.9833 7.08366Z"
+                  fill="#4A9CE8"
+                />
+              </svg>
+            </button>
+            :
+            <button
+              onClick={() => handleEdit(index)}
+            >
+              <img src={editsvg} alt="edit" className="min-w-[18px]" />
+            </button>
+        );
+      },
     },
   ];
 
@@ -172,16 +250,6 @@ const ControlAccTable = ({ tabIndex }) => {
       key: "7",
     },
   ];
-  const invoiceData = data?.data?.data?.map((e) => ({
-    "Account name": e.account_name,
-    "Nature of account": e.nature_of_account,
-    // "Parent account": e.parent_account_name,
-    Description: e.description ? e.description : '-',
-    "Opening balance": e.total_opening_balance,
-    "Current balance": e.total_current_balance,
-
-    Action: "",
-  }));
 
   //   const invoiceData = data?.data?.data?.data?.map((e) => [
   //     {
@@ -193,7 +261,6 @@ const ControlAccTable = ({ tabIndex }) => {
   //       "Contact number": "$828.00",
   //       Address: "$551.00",
   //       Remarks: "$211.00",
-
   //       Action: "",
   //     },
   //   ]);
@@ -271,7 +338,7 @@ const ControlAccTable = ({ tabIndex }) => {
         columns={InvoiceColumns}
         data={invoiceData}
       />
-      <Pagination setFilter={setFilter} filter={filter}/>
+      <Pagination setFilter={setFilter} filter={filter} />
     </div>
   );
 };

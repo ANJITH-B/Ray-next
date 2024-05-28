@@ -12,6 +12,7 @@ import PurchaseBillPage from "../Pages/PurchasePage/PurchaseSubPages/PurchaseBil
 import PurchaseHistory from "../Pages/PurchasePage/PurchaseSubPages/PurchaseHistory/PurchaseHistory";
 import PurchaseReturnPage from "../Pages/PurchasePage/PurchaseSubPages/PurchaseReturnPage/PurchaseReturnPage";
 import SupplierPage from "../Pages/PurchasePage/PurchaseSubPages/SupplierPage/SupplierPage";
+import FinancialReportPage from "../Pages/ReportPage/ReportSubPages/FinancialReports/FinancialReportPage";
 import SalesPage from "../Pages/SalesPage/SalesPage";
 import CustomerPage from "../Pages/SalesPage/SalesSubPages/CustomerPage/CustomerPage";
 import SalesHistory from "../Pages/SalesPage/SalesSubPages/SalesHistory/SalesHistory";
@@ -176,6 +177,27 @@ export const routes = [
 
   {
     path: "/inventory",
+    component: InventoryPage,
+    IsPrivet: true,
+    isSubRoute: true,
+    
+  },
+  {
+    path: "/reports",
+    component: InventoryPage,
+    IsPrivet: true,
+    isSubRoute: true,
+    
+  },
+  {
+    path: "/reports/financial-reports",
+    component: FinancialReportPage,
+    IsPrivet: true,
+    isSubRoute: true,
+    
+  },
+  {
+    path: "/reports",
     component: InventoryPage,
     IsPrivet: true,
     isSubRoute: true,

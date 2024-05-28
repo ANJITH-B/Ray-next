@@ -53,7 +53,8 @@ const MenuCard = ({
             <h3 className=" text-base 2xl:text-xl font-semibold ">25%</h3>
             <p className=" text-xs 2xl:text-sm">increase in total sales</p>
           </div>
-          <Link className="px-4 py-2 hover:bg-transparent text-xs 2xl:text-sm hover:text-dark-color transition-all hover:border border-dark-color bg-dark-color rounded-full text-white">
+          <Link className="px-4 py-2 hover:bg-transparent text-xs 2xl:text-sm hover:text-dark-color transition-all hover:border border-dark-color bg-dark-color rounded-full text-white"
+          to={`/${head?.toLowerCase()}`}>
             Details
           </Link>
         </div>

@@ -3,7 +3,6 @@ import DateSelect from "./DashboardComponents/DateSelect";
 import BalanceCard from "./DashboardComponents/BalanceCard";
 import bank from "../../Assets/DashboardIcons/bank.svg";
 import cal from "../../Assets/DashboardIcons/calendar.svg";
-import money from "../../Assets/DashboardIcons/moneys.svg";
 import shoping from "../../Assets/DashboardIcons/shoppingbag.svg";
 import docs from "../../Assets/DashboardIcons/tabledocument.svg";
 import sales from "../../Assets/DashboardIcons/chart2.svg";
@@ -83,32 +82,26 @@ const Dashboard = () => {
               value={"2.5%"}
               links={[
                 {
-                  path: "#",
                   path: "/sales/invoice",
                   content: "Invoice",
                 },
                 {
-                  path: "#",
                   content: "Return",
                   path: "/sales/return",
                 },
                 {
-                  path: "#",
                   content: "Quotations",
                   path: "/sales/quotation",
                 },
                 {
-                  path: "#",
                   content: "Customer",
                   path: "/sales/customer",
                 },
                 {
-                  path: "#",
                   content: "Sales order",
                   path: "/sales/sales-order",
                 },
                 {
-                  path: "#",
                   content: "History",
                   path: "/sales/history",
                 },
@@ -122,31 +115,26 @@ const Dashboard = () => {
               value={"298"}
               links={[
                 {
-                  path: "#",
                   content: "Bill",
                   path: "/purchase/bill",
                 },
                 {
-                  path: "#",
                   content: "Return",
                   path: "/purchase/return",
                 },
                 {
-                  path: "#",
                   content: "LPO",
                   path: "/purchase/LPO",
                 },
                 {
-                  path: "#",
                   content: "Supplier",
                   path: "/purchase/supplier",
                 },
                 {
-                  path: "#",
                   content: "Cost allocation",
+                  path:'#'
                 },
                 {
-                  path: "#",
                   content: "History",
                   path: "/purchase/history",
                 },
@@ -265,7 +253,7 @@ const Dashboard = () => {
                   content: "Register",
                 },
                 {
-                  path: "#",
+                  path: "/reports/financial-reports",
                   content: "Financial reports",
                 },
                 {

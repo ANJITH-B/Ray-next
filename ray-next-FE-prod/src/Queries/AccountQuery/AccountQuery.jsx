@@ -9,6 +9,7 @@ import {
   getAllRegularAccounts,
   getControllAccounts,
   getJournalId,
+  updateControlAccount,
 } from "./accountUrls";
 
 const useGetJournalId = () => {
@@ -90,6 +91,20 @@ const useAddControlledAccount = () => {
     },
   });
 };
+
+const useUpdateControlAccount = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation((data) => updateControlAccount(data), {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries("get_controll_account");
+      return data;
+    },
+    onError: (data) => {
+      return data;
+    },
+  });
+};
 const useAddAccountGroup = () => {
   const queryClient = useQueryClient();
 
@@ -109,6 +124,7 @@ export {
   useAddJournal,
   useAddRegularAccount,
   useAddControlledAccount,
+  useUpdateControlAccount,
   useGetControlAccount,
   useAddAccountGroup,
   useGetAccountGroup,
