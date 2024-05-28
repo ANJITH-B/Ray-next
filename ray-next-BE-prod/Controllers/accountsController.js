@@ -76,7 +76,7 @@ module.exports.createJournalEntry = async (req, res) => {
       }
 
       await regularAccountSchema.updateOne({ _id: account_id }, { current_balance: amountVal })
-      await accountBookTransaction(account_id, Date.now(), _id, "", account_name, cr, dr, amountVal)
+      await accountBookTransaction(account_id, new Date(date), _id, "", account_name, cr, dr, amountVal)
     }
 
     transactions.map(item => {
