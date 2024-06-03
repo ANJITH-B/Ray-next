@@ -2,13 +2,13 @@ import { DatePicker } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import "./otherComponentStyle.scss";
 import { SlidersOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 const AllHeadSection = ({ name, head, formik, id, isActive, toggleIsActive }) => {
   // const [isActive, setIsActive] = useState(false);
   // const handleClick = () => {
   //   setIsActive(!isActive);
   // };
   const inputRef = useRef(null);
-
   useEffect(() => {
     inputRef.current.focus();
   }, []);
@@ -88,6 +88,7 @@ const AllHeadSection = ({ name, head, formik, id, isActive, toggleIsActive }) =>
               e.target.style.border = '1px solid';
               e.target.style.borderRadius = '5px'; // Apply curved border on focus
             }}
+            defaultValue={dayjs()}
             onBlur={(e) => e.target.style.border = '1px solid transparent'}
             className="issue-date"
             bordered={false}

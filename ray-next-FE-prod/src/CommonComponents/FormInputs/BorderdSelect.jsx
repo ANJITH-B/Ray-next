@@ -2,12 +2,12 @@ import { Select, Tooltip } from "antd";
 import { Option } from "antd/es/mentions";
 import React from "react";
 import "./formInputStyle.scss";
-const BorderdSelect = ({ items=null, ...rest }) => {
+const BorderdSelect = ({ items=null, addOption, setAddOption, ...rest }) => {
   return (
     <div className="h-[48px] border-[1.5px] w-full overflow-hidden bg-white flex items-center gap-3  focus-within:ring-[2px] focus-within:ring-blue transition-all border-border-gray rounded-xl ">
       <Select
         dropdownStyle={{ zIndex: 999999 }}
-        //  onSearch={(e)=>console.log(e)}
+         onSearch={(e)=>console.log(e)}
         {...rest}
         suffixIcon={
           rest.error ? (
@@ -69,6 +69,7 @@ const BorderdSelect = ({ items=null, ...rest }) => {
         {items?.map((item) => {
           return <Option  value={item?.value}>{item?.label}</Option>;
         })}
+        {addOption && <Option disabled value={''}><button onClick={()=>setAddOption(true)} className="w-full bg-blue text-white min-w-[2rem]  border-border-gray rounded-md">Create Account</button></Option>}
       </Select>
     </div>
   );

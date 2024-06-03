@@ -7,12 +7,12 @@ import editsvg from "../../../Assets/CommonImages/edit.svg";
 import trash from "../../../Assets/CommonImages/trash.svg";
 import BorderLessTable from "../../../CommonComponents/Tables/BorderLessTable";
 import { useGetRegularAccount } from "../../../Queries/AccountQuery/AccountQuery";
+import RegularAccountModal from "./RegularAccountModal";
 
 const InvoiceTable = ({ formik, edit, setEdit, item, setItem, addItem, typeState, setTypeState }) => {
   const { data, isloading } = useGetRegularAccount({ pageNo: 1, pageCount: 100 });
   // const [typeState,setTypeState] = useState("")
-  const [accountNameState, setAccountNameState] = useState("");
-
+  const [addAcc, setAddAcc] = useState(false)
   const accountData = (data?.data?.data ?? [])
     .filter(e => e.account_name !== "Difference in Openning Balance")
     .map(e => ({
@@ -72,6 +72,8 @@ const InvoiceTable = ({ formik, edit, setEdit, item, setItem, addItem, typeState
           <div className="w-full">
             {edit === index ? (
               <BorderdSelect
+                addOption={true}
+                setAddOption={setAddAcc}
                 name="account_name"
                 showSearch={true}
                 items={accountData}
@@ -82,7 +84,6 @@ const InvoiceTable = ({ formik, edit, setEdit, item, setItem, addItem, typeState
                 }
                 defaultValue={record["account_name"]?.value}
                 onChange={(_, i) => {
-                  setAccountNameState(i.value);
                   updateData(index, "account_name", i);
                 }}
                 placeholder="Account name"
@@ -290,6 +291,7 @@ const InvoiceTable = ({ formik, edit, setEdit, item, setItem, addItem, typeState
   return (
     <div>
       <BorderLessTable columns={columns} data={item || []} key={v4()} />
+      <RegularAccountModal open={addAcc} setOpen={setAddAcc} />
     </div>
   );
 };
