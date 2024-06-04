@@ -11,6 +11,7 @@ import { v4 } from "uuid";
 import BorderdInput from "../../../../CommonComponents/FormInputs/BorderdInput";
 import { getAllRegularAccounts } from "../../../../Queries/AccountQuery/accountUrls";
 import { useGetRegularAccount } from "../../../../Queries/AccountQuery/AccountQuery";
+import { colorCode } from "../../../../HelperFunctions/colorCodes";
 
 const Filter = ({ setFilter, tabIndex }) => {
   const [date, seDate] = useState();
@@ -101,9 +102,7 @@ const RegularAccTable = ({ tabIndex }) => {
         return (
           <div className=" flex justify-center">
             <h1
-              className={`px-3 bg-opacity-20 text-xs font-medium rounded-xl py-1 ${
-                item === "EXPENSE" && "bg-[#D7261B] text-[#D7261B]"
-              } ${item === "ASSET" && "bg-[#12B13F] text-[#12B13F]"}`}
+              className={`px-3 bg-opacity-20 text-xs font-medium rounded-xl py-1 ${colorCode(item)}`}
             >
               {item}
             </h1>

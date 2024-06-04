@@ -4,9 +4,15 @@ import "./formInputStyle.scss";
 import dayjs from "dayjs";
 
 export const BordedDateRangePicker = ({ onChange, ...rest }) => {
+  const accstartdate = JSON.parse(localStorage.getItem("accstartdate"));
+  const date = JSON.parse(localStorage.getItem("peroid_date")) ?? [
+    accstartdate,
+    dayjs().toISOString(),
+  ];
+  const [value, setValue] = useState(
+    date ? [dayjs(date?.[0]), dayjs(date?.[1])] : [dayjs(accstartdate), dayjs()]
+  );
 
-  const date = JSON.parse(localStorage.getItem('peroid_date')) ?? false
-  const [value, setValue] = useState(date ? [dayjs(date?.[0]), dayjs(date?.[1])] : null);
   const handleChange = (dates) => {
     setValue(dates);
     if (onChange) {
@@ -15,8 +21,8 @@ export const BordedDateRangePicker = ({ onChange, ...rest }) => {
   };
   const disabledDate = (current) => {
     return (
-      (current && current.isBefore(date?.[0], 'day')) ||
-      (current && current.isAfter(date?.[1], 'day'))
+      (current && current.isBefore(date?.[0], "day")) ||
+      (current && current.isAfter(date?.[1], "day"))
     );
   };
 
@@ -25,7 +31,7 @@ export const BordedDateRangePicker = ({ onChange, ...rest }) => {
       <div>
         <DatePicker.RangePicker
           {...rest}
-          format='MMM-YYYY'
+          format="MMM-YYYY"
           suffixIcon={
             <svg
               width="10"

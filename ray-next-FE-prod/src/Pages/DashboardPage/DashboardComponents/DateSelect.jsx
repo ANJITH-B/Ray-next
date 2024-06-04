@@ -4,7 +4,8 @@ import dayjs from 'dayjs'
 
 const DateSelect = ({ref}) => {
   const date = JSON.parse(localStorage.getItem('peroid_date'))
-  const initialValue = date ? [dayjs(date?.[0]), dayjs(date?.[1])] : null
+  const accstartdate = JSON.parse(localStorage.getItem('accstartdate'))
+  const initialValue = date ? [dayjs(date?.[0]), dayjs(date?.[1])] : [dayjs(accstartdate), dayjs()]
 
   const handleChange = (e) => {
     localStorage.setItem('peroid_date', JSON.stringify(e))

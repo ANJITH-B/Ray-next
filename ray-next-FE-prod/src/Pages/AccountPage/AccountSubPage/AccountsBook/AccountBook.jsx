@@ -84,25 +84,33 @@ const Filter = ({ setFilter, tabIndex }) => {
 };
 
 const AccountBookPage = () => {
-  const date = JSON.parse(localStorage.getItem('peroid_date')) || null
+  const accstartdate = JSON.parse(localStorage.getItem("accstartdate"));
+  const date = JSON.parse(localStorage.getItem("peroid_date")) ?? [
+    accstartdate,
+    dayjs().toISOString(),
+  ];
   const [filter, setFilter] = useState({
     pageNo: 1,
     pageCount: 10,
     account: "",
-    date
+    date,
   });
   const [pageFilter, setPageFilter] = useState([]);
   const [tabIndex, setTabIndex] = useState("1");
   const [open, setOpen] = useState(false);
-  const { data, isSuccess } = useGetRegularAccount({ pageNo: 1, pageCount: 100 });
+  const { data, isSuccess } = useGetRegularAccount({
+    pageNo: 1,
+    pageCount: 100,
+  });
 
   const handleChange = (e) => {
-    const date = JSON.stringify(e)
+    console.log(e);
+    const date = JSON.stringify(e);
     setFilter((pre) => ({
       ...pre,
-      date: JSON.parse(date)
+      date: JSON.parse(date),
     }));
-  }
+  };
   useEffect(() => {
     if (isSuccess) {
       setFilter((pre) => ({
@@ -113,7 +121,6 @@ const AccountBookPage = () => {
       }));
     }
   }, [isSuccess]);
-
 
   const accountData = data?.data?.data?.map((e) => {
     return {
@@ -175,7 +182,9 @@ const AccountBookPage = () => {
               <BorderdSelectRounded
                 items={accountData}
                 placeholder=" Sales account"
-                defaultValue={[{ label: "Sales account", value: "Sales account" }]}
+                defaultValue={[
+                  { label: "Sales account", value: "Sales account" },
+                ]}
                 default
                 onChange={(e) => {
                   setFilter((pre) => ({ ...pre, account: e }));
@@ -272,7 +281,11 @@ const AccountBookPage = () => {
           </div>
         </div>
         <div>
-          <AccountBookTable filter={filter} setFilter={setFilter} accountData={accountData}/>
+          <AccountBookTable
+            filter={filter}
+            setFilter={setFilter}
+            accountData={accountData}
+          />
         </div>
       </div>
     </div>

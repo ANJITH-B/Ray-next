@@ -14,6 +14,7 @@ import {
 import { toast } from "react-hot-toast";
 import NewRefferenceModel from "../../../CommonComponents/OtherComponent/NewRefferenceModel";
 import { onlyNumbers } from "../../../Utilities/inputRestrictions";
+import ControlledAccountModal from "./ControlledAccountModal";
 
 const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
   const [openRef, setOpenRef] = useState(false);
@@ -32,7 +33,7 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
   const { mutateAsync: addRegularAccount, isLoading } = useAddRegularAccount();
   const { mutateAsync: addControlledAccount, isLoading: controlledLoading } =
     useAddControlledAccount();
-
+  const [addAcc, setAddAcc] = useState(false);
   const { data } = useGetControlAccount({ pageNo: 1, pageCount: 100 });
 
   const parrentData = data?.data?.data?.map((e) => {
@@ -51,18 +52,20 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
       parent_account_id: values?.parent_account_id,
       opening_balance: values?.opening_balance,
       opening_balance_type: values?.opening_balance_type,
-      reference
+      reference,
     };
-    if (datas.account_name === '' ||
-      datas.account_code === '' ||
-      datas.parent_account_id === '') {
-      return
+    if (
+      datas.account_name === "" ||
+      datas.account_code === "" ||
+      datas.parent_account_id === ""
+    ) {
+      return;
     }
     if (datas.opening_balance) {
-      if (datas.opening_balance_type === '') return
-    }else{
-      datas.opening_balance = 0
-      datas.opening_balance_type = ''
+      if (datas.opening_balance_type === "") return;
+    } else {
+      datas.opening_balance = 0;
+      datas.opening_balance_type = "";
     }
     if (isCotrolled) {
       addControlledAccount(datas)
@@ -139,6 +142,8 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
                         id="name"
                         placeholder="Sub account of"
                         items={parrentData}
+                        addOption={true}
+                        setAddOption={setAddAcc}
                       />
                     </div>
                   </div>
@@ -157,17 +162,32 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
                     <div className="flex-[.4]">
                       <p className="text-sm mb-2">Debit / Credit</p>
                       <BorderdSelect
-                        onChange={(e) => setFieldValue("opening_balance_type", e)}
+                        onChange={(e) =>
+                          setFieldValue("opening_balance_type", e)
+                        }
                         id="name"
                         placeholder="Debit / Credit"
-                        items={[{ label: 'Debit', value: 'DR' }, { label: 'Credit', value: 'CR' }]}
+                        items={[
+                          { label: "Debit", value: "DR" },
+                          { label: "Credit", value: "CR" },
+                        ]}
                       />
                     </div>
-                    <NewRefferenceModel open={openRef} setOpen={setOpenRef} total={parseInt(values?.opening_balance)} type={values?.opening_balance_type} setReference={setReference} />
+                    <NewRefferenceModel
+                      open={openRef}
+                      setOpen={setOpenRef}
+                      total={parseInt(values?.opening_balance)}
+                      type={values?.opening_balance_type}
+                      setReference={setReference}
+                    />
                     <div className="flex-[.4]">
                       <p className="text-sm mb-2">details</p>
-                      <button onClick={() => setOpenRef(true)}
-                        disabled={!values.opening_balance || !values.opening_balance_type}
+                      <button
+                        onClick={() => setOpenRef(true)}
+                        disabled={
+                          !values.opening_balance ||
+                          !values.opening_balance_type
+                        }
                         className={`py-2 2xl:py-4 px-6 h-[40px] 2xl:h-[56px] rounded-full w-full whitespace-nowrap 2xl:text-base text-sme flex justify-center  bg-blue text-white `}
                         type="button"
                       >
@@ -200,7 +220,7 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
                       <Button
                         background={"bg-blue text-white"}
                         text={"Save"}
-                        type={'submit'}
+                        type={"submit"}
                         loading={isLoading || controlledLoading}
                       />
                     </div>
@@ -211,6 +231,7 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
           </Formik>
         </div>
       </div>
+      <ControlledAccountModal open={addAcc} setOpen={setAddAcc} />
     </ModalLayout>
   );
 };
