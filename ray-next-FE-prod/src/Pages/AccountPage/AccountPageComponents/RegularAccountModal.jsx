@@ -1,22 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ModalLayout from "../../../CommonComponents/OtherComponent/ModalLayout";
 import { Form, Formik } from "formik";
+import * as Yup from "yup";
 import BorderdInput from "../../../CommonComponents/FormInputs/BorderdInput";
 import BorderdTextArea from "../../../CommonComponents/FormInputs/BorderdTextArea";
 import Button from "../../../CommonComponents/FormInputs/Button";
 import RoundedCheckbox from "../../../CommonComponents/FormInputs/RoundedCheckbox";
 import BorderdSelect from "../../../CommonComponents/FormInputs/BorderdSelect";
 import {
-  useAddControlledAccount,
   useAddRegularAccount,
   useGetControlAccount,
+  useUpdateRegularAccount,
 } from "../../../Queries/AccountQuery/AccountQuery";
 import { toast } from "react-hot-toast";
 import NewRefferenceModel from "../../../CommonComponents/OtherComponent/NewRefferenceModel";
 import { onlyNumbers } from "../../../Utilities/inputRestrictions";
 import ControlledAccountModal from "./ControlledAccountModal";
 
-const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
+const validationSchema = Yup.object().shape({
+  account_name: Yup.string().required("Account name is required"),
+  alias: Yup.string().required("Alias is required"),
+  account_code: Yup.string().required("Account code is required"),
+  parent_account_id: Yup.string().required("Sub Account is required"),
+  opening_balance: Yup.number().min(
+    0,
+    "Opening balance must be a positive number"
+  ),
+  // opening_balance_type: Yup.string().when("opening_balance", {
+  //   is: (val) => val && val > 0,
+  //   then: Yup.string().required("Debit/Credit is required when there is an opening balance")
+  // }),
+  description: Yup.string().required("Description is required"),
+});
+
+const RegularAccountModal = ({ open, setOpen, type = "Add", accdata }) => {
   const [openRef, setOpenRef] = useState(false);
   const [reference, setReference] = useState(null);
   const initialValue = {
@@ -29,10 +46,11 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
     opening_balance: "",
     opening_balance_type: "",
   };
-
+  const disabled = type === "Edit" && accdata?.opening_balance;
+  const formikRef = useRef();
   const { mutateAsync: addRegularAccount, isLoading } = useAddRegularAccount();
-  const { mutateAsync: addControlledAccount, isLoading: controlledLoading } =
-    useAddControlledAccount();
+  const { mutateAsync: updateRegularAccount, isLoading: updating } =
+    useUpdateRegularAccount();
   const [addAcc, setAddAcc] = useState(false);
   const { data } = useGetControlAccount({ pageNo: 1, pageCount: 100 });
 
@@ -42,6 +60,7 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
       value: e?._id,
     };
   });
+
   const handleSubmit = (values, { resetForm }) => {
     const datas = {
       account_name: values?.account_name,
@@ -67,16 +86,17 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
       datas.opening_balance = 0;
       datas.opening_balance_type = "";
     }
-    if (isCotrolled) {
-      addControlledAccount(datas)
+    if (type === "Edit") {
+      updateRegularAccount({ ...datas, _id: accdata?._id })
         .then((res) => {
-          toast.success("Controlled account added");
+          toast.success("Regular account added");
           setOpen(false);
           resetForm();
         })
         .catch((err) => {
           toast.error("Something went wrong");
         });
+      setOpen(false);
     } else {
       addRegularAccount(datas)
         .then((res) => {
@@ -87,20 +107,37 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
         .catch((err) => {
           toast.error("Something went wrong");
         });
+      setOpen(false);
     }
   };
+
+  useEffect(() => {
+    if (open) {
+      if (type === "Edit" && accdata) {
+        formikRef.current.setValues(accdata);
+      } else {
+        formikRef.current.resetForm();
+      }
+    }
+  }, [open, accdata, type]);
 
   return (
     <ModalLayout
       setOpen={setOpen}
       open={open}
       width={700}
-      title={"Add account"}
+      title={`${type} Account`}
     >
       <div>
         <div>
-          <Formik initialValues={initialValue} onSubmit={handleSubmit}>
-            {({ setFieldValue, values }) => (
+          <Formik
+            initialValues={initialValue}
+            onSubmit={handleSubmit}
+            enableReinitialize={true}
+            validationSchema={validationSchema}
+            innerRef={formikRef}
+          >
+            {({ setFieldValue, values, errors, touched }) => (
               <Form>
                 <div>
                   <div className="mb-6 flex items-center gap-6">
@@ -112,6 +149,11 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
                         id="code"
                         placeholder="Enter name"
                       />
+                      {errors.account_name && touched.account_name && (
+                        <div className="text-red-500 text-sm">
+                          {errors.account_name}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex-1">
@@ -122,6 +164,11 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
                         id="code"
                         placeholder="Enter alias"
                       />
+                      {errors.alias && touched.alias && (
+                        <div className="text-red-500 text-sm">
+                          {errors.alias}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="mb-6 flex items-center gap-6">
@@ -133,30 +180,48 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
                         id="code"
                         placeholder="Enter code"
                       />
+                      {errors.account_code && touched.account_code && (
+                        <div className="text-red-500 text-sm">
+                          {errors.account_code}
+                        </div>
+                      )}
                     </div>
-
                     <div className="flex-1">
                       <p className="text-sm mb-2">Sub Account</p>
                       <BorderdSelect
                         onChange={(e) => setFieldValue("parent_account_id", e)}
                         id="name"
                         placeholder="Sub account of"
+                        disabled={disabled}
                         items={parrentData}
+                        value={values?.parent_account_id}
                         addOption={true}
                         setAddOption={setAddAcc}
                       />
+                      {errors.parent_account_id &&
+                        touched.parent_account_id && (
+                          <div className="text-red-500 text-sm">
+                            {errors.parent_account_id}
+                          </div>
+                        )}
                     </div>
                   </div>
                   <div className="mb-6 flex items-center gap-6">
                     <div className="flex-[.6]">
-                      <p className="text-sm mb-2">Openning Balance</p>
+                      <p className="text-sm mb-2">Opening Balance</p>
                       <BorderdInput
                         formik={true}
                         name="opening_balance"
-                        id="code"
-                        placeholder="Enter openning balance"
+                        id="opening_balance"
+                        placeholder="Enter opening balance"
                         onInput={onlyNumbers}
+                        disabled={disabled}
                       />
+                      {errors.opening_balance && touched.opening_balance && (
+                        <div className="text-red-500 text-sm">
+                          {errors.opening_balance}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex-[.4]">
@@ -166,12 +231,20 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
                           setFieldValue("opening_balance_type", e)
                         }
                         id="name"
+                        value={values?.opening_balance_type}
                         placeholder="Debit / Credit"
                         items={[
                           { label: "Debit", value: "DR" },
                           { label: "Credit", value: "CR" },
                         ]}
+                        disabled={disabled}
                       />
+                      {errors.opening_balance_type &&
+                        touched.opening_balance_type && (
+                          <div className="text-red-500 text-sm">
+                            {errors.opening_balance_type}
+                          </div>
+                        )}
                     </div>
                     <NewRefferenceModel
                       open={openRef}
@@ -181,17 +254,18 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
                       setReference={setReference}
                     />
                     <div className="flex-[.4]">
-                      <p className="text-sm mb-2">details</p>
+                      <p className="text-sm mb-2">Details</p>
                       <button
                         onClick={() => setOpenRef(true)}
                         disabled={
                           !values.opening_balance ||
-                          !values.opening_balance_type
+                          !values.opening_balance_type ||
+                          disabled
                         }
-                        className={`py-2 2xl:py-4 px-6 h-[40px] 2xl:h-[56px] rounded-full w-full whitespace-nowrap 2xl:text-base text-sme flex justify-center  bg-blue text-white `}
+                        className={`py-2 2xl:py-4 px-6 h-[40px] 2xl:h-[56px] rounded-full w-full whitespace-nowrap 2xl:text-base text-sme flex justify-center bg-blue text-white`}
                         type="button"
                       >
-                        details
+                        Details
                       </button>
                     </div>
                   </div>
@@ -199,7 +273,6 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
                     <div className="flex-1">
                       <p className="text-sm mb-2">Description</p>
                       <BorderdTextArea
-                        //   formik={true}
                         onChange={(e) => {
                           setFieldValue("description", e.target.value);
                         }}
@@ -208,6 +281,11 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
                         id="code"
                         placeholder="Enter description"
                       />
+                      {errors.description && touched.description && (
+                        <div className="text-red-500 text-sm">
+                          {errors.description}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex w-full justify-between">
@@ -221,7 +299,7 @@ const RegularAccountModal = ({ open, setOpen, isCotrolled = false }) => {
                         background={"bg-blue text-white"}
                         text={"Save"}
                         type={"submit"}
-                        loading={isLoading || controlledLoading}
+                        loading={isLoading || updating}
                       />
                     </div>
                   </div>

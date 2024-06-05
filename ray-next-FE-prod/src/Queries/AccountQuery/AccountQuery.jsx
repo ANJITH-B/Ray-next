@@ -10,6 +10,7 @@ import {
   getControllAccounts,
   getJournalId,
   updateControlAccount,
+  updateRegularAccount,
 } from "./accountUrls";
 
 const useGetJournalId = () => {
@@ -78,6 +79,21 @@ const useAddRegularAccount = () => {
     },
   });
 };
+
+const useUpdateRegularAccount = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation((data) => updateRegularAccount(data), {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries("get_regular_account");
+      return data;
+    },
+    onError: (data) => {
+      return data;
+    },
+  });
+};
+
 const useAddControlledAccount = () => {
   const queryClient = useQueryClient();
 
@@ -123,6 +139,7 @@ export {
   useGetRegularAccount,
   useAddJournal,
   useAddRegularAccount,
+  useUpdateRegularAccount,
   useAddControlledAccount,
   useUpdateControlAccount,
   useGetControlAccount,

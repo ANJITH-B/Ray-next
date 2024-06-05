@@ -348,6 +348,83 @@ module.exports.createRegularAccounts = async (req, res) => {
   }
 };
 
+module.exports.updateRegularAccounts = async (req, res) => {
+  const {
+    account_name,
+    alias,
+    account_code,
+    description,
+    show_in_reports,
+    parent_account_id,
+    opening_balance,
+    opening_balance_type,
+    reference,
+    _id
+  } = req.body;
+
+  try {
+    const newRegularAccount = await regularAccountSchema.updateOne({_id},{$set:{
+      account_name,
+      alias,
+      account_code,
+      description,
+      show_in_reports,
+      parent_account_id,
+      // ...(opening_balance !== 0 && {
+      //   opening_balance,
+      //   opening_balance_type,
+      //   reference,
+      // }),
+  }});
+    // opening_balance !== 0 &&
+    //   ( await accountBookTransaction( newRegularAccount._id, Date.now(), _id, "", account_name, 0, 0, opening_balance, opening_balance ));
+    // const CurrentBalanceUpdater = async (amount, crdr, account_name) => {
+    //   const diff_in_openning_bal = await regularAccountSchema.findOne({
+    //     account_name: "Difference in Openning Balance",
+    //     user_id: _id,
+    //   });
+    //   const controlAcc = await controlAccountSchema.findOne({
+    //     _id: parent_account_id,
+    //   });
+
+    //   let amountVal = 0;
+    //   const curr_bal = diff_in_openning_bal.current_balance;
+    //   if (
+    //     controlAcc.nature_of_account === "ASSET" ||
+    //     controlAcc.nature_of_account === "EXPENSE"
+    //   ) {
+    //     amountVal = crdr == "CR" ? curr_bal - amount : curr_bal + amount;
+    //   } else {
+    //     amountVal = crdr == "CR" ? curr_bal + amount : curr_bal - amount;
+    //   }
+
+    //   await regularAccountSchema.updateOne(
+    //     { _id: diff_in_openning_bal._id },
+    //     { current_balance: amountVal }
+    //   );
+    //   await accountBookTransaction(
+    //     diff_in_openning_bal._id,
+    //     Date.now(),
+    //     _id,
+    //     "",
+    //     account_name,
+    //     crdr == "CR" ? amount : 0,
+    //     crdr == "DR" ? amount : 0,
+    //     amountVal
+    //   );
+    // };
+    // opening_balance !== 0 &&
+    //   (await CurrentBalanceUpdater(
+    //     opening_balance,
+    //     opening_balance_type,
+    //     account_name
+    //   ));
+    return successResponse(res, 201, "successs");
+  } catch (error) {
+    return errorResponse(res, 500, error.message);
+  }
+};
+
 //get all regular accounts - pagination,filter
 module.exports.getAllRegularAccounts = async (req, res) => {
   const _id = req.decoded._id;

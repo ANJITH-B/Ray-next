@@ -33,9 +33,10 @@ const ControlledAccountModal = ({ open, setOpen, type = "Add", data }) => {
   };
 
   const formikRef = useRef();
-  const { mutateAsync: addControlledAccount, isLoading: controlledLoading } =
+  const { mutateAsync: addControlledAccount, isLoading } =
     useAddControlledAccount();
-  const { mutateAsync: updateControlAccount } = useUpdateControlAccount();
+  const { mutateAsync: updateControlAccount, isLoading: updating } =
+    useUpdateControlAccount();
   const handleSubmit = (values, { resetForm }) => {
     const datas = {
       account_name: values?.account_name,
@@ -56,7 +57,7 @@ const ControlledAccountModal = ({ open, setOpen, type = "Add", data }) => {
         .catch((err) => {
           toast.error("Something went wrong");
         });
-      setOpen(false)
+      setOpen(false);
     } else {
       addControlledAccount(datas)
         .then((res) => {
@@ -67,7 +68,7 @@ const ControlledAccountModal = ({ open, setOpen, type = "Add", data }) => {
         .catch((err) => {
           toast.error("Something went wrong");
         });
-      setOpen(false)
+      setOpen(false);
     }
   };
 
@@ -195,7 +196,7 @@ const ControlledAccountModal = ({ open, setOpen, type = "Add", data }) => {
                   <Button
                     background={"bg-blue text-white"}
                     text={"Save"}
-                    loading={controlledLoading}
+                    loading={isLoading || updating}
                   />
                 </div>
               </div>
