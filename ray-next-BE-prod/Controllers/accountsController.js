@@ -62,38 +62,69 @@ module.exports.createJournalEntry = async (req, res) => {
 
     // add current balnce and accoynt book transactio in a single for loop of transaction
 
-    const CurrentBalanceUpdater = async (account_id, amount, crdr, account_name, cr, dr) => {
-      console.log(account_id, amount, crdr, account_name, cr, dr)
-      const selectedRegularAccount = await regularAccountSchema.findOne({ _id: account_id })
-      const controlAcc = await controlAccountSchema.findOne({ _id: selectedRegularAccount?.parent_account_id })
+    const CurrentBalanceUpdater = async (
+      account_id,
+      amount,
+      crdr,
+      account_name,
+      cr,
+      dr
+    ) => {
+      console.log(account_id, amount, crdr, account_name, cr, dr);
+      const selectedRegularAccount = await regularAccountSchema.findOne({
+        _id: account_id,
+      });
+      const controlAcc = await controlAccountSchema.findOne({
+        _id: selectedRegularAccount?.parent_account_id,
+      });
 
-      let amountVal = 0
-      const curr_bal = selectedRegularAccount.current_balance
-      if (controlAcc.nature_of_account === 'ASSET' || controlAcc.nature_of_account === 'EXPENSE') {
-        amountVal = crdr == "CR" ? curr_bal - amount : curr_bal + amount
+      let amountVal = 0;
+      const curr_bal = selectedRegularAccount.current_balance;
+      if (
+        controlAcc.nature_of_account === "ASSET" ||
+        controlAcc.nature_of_account === "EXPENSE"
+      ) {
+        amountVal = crdr == "CR" ? curr_bal - amount : curr_bal + amount;
       } else {
-        amountVal = crdr == "CR" ? curr_bal + amount : curr_bal - amount
+        amountVal = crdr == "CR" ? curr_bal + amount : curr_bal - amount;
       }
 
-      await regularAccountSchema.updateOne({ _id: account_id }, { current_balance: amountVal })
-      await accountBookTransaction(account_id, Date.now(), _id, "", account_name, cr, dr, amountVal)
-    }
+      await regularAccountSchema.updateOne(
+        { _id: account_id },
+        { current_balance: amountVal }
+      );
+      await accountBookTransaction(
+        account_id,
+        Date.now(),
+        _id,
+        "",
+        account_name,
+        cr,
+        dr,
+        amountVal
+      );
+    };
 
-    transactions.map(item => {
+    transactions.map((item) => {
       // add current balance
-      let amount = 0
+      let amount = 0;
       if (item.drcr == "CR") {
-        amount = item.credit
+        amount = item.credit;
       } else {
-        amount = item.debit
+        amount = item.debit;
       }
 
       // add account book transaction
 
-      CurrentBalanceUpdater(item.account_id, amount, item.drcr, item.account_name, item.credit, item.debit)
-    })
-
-
+      CurrentBalanceUpdater(
+        item.account_id,
+        amount,
+        item.drcr,
+        item.account_name,
+        item.credit,
+        item.debit
+      );
+    });
 
     // await accountBookTransaction(salesAccount_id._id,Date.now(),"","sales account",gross_total,0,gross_total)
     //   await accountBookTransaction(cash_id._id,Date.now(),"","cash account",0,gross_total,0)
@@ -206,6 +237,36 @@ module.exports.createControlAccount = async (req, res) => {
   }
 };
 
+module.exports.updateControlAccount = async (req, res) => {
+  const {
+    account_name,
+    alias,
+    account_code,
+    description,
+    show_in_reports,
+    nature_of_account,
+    _id,
+  } = req.body;
+  try {
+    await controlAccountSchema.updateOne(
+      { _id },
+      {
+        $set: {
+          account_name,
+          alias,
+          account_code,
+          nature_of_account,
+          description,
+          show_in_reports,
+        },
+      }
+    );
+    return successResponse(res, 201, "successs");
+  } catch (error) {
+    return errorResponse(res, 500, error.message);
+  }
+};
+
 // create regular account
 
 module.exports.createRegularAccounts = async (req, res) => {
@@ -218,7 +279,7 @@ module.exports.createRegularAccounts = async (req, res) => {
     parent_account_id,
     opening_balance,
     opening_balance_type,
-    reference
+    reference,
   } = req.body;
   const _id = req.decoded._id;
   try {
@@ -234,30 +295,53 @@ module.exports.createRegularAccounts = async (req, res) => {
       ...(opening_balance !== 0 && {
         opening_balance,
         opening_balance_type,
-        reference
+        reference,
       }),
     });
     console.log(newRegularAccount);
-    opening_balance !== 0 && await accountBookTransaction(newRegularAccount._id, Date.now(), _id, "", account_name, 0, 0, opening_balance, opening_balance)
+    opening_balance !== 0 &&
+      ( await accountBookTransaction( newRegularAccount._id, Date.now(), _id, "", account_name, 0, 0, opening_balance, opening_balance ));
     const CurrentBalanceUpdater = async (amount, crdr, account_name) => {
       const diff_in_openning_bal = await regularAccountSchema.findOne({
         account_name: "Difference in Openning Balance",
-        user_id: _id
-      })
-      const controlAcc = await controlAccountSchema.findOne({ _id: parent_account_id })
+        user_id: _id,
+      });
+      const controlAcc = await controlAccountSchema.findOne({
+        _id: parent_account_id,
+      });
 
-      let amountVal = 0
-      const curr_bal = diff_in_openning_bal.current_balance
-      if (controlAcc.nature_of_account === 'ASSET' || controlAcc.nature_of_account === 'EXPENSE') {
-        amountVal = crdr == "CR" ? curr_bal - amount : curr_bal + amount
+      let amountVal = 0;
+      const curr_bal = diff_in_openning_bal.current_balance;
+      if (
+        controlAcc.nature_of_account === "ASSET" ||
+        controlAcc.nature_of_account === "EXPENSE"
+      ) {
+        amountVal = crdr == "CR" ? curr_bal - amount : curr_bal + amount;
       } else {
-        amountVal = crdr == "CR" ? curr_bal + amount : curr_bal - amount
+        amountVal = crdr == "CR" ? curr_bal + amount : curr_bal - amount;
       }
 
-      await regularAccountSchema.updateOne({ _id: diff_in_openning_bal._id }, { current_balance: amountVal })
-      await accountBookTransaction(diff_in_openning_bal._id, Date.now(), _id, "", account_name, crdr == "CR" ? amount : 0, crdr == "DR" ? amount : 0, amountVal)
-    }
-    opening_balance !== 0 && await CurrentBalanceUpdater(opening_balance, opening_balance_type, account_name)
+      await regularAccountSchema.updateOne(
+        { _id: diff_in_openning_bal._id },
+        { current_balance: amountVal }
+      );
+      await accountBookTransaction(
+        diff_in_openning_bal._id,
+        Date.now(),
+        _id,
+        "",
+        account_name,
+        crdr == "CR" ? amount : 0,
+        crdr == "DR" ? amount : 0,
+        amountVal
+      );
+    };
+    opening_balance !== 0 &&
+      (await CurrentBalanceUpdater(
+        opening_balance,
+        opening_balance_type,
+        account_name
+      ));
     return successResponse(res, 201, "successs");
   } catch (error) {
     return errorResponse(res, 500, error.message);
@@ -281,7 +365,6 @@ module.exports.getAllRegularAccounts = async (req, res) => {
     // calculation for current account
     // check how much total debit and credit happened for this regular account in journal
 
-
     const pipeline = [
       {
         $match: {
@@ -301,7 +384,7 @@ module.exports.getAllRegularAccounts = async (req, res) => {
         $match: {
           $or: [
             {
-              "account_name": {
+              account_name: {
                 $regex: new RegExp(search, "i"), // Case-insensitive search
               },
             },
@@ -321,7 +404,9 @@ module.exports.getAllRegularAccounts = async (req, res) => {
       },
     ];
     // Execute the aggregation pipeline
-    let allRegularAccounts = await regularAccountSchema.aggregate(pipeline).exec();
+    let allRegularAccounts = await regularAccountSchema
+      .aggregate(pipeline)
+      .exec();
 
     return successResponse(res, 201, "successs", allRegularAccounts);
   } catch (error) {
@@ -521,13 +606,15 @@ module.exports.getAccountBooks = async (req, res) => {
   const _id = req.decoded._id;
   const accountId = req.query.account;
   const period = req.query.period;
-  const [startDate, endDate] = period.split(',').map(dateString => new Date(dateString));
+  const [startDate, endDate] = period
+    .split(",")
+    .map((dateString) => new Date(dateString));
 
   try {
     const allTransactions = await accountBookTransactionSchema.find({
       user_id: _id,
       account_id: accountId,
-      date: { $gte: startDate, $lte: endDate }
+      date: { $gte: startDate, $lte: endDate },
     });
     return successResponse(res, 201, "successs", allTransactions);
   } catch (error) {

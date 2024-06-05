@@ -12,11 +12,13 @@ const {
   getAllAccountGroups,
   journalIdGenerator,
   getAccountBooks,
+  updateControlAccount,
 } = require("../Controllers/accountsController");
 
 router.use(authorization);
 router.post("/v1/journal", createJournalEntry);
 router.post("/v1/coa/control-account", createControlAccount);
+router.patch("/v1/coa/control-account", updateControlAccount);
 router.post("/v1/coa/regular-account", createRegularAccounts);
 router.post("/v1/coa/account-group", createAccountGroups);
 router.get("/v1/coa/regular-account", getAllRegularAccounts);
