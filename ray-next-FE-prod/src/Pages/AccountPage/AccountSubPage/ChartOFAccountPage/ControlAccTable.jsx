@@ -1,20 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import BordedTable from "../../../../CommonComponents/Tables/BorderdTabel";
-import avrt from "../../../../Assets/CommonImages/avtr.png";
-import flag from "../../../../Assets/CommonImages/flag.svg";
 import editsvg from "../../../../Assets/CommonImages/edit.svg";
 import Pagination from "../../../../CommonComponents/OtherComponent/Pagination";
-import { useGetCustomer } from "../../../../Queries/CustomerQuery/CustomerQuery";
-import { Button, Dropdown } from "antd";
+import { Dropdown } from "antd";
 import BorderdSelect from "../../../../CommonComponents/FormInputs/BorderdSelect";
-import { v4 } from "uuid";
 import BorderdInput from "../../../../CommonComponents/FormInputs/BorderdInput";
-import {
-  useGetControlAccount,
-  useUpdateControlAccount,
-} from "../../../../Queries/AccountQuery/AccountQuery";
-import toast from "react-hot-toast";
+import { useGetControlAccount } from "../../../../Queries/AccountQuery/AccountQuery";
 import { colorCode } from "../../../../HelperFunctions/colorCodes";
+import ControlledAccountModal from "../../AccountPageComponents/ControlledAccountModal";
 
 const Filter = ({ setFilter, tabIndex }) => {
   const [date, seDate] = useState();
@@ -83,13 +76,11 @@ const Filter = ({ setFilter, tabIndex }) => {
 };
 const ControlAccTable = ({ tabIndex }) => {
   const [edit, setEdit] = useState(false);
-  const [natureOfAcc, setNatureOfAcc] = useState("");
   const [filter, setFilter] = useState({
     pageNo: 1,
     pageCount: 10,
   });
   const { data, isLoading } = useGetControlAccount(filter);
-  const { mutateAsync: updateControlAccount } = useUpdateControlAccount();
   const invoiceData = data?.data?.data?.map((e) => ({
     _id: e._id,
     "Account name": e.account_name,
@@ -102,31 +93,6 @@ const ControlAccTable = ({ tabIndex }) => {
     Action: "",
   }));
 
-  const handleEdit = (index) => {
-    setEdit(index);
-    setNatureOfAcc(invoiceData?.[edit]?.nature_of_account);
-  };
-  const handleUpdate = () => {
-    console.log(natureOfAcc);
-    console.log(invoiceData?.[edit]?.["Nature of account"]);
-    if (natureOfAcc === invoiceData?.[edit]?.nature_of_account) {
-      setEdit(false);
-      setNatureOfAcc("");
-      return;
-    }
-    updateControlAccount({ data: invoiceData?.[edit], natureOfAcc })
-      .then((res) => {
-        if (res.status === 500) {
-          toast.error("Something went wrong");
-        }
-        toast.success(`nature of acc changed to ${natureOfAcc}`);
-      })
-      .catch((err) => {
-        toast.error("Something went wrong");
-      });
-    setNatureOfAcc("");
-    setEdit(false);
-  };
   const InvoiceColumns = [
     {
       title: "Account name",
@@ -141,25 +107,13 @@ const ControlAccTable = ({ tabIndex }) => {
       key: "Nature of account",
       width: 120,
 
-      render: (item, record, index) => {
-        return edit === index ? (
-          <BorderdSelect
-            onChange={(e) => setNatureOfAcc(e)}
-            id="name"
-            placeholder="Nature of account"
-            defaultValue={item}
-            items={[
-              { label: "Asset", value: "ASSET" },
-              { label: "Expense", value: "EXPENSE" },
-              { label: "Income", value: "INCOME" },
-              { label: "Liability", value: "LIABILITY" },
-              { label: "Equity", value: "EQUITY" },
-            ]}
-          />
-        ) : (
+      render: (item) => {
+        return (
           <div className=" flex justify-center ">
             <h1
-              className={`px-3 bg-opacity-20 text-xs font-medium rounded-xl py-1 ${colorCode(item)}`}
+              className={`px-3 bg-opacity-20 text-xs font-medium rounded-xl py-1 ${colorCode(
+                item
+              )}`}
             >
               {item}
             </h1>
@@ -195,7 +149,7 @@ const ControlAccTable = ({ tabIndex }) => {
       width: 100,
       render: (text, record, index) => {
         return edit === index ? (
-          <button onClick={handleUpdate}>
+          <button>
             <svg
               width="18"
               height="18"
@@ -210,7 +164,7 @@ const ControlAccTable = ({ tabIndex }) => {
             </svg>
           </button>
         ) : (
-          <button onClick={() => handleEdit(index)}>
+          <button onClick={() => setEdit(index)}>
             <img src={editsvg} alt="edit" className="min-w-[18px]" />
           </button>
         );
@@ -339,6 +293,12 @@ const ControlAccTable = ({ tabIndex }) => {
         data={invoiceData}
       />
       <Pagination setFilter={setFilter} filter={filter} />
+      <ControlledAccountModal
+        open={edit !== false}
+        setOpen={setEdit}
+        type="Edit"
+        data={data?.data?.data?.[edit]}
+      />
     </div>
   );
 };
