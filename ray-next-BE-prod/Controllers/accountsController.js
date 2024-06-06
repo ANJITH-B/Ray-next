@@ -379,7 +379,7 @@ module.exports.createRegularAccounts = async (req, res) => {
       });
 
       let amountVal = 0;
-      const curr_bal = diff_in_openning_bal.current_balance;
+      const curr_bal = diff_in_openning_bal?.current_balance ?? 0;
       if (
         controlAcc.nature_of_account === "ASSET" ||
         controlAcc.nature_of_account === "EXPENSE"
@@ -391,7 +391,7 @@ module.exports.createRegularAccounts = async (req, res) => {
 
       await regularAccountSchema.updateOne(
         { _id: diff_in_openning_bal._id },
-        { current_balance: amountVal }
+        {$set:{ current_balance: amountVal }}
       );
       await accountBookTransaction(
         diff_in_openning_bal._id,
