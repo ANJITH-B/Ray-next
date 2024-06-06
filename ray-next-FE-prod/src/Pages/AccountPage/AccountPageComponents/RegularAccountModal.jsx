@@ -34,6 +34,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const RegularAccountModal = ({ open, setOpen, type = "Add", accdata }) => {
+  const accstartdate = JSON.parse(localStorage.getItem("accstartdate"));
   const [openRef, setOpenRef] = useState(false);
   const [reference, setReference] = useState(null);
   const initialValue = {
@@ -72,6 +73,7 @@ const RegularAccountModal = ({ open, setOpen, type = "Add", accdata }) => {
       opening_balance: values?.opening_balance,
       opening_balance_type: values?.opening_balance_type,
       reference,
+      accstartdate
     };
     if (
       datas.account_name === "" ||

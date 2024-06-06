@@ -37,7 +37,7 @@ module.exports.createJournalEntry = async (req, res) => {
 
   try {
     const _id = req.decoded._id;
-
+    const dt = date ? new Date(date).getTime() : Date.now();
     const newJournalEntry = await journalSchema.create({
       journal_id,
       date,
@@ -60,7 +60,13 @@ module.exports.createJournalEntry = async (req, res) => {
       modifiedTransactions
     );
 
-    // add current balnce and accoynt book transactio in a single for loop of transaction
+    const CurrentBalance = (amount, balance, crdr, nature) => {
+      if (nature === "ASSET" || nature === "EXPENSE") {
+        return crdr == "CR" ? balance - amount : balance + amount;
+      } else {
+        return crdr == "CR" ? balance + amount : balance - amount;
+      }
+    };
 
     const CurrentBalanceUpdater = async (
       account_id,
@@ -78,31 +84,81 @@ module.exports.createJournalEntry = async (req, res) => {
         _id: selectedRegularAccount?.parent_account_id,
       });
 
-      let amountVal = 0;
-      const curr_bal = selectedRegularAccount.current_balance;
-      if (
-        controlAcc.nature_of_account === "ASSET" ||
-        controlAcc.nature_of_account === "EXPENSE"
-      ) {
-        amountVal = crdr == "CR" ? curr_bal - amount : curr_bal + amount;
-      } else {
-        amountVal = crdr == "CR" ? curr_bal + amount : curr_bal - amount;
-      }
+      const amountVal = CurrentBalance(
+        amount,
+        selectedRegularAccount?.current_balance,
+        crdr,
+        controlAcc?.nature_of_account
+      );
 
       await regularAccountSchema.updateOne(
         { _id: account_id },
         { current_balance: amountVal }
       );
-      await accountBookTransaction(
-        account_id,
-        Date.now(),
-        _id,
-        "",
-        account_name,
-        cr,
-        dr,
-        amountVal
-      );
+
+      const allTransactions = await accountBookTransactionSchema
+        .find({
+          user_id: _id,
+          account_id,
+          date: { $gt: dt },
+        })
+        .sort({ date: 1 });
+
+      if (allTransactions?.length) {
+        const lastTransaction = await accountBookTransactionSchema
+          .find({
+            user_id: _id,
+            account_id,
+            date: { $lt: dt },
+          })
+          .sort({ date: -1 })
+          .limit(1);
+          
+        let previousBalance = CurrentBalance(
+          amount,
+          lastTransaction?.[0]?.balance ?? 0,
+          crdr,
+          controlAcc?.nature_of_account
+        );
+        console.log(previousBalance);
+        await accountBookTransaction(
+          account_id,
+          dt,
+          _id,
+          "",
+          account_name,
+          cr,
+          dr,
+          previousBalance
+        );
+        for (let transaction of allTransactions) {
+          let curr_bal = 0;
+          if (transaction?.credit) {
+            curr_bal = transaction.credit;
+          } else {
+            curr_bal = transaction.debit;
+          }
+          previousBalance = CurrentBalance(
+            curr_bal,
+            previousBalance,
+            transaction?.credit ? "CR" : "DR",
+            controlAcc?.nature_of_account
+          );
+          transaction.balance = previousBalance;
+          await transaction.save();
+        }
+      } else {
+        await accountBookTransaction(
+          account_id,
+          dt,
+          _id,
+          "",
+          account_name,
+          cr,
+          dr,
+          amountVal
+        );
+      }
     };
 
     transactions.map((item) => {
@@ -131,6 +187,7 @@ module.exports.createJournalEntry = async (req, res) => {
 
     return successResponse(res, 201, "successs");
   } catch (error) {
+    console.log(error);
     return errorResponse(res, 500, error.message);
   }
 };
@@ -280,6 +337,7 @@ module.exports.createRegularAccounts = async (req, res) => {
     opening_balance,
     opening_balance_type,
     reference,
+    accstartdate,
   } = req.body;
   const _id = req.decoded._id;
   try {
@@ -300,7 +358,17 @@ module.exports.createRegularAccounts = async (req, res) => {
     });
     console.log(newRegularAccount);
     opening_balance !== 0 &&
-      ( await accountBookTransaction( newRegularAccount._id, Date.now(), _id, "", account_name, 0, 0, opening_balance, opening_balance ));
+      (await accountBookTransaction(
+        newRegularAccount._id,
+        new Date(accstartdate)?.getTime(),
+        _id,
+        "",
+        account_name,
+        0,
+        0,
+        opening_balance,
+        opening_balance
+      ));
     const CurrentBalanceUpdater = async (amount, crdr, account_name) => {
       const diff_in_openning_bal = await regularAccountSchema.findOne({
         account_name: "Difference in Openning Balance",
@@ -327,7 +395,7 @@ module.exports.createRegularAccounts = async (req, res) => {
       );
       await accountBookTransaction(
         diff_in_openning_bal._id,
-        Date.now(),
+        new Date(accstartdate)?.getTime(),
         _id,
         "",
         account_name,
@@ -359,23 +427,28 @@ module.exports.updateRegularAccounts = async (req, res) => {
     opening_balance,
     opening_balance_type,
     reference,
-    _id
+    _id,
   } = req.body;
 
   try {
-    const newRegularAccount = await regularAccountSchema.updateOne({_id},{$set:{
-      account_name,
-      alias,
-      account_code,
-      description,
-      show_in_reports,
-      parent_account_id,
-      // ...(opening_balance !== 0 && {
-      //   opening_balance,
-      //   opening_balance_type,
-      //   reference,
-      // }),
-  }});
+    const newRegularAccount = await regularAccountSchema.updateOne(
+      { _id },
+      {
+        $set: {
+          account_name,
+          alias,
+          account_code,
+          description,
+          show_in_reports,
+          parent_account_id,
+          // ...(opening_balance !== 0 && {
+          //   opening_balance,
+          //   opening_balance_type,
+          //   reference,
+          // }),
+        },
+      }
+    );
     // opening_balance !== 0 &&
     //   ( await accountBookTransaction( newRegularAccount._id, Date.now(), _id, "", account_name, 0, 0, opening_balance, opening_balance ));
     // const CurrentBalanceUpdater = async (amount, crdr, account_name) => {
@@ -688,11 +761,13 @@ module.exports.getAccountBooks = async (req, res) => {
     .map((dateString) => new Date(dateString));
 
   try {
-    const allTransactions = await accountBookTransactionSchema.find({
-      user_id: _id,
-      account_id: accountId,
-      date: { $gte: startDate, $lte: endDate },
-    });
+    const allTransactions = await accountBookTransactionSchema
+      .find({
+        user_id: _id,
+        account_id: accountId,
+        date: { $gte: startDate, $lte: endDate },
+      })
+      .sort({ date: 1 });
     return successResponse(res, 201, "successs", allTransactions);
   } catch (error) {
     return errorResponse(res, 500, error.message);
