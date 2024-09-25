@@ -196,7 +196,7 @@ const RegularAccountModal = ({ open, setOpen, type = "Add", accdata }) => {
                         placeholder="Sub account of"
                         disabled={disabled}
                         items={parrentData}
-                        value={values?.parent_account_id}
+                        value={type === 'Edit' ? values?.parent_account_id : undefined}
                         addOption={true}
                         setAddOption={setAddAcc}
                       />

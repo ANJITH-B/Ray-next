@@ -17,9 +17,11 @@ import PendingChequeChart from "./DashboardComponents/PendingChequeChart";
 import OverdueChart from "./DashboardComponents/OverdueChart";
 import AvailableBalanceChart from "./DashboardComponents/AvailableBalanceChart";
 import JournalEntry from "../AccountPage/AccountPageComponents/JournalEntry";
+import PaymentEntry from "../PaymentPage/PaymentEntry";
 
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
   return (
     <div className="w-full  p-6 mb-6 max-w-[1512px] overflow-hidden h-full  m-auto">
       <div className="flex overflow-hidden   relative gap-6 2xl:gap-8">
@@ -158,6 +160,8 @@ const Dashboard = () => {
                 {
                   path: "#",
                   content: "To bank/cash",
+                  isButton: true,
+                  onClick: () => setPaymentOpen(true),
                 },
                 {
                   path: "#",
@@ -292,6 +296,7 @@ const Dashboard = () => {
         </div>
       </div>
       <JournalEntry open={open} setOpen={setOpen} />
+      <PaymentEntry open={paymentOpen} setOpen={setPaymentOpen} />
     </div>
   );
 };

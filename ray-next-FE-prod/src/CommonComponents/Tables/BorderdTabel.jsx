@@ -13,14 +13,13 @@ const BordedTable = ({ columns, data, ...rest }) => {
         className="border-[.5px] max-h-[35rem]   border-[#E0E0E0] rounded-[30px] "
       >
         <Table
-          {...rest}
           sticky={true}
           scroll={{ y: `calc(100vh - 250px)`, x: 1000 }}
           className="borderd-table"
           columns={columns}
-          
           pagination={false}
           dataSource={data}
+          {...rest}
         />
       </div>
     </div>

@@ -14,13 +14,15 @@ const AccountBookTable = ({ filter, setFilter, accountData }) => {
   const storedDate = JSON.parse(localStorage.getItem('accstartdate')) ?? false
   const isDate = storedDate ? moment(storedDate) : null;
   const { data: bookData, isLoading } = useGetAccountBook(filter);
+  React.useEffect(()=>{
+    console.log(isLoading)
+  },[isLoading])
   const InvoiceColumns = [
     {
       title: "Date",
       dataIndex: "Date",
       key: "Date",
       className: "text-base w-[10rem]",
-      width: 200,
       // render: (item, record) => {
       //   return acc?.[0]?.label === 'Difference in Openning Balance' ? isDate?.format('DD-MM-YYYY') : item
       // },
@@ -29,21 +31,18 @@ const AccountBookTable = ({ filter, setFilter, accountData }) => {
     //   title: "Particular",
     //   dataIndex: "Particular",
     //   key: "Particular",
-    //   width: 100,
     //   className: "text-base font-semibold w-[6rem]",
     // },
     {
       title: "Description",
       dataIndex: "Description",
       key: "Description",
-      width: 120,
     },
     {
       title: "Voucher Type",
       key: "Voucher Type",
       className: "text-base",
       dataIndex: "Voucher Type",
-      width: 170,
       render: (item, record) => {
         return (
           <div className="flex justify-center ">
@@ -57,28 +56,24 @@ const AccountBookTable = ({ filter, setFilter, accountData }) => {
       key: "Debit",
       className: "text-base",
       dataIndex: "Debit",
-      width: 150,
     },
     {
       title: "Credit",
       key: "Credit",
       className: "text-base",
       dataIndex: "Credit",
-      width: 150,
     },
     {
       title: "Openning Balance",
       className: "text-base",
       key: "Openning Balance",
       dataIndex: "OpeningBalance",
-      width: 150,
     },
     {
       title: "Current Balance",
       className: "text-base",
       key: "Balance",
       dataIndex: "Balance",
-      width: 150,
     },
   ];
 
@@ -125,7 +120,6 @@ const AccountBookTable = ({ filter, setFilter, accountData }) => {
         data={invoiceData}
       />
       <div>
-
         <Pagination setFilter={setFilter} filter={filter} />
       </div>
     </div>

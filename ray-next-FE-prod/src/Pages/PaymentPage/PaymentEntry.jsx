@@ -1,29 +1,33 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import AllHeadSection from "../../../CommonComponents/OtherComponent/AllHeadSection";
-import IssueCard from "../../../CommonComponents/OtherComponent/IssueCard";
-import IssuerCard from "../../../CommonComponents/OtherComponent/IssuerCard";
-import wise from "../../../Assets/CommonImages/Wise.svg";
-import DetialsContainer from "../../../CommonComponents/OtherComponent/DetialsContainer";
-import BorderlessSelect from "../../../CommonComponents/FormInputs/BorderlessSelect";
-import BorderLessInput from "../../../CommonComponents/FormInputs/BorderLessInput";
-import printer from "../../../Assets/CommonImages/printer.svg";
-import BorderdInput from "../../../CommonComponents/FormInputs/BorderdInput";
+import AllHeadSection from "../../CommonComponents/OtherComponent/AllHeadSection";
+import IssueCard from "../../CommonComponents/OtherComponent/IssueCard";
+import IssuerCard from "../../CommonComponents/OtherComponent/IssuerCard";
+import wise from "../../Assets/CommonImages/Wise.svg";
+import DetialsContainer from "../../CommonComponents/OtherComponent/DetialsContainer";
+import BorderlessSelect from "../../CommonComponents/FormInputs/BorderlessSelect";
+import BorderLessInput from "../../CommonComponents/FormInputs/BorderLessInput";
+import printer from "../../Assets/CommonImages/printer.svg";
+import BorderdInput from "../../CommonComponents/FormInputs/BorderdInput";
 import * as Yup from "yup";
-import AdditionalDetialsModal from "../../../CommonComponents/OtherComponent/AdditionalDetialsModal";
-import OtherChargesModal from "../../../CommonComponents/OtherComponent/OtherChargesModal";
-import SettilemantModal from "../../../CommonComponents/OtherComponent/SettilemantModal";
-import { useAddInvoice } from "../../../Queries/SalesQuery/SalesQuery";
-import LoadingSpinner from "../../../CommonComponents/UtilComponent/LoadingSpinner";
+import AdditionalDetialsModal from "../../CommonComponents/OtherComponent/AdditionalDetialsModal";
+import OtherChargesModal from "../../CommonComponents/OtherComponent/OtherChargesModal";
+import SettilemantModal from "../../CommonComponents/OtherComponent/SettilemantModal";
+import { useAddInvoice } from "../../Queries/SalesQuery/SalesQuery";
+import LoadingSpinner from "../../CommonComponents/UtilComponent/LoadingSpinner";
 import { toast } from "react-hot-toast";
-import { onlyNumbers } from "../../../Utilities/inputRestrictions";
+import { onlyNumbers } from "../../Utilities/inputRestrictions";
 import { useFormik } from "formik";
-import InvoiceTable from "./InvoiceTable";
-import { useGetID } from "../../../Queries/OtherQuery/OtherQuery";
-import { Tooltip } from "antd";
-import ModalLayout from "../../../CommonComponents/OtherComponent/ModalLayout";
-import BorderdTextArea from "../../../CommonComponents/FormInputs/BorderdTextArea";
-import { useAddJournal,useGetJournalId,} from "../../../Queries/AccountQuery/AccountQuery";
-import InvoiceTableTwo from "./InvoiceTable2";
+import InvoiceTable from "./PaymentPageComponents/InvoiceTable";
+import { useGetID } from "../../Queries/OtherQuery/OtherQuery";
+import { Button, Dropdown, Space, Tooltip } from "antd";
+import ModalLayout from "../../CommonComponents/OtherComponent/ModalLayout";
+import BorderdTextArea from "../../CommonComponents/FormInputs/BorderdTextArea";
+import { useAddJournal,useGetJournalId,} from "../../Queries/AccountQuery/AccountQuery";
+import { DownOutlined, UserOutlined } from '@ant-design/icons';
+import { MenuProps } from 'antd';
+import CashHandle from "./PaymentPageComponents/CashHandle";
+
+
 
 const invoiceValidation = () => {
   return Yup.object().shape({
@@ -38,7 +42,7 @@ const invoiceValidation = () => {
   });
 };
 
-const JournalEntry = ({ open, setOpen }) => {
+const PaymentEntry = ({ open, setOpen }) => {
   const [edit, setEdit] = useState(false);
   const [additionOpen, setAdditionOpen] = useState(false);
   const [otherCharges, setOtherCharges] = useState(false);
@@ -152,7 +156,7 @@ const JournalEntry = ({ open, setOpen }) => {
               toggleIsActive={toggleIsActive}
               id={id?.data?.data?.product_id}
               formik={formik}
-              head={"Journal"}
+              head={"Payment"}
               name={"journal_id"}
             />
             {/* //.. need to hide   */}
@@ -198,8 +202,26 @@ const JournalEntry = ({ open, setOpen }) => {
                   </div>
                 </DetialsContainer>
               </div>
+       
             </div>
             )}
+            {!isActive && (
+          <div className="mb-12 flex w-full gap-3">
+            <div className="flex items-baseline w-full justify-between">
+              {/* <Dropdown menu={menuProps}>
+                <Button className="w-full h-10 rounded-xl">
+                  <div className="justify-between flex">
+                    <p className="text-gray-400">Cash in hand</p>
+                    <DownOutlined />
+                  </div> 
+                </Button>
+              </Dropdown> */}
+            </div>
+            <div className=" items-baseline w-full justify-between">
+            <CashHandle/>
+            </div>
+          </div>
+          )}
           </div>
 
           {/* head ended */}
@@ -210,31 +232,10 @@ const JournalEntry = ({ open, setOpen }) => {
           <div className="mb-12">
 
             <div className="flex gap-2  items-baseline justify-between">
-            
+    
             </div>
             <div className="flex gap-2  items-baseline justify-between">
-              <InvoiceTableTwo
-                edit={edit}
-                formik={formik}
-                item={item}
-                setEdit={setEdit}
-                setItem={setItem}
-                clear={clear}
-                addItem={addItem}
-                setTypeState={setTypeState}
-                typeState={typeState}
-              />
-              <InvoiceTableTwo
-                edit={edit}
-                formik={formik}
-                item={item}
-                setEdit={setEdit}
-                setItem={setItem}
-                clear={clear}
-                addItem={addItem}
-                setTypeState={setTypeState}
-                typeState={typeState}
-              />
+
             </div>
           </div>
           )}
@@ -461,4 +462,4 @@ const JournalEntry = ({ open, setOpen }) => {
   );
 };
 
-export default JournalEntry;
+export default PaymentEntry;
