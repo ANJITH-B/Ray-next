@@ -5,6 +5,7 @@ import AccCustomerPage from "../Pages/AccountPage/AccountSubPage/CustomerPage/Cu
 import Dashboard from "../Pages/DashboardPage/Dashboard";
 import HomePage from "../Pages/HomePage/HomePage";
 import InventoryPage from "../Pages/InventoryPage/InventoryPage";
+import TemplateEditor from "../Pages/InvoiceGenerator/TemplateEditor";
 import LoginPage from "../Pages/LoginPage/LoginPage";
 import PurchasePage from "../Pages/PurchasePage/PurchasePage";
 import LPOPage from "../Pages/PurchasePage/PurchaseSubPages/LPOPage/LPOPage";
@@ -64,6 +65,11 @@ export const routes = [
   {
     path: "/home",
     component: Dashboard,
+    IsPrivet: true,
+  },
+  {
+    path: "/invoice-generator",
+    component: TemplateEditor,
     IsPrivet: true,
   },
   {

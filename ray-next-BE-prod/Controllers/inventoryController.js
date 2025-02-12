@@ -1,4 +1,4 @@
-const { inventorySchema } = require("../Models/inventoryModel");
+const { inventorySchema } = require("../Models/inventory/inventoryModel");
 const errorResponse = require("../Utils/errorResponse");
 const successResponse = require("../Utils/successResponse");
 const mongoose = require("mongoose");
