@@ -5,7 +5,7 @@ import BorderdSelect from "../FormInputs/BorderdSelect";
 import { Form, Formik } from "formik";
 import RoundedCheckbox from "../FormInputs/RoundedCheckbox";
 import Button from "../FormInputs/Button";
-import { useAddInventory } from "../../Queries/InventoryQuery/InventoryQuery";
+import { useAddInventory, useGetBrands, useGetCategories } from "../../Queries/InventoryQuery/InventoryQuery";
 import { toast } from "react-hot-toast";
 import * as Yup from "yup";
 import { useGetSupplier } from "../../Queries/PurchaseQuery/PurchaseQuery";
@@ -61,7 +61,8 @@ const AddInventoryModal = ({ setOpen, open }) => {
   };
 
   const { mutateAsync: addInventory, isLoading } = useAddInventory();
-  const { data, isLoading: suppleirLoading } = useGetSupplier({ pageNo: 1 });
+  const { data: category } = useGetCategories({ pageNo: 1 });
+  const { data: brands } = useGetBrands({ pageNo: 1 });
   const handleSubmit = (values, { resetForm }) => {
     const data = {
       name: values?.name,
@@ -106,7 +107,13 @@ const AddInventoryModal = ({ setOpen, open }) => {
       });
   };
 
-  const supplierData = data?.data?.data?.data?.map((e) => {
+  const categoryData = category?.data?.map((e) => {
+    return {
+      value: e?._id,
+      label: e?.name,
+    };
+  });
+  const brandData = brands?.data?.map((e) => {
     return {
       value: e?._id,
       label: e?.name,
@@ -181,12 +188,7 @@ const AddInventoryModal = ({ setOpen, open }) => {
                         }}
                         id="category"
                         placeholder="Select"
-                        items={[
-                          { label: "Electronics", value: "electronics" },
-                          { label: "Appliances", value: "appliances" },
-                          { label: "Footwear", value: "footwear" },
-                          { label: "Accessories", value: "accessories" },
-                        ]}
+                        items={categoryData}
                       />
                     </div>
                     <div className="flex-[.8]">
@@ -195,7 +197,7 @@ const AddInventoryModal = ({ setOpen, open }) => {
                         onChange={(e) => setFieldValue("brand", e)}
                         id="brand"
                         placeholder="Select"
-                        items={[{ label: "brand1", value: "brand1" }]}
+                        items={brandData}
                       />
                     </div>
                   </div>

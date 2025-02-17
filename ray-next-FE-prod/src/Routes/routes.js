@@ -27,6 +27,9 @@ import SerialNumberVerify from "../Pages/SignUpPage/SignUpComponents/SerialNumbe
 import SignUpForm from "../Pages/SignUpPage/SignUpComponents/SignUpForm";
 import SignUpPage from "../Pages/SignUpPage/SignUpPage";
 import ItemArchive from "../Pages/InventoryPage/InventorySubPages/ItemArchivePage/ItemArchive";
+import WarehousePage from "../Pages/InventoryPage/InventorySubPages/WarehousePage/WarehousePage";
+import StockSummary from "../Pages/InventoryPage/InventorySubPages/StockSummaryPage/StockSummary";
+import MoveInventory from "../Pages/InventoryPage/InventorySubPages/MoveInventoryPage/MoveInventory";
 export const routes = [
   {
     path: "login",
@@ -196,39 +199,25 @@ export const routes = [
   },
   {
     path: "/inventory/warehouse",
-    component: InventoryPage,
+    component: WarehousePage,
     IsPrivet: true,
     isSubRoute: true,
     
-  },
-  {
-    path: "/inventory/price-list",
-    component: InventoryPage,
-    IsPrivet: true,
-    isSubRoute: true,
   },
   {
     path: "/inventory/move-inventory",
-    component: InventoryPage,
-    IsPrivet: true,
-    isSubRoute: true,
-    
-  },
-  {
-    path: "/inventory/units",
-    component: InventoryPage,
+    component: MoveInventory,
     IsPrivet: true,
     isSubRoute: true,
     
   },
   {
     path: "/inventory/stock-summary",
-    component: InventoryPage,
+    component: StockSummary,
     IsPrivet: true,
     isSubRoute: true,
     
   },
-
   {
     path: "/reports",
     component: InventoryPage,

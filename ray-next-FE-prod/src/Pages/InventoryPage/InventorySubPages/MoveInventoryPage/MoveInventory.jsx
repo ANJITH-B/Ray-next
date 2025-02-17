@@ -1,33 +1,34 @@
-import React, { useState } from "react";
-import SideBar from "./InventoryComponents/SideBar";
-import { Link } from "react-router-dom";
-import printer from "../../Assets/CommonImages/printer.svg";
-import excel from "../../Assets/CommonImages/excel.svg";
-import Button from "../../CommonComponents/FormInputs/Button";
-import { Tabs } from "antd";
-import ProductListTable from "./InventoryComponents/ProductListTable";
-import AddInventoryModal from "../../CommonComponents/OtherComponent/AddInventoryModal";
 
-const InventoryPage = () => {
+import React, { useState } from "react";
+import SideBar from "../../InventoryComponents/SideBar";
+import { Link } from "react-router-dom";
+import printer from "../../../../Assets/CommonImages/printer.svg";
+import excel from "../../../../Assets/CommonImages/excel.svg";
+import Button from "../../../../CommonComponents/FormInputs/Button";
+import { Tabs } from "antd";
+import ProductListTable from "../../InventoryComponents/ProductListTable";
+import AddWarehouseModel from "../../../../CommonComponents/OtherComponent/AddWarehouseModel";
+
+const MoveInventory = () => {
   const [open, setOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState("1");
   const [active, setActive] = useState(true);
 
-  
+
   const tabItems = [
     {
       key: "1",
-      label: "Product List",
+      label: "Request",
       children: <ProductListTable tabIndex={tabIndex} />,
     },
     {
       key: "2",
-      label: "Low stock",
+      label: "Transfers",
       children: <ProductListTable tabIndex={tabIndex} />,
     },
     {
       key: "3",
-      label: "Negative Stock",
+      label: "Damaged",
       children: <ProductListTable tabIndex={tabIndex} />,
     },
   ];
@@ -37,16 +38,12 @@ const InventoryPage = () => {
         <SideBar setActive={setActive} active={active} />
       </div>
       <div
-        className={`w-auto  ${
-          active ? "ml-[130px]" : "ml-[300px]"
-        } transition-all`}
+        className={`w-auto  ${active ? "ml-[130px]" : "ml-[300px]"
+          } transition-all`}
       >
         <div className=" flex justify-between  mb-[12px]">
           <div className="flex items-center gap-12 ">
-            <Link className="text-[32px] font-semibold">Product</Link>
-            <Link className="text-[32px] font-semibold opacity-50">
-              Services
-            </Link>
+            <Link className="text-[32px] font-semibold">Move Inventory</Link>
           </div>
 
           <div className="flex items-center gap-4">
@@ -62,9 +59,16 @@ const InventoryPage = () => {
               </button>
             </div>
             <Button
-              onClick={() => setOpen(true)}
+              background={"bg-light-gray"}
+              text={"Move to Damaged"}
+            />
+            <Button
+              background={"bg-light-gray"}
+              text={"New Request"}
+            />
+            <Button
               background={"bg-blue text-white"}
-              text={"Add Inventory"}
+              text={"New Transfer"}
             />
           </div>
         </div>
@@ -75,9 +79,8 @@ const InventoryPage = () => {
           items={tabItems}
         />
       </div>
-      <AddInventoryModal open={open} setOpen={setOpen} />
     </div>
   );
 };
 
-export default InventoryPage;
+export default MoveInventory;
