@@ -1,83 +1,97 @@
 import React, { useState } from "react";
 import BorderdInput from "../../../CommonComponents/FormInputs/BorderdInput";
-import BorderdSelect from "../../../CommonComponents/FormInputs/BorderdSelect";
 import { v4 } from "uuid";
 import { onlyNumbers } from "../../../Utilities/inputRestrictions";
 import editsvg from "../../../Assets/CommonImages/edit.svg";
 import trash from "../../../Assets/CommonImages/trash.svg";
 import BorderLessTable from "../../../CommonComponents/Tables/BorderLessTable";
-import { useGetRegularAccount } from "../../../Queries/AccountQuery/AccountQuery";
+import toast from "react-hot-toast";
 
-const ProductUnitTable = ({ formik, edit, setEdit, setItem, addItem, typeState, setTypeState }) => {
-const item = [{}]
+const ProductUnitTable = ({ data, setItem }) => {
+  const [editIndex, setEditIndex] = useState(0);
+  const editItem = (index) => {
+    const { unit, base_unit, n_unit, n_base_unit } = data[editIndex > data?.length - 1 ? data?.length - 1 : editIndex];
+    if (unit === "" || unit === undefined || base_unit === "" || base_unit === undefined || n_unit === "" || n_unit === undefined || n_base_unit === "" || n_base_unit === undefined) {
+      toast.error("Please fill all the fields");
+      return false;
+    }
+    else {
+      setEditIndex(index)
+    }
+  }
+
+  const addItem = () => {
+    if (!data?.length) {
+      setItem([{}]);
+      setEditIndex(0)
+      return
+    }
+    const { unit, base_unit, n_unit, n_base_unit } = data[editIndex > data?.length - 1 ? data?.length - 1 : editIndex];
+    if (unit === "" || unit === undefined || base_unit === "" || base_unit === undefined || n_unit === "" || n_unit === undefined || n_base_unit === "" || n_base_unit === undefined) {
+      toast.error("Please fill all the fields");
+      return false;
+    }
+    else {
+      setItem([...data, {}]);
+      setEditIndex(data.length);
+    }
+  };
+
   const updateData = (rowIndex, key, value) => {
-    const updatedData = [...item];
-
+    const updatedData = [...data];
     return (updatedData[rowIndex][key] = value);
   };
   const [values, setValues] = useState({ dirty: false, isError: [] });
   const columns = [
     {
       title: "Unit",
-      key: "Unit",
-      dataIndex: "Unit",
-      className: "w-[7rem]",
+      key: "unit",
+      dataIndex: "unit",
+      className: "w-[9rem]",
       render: (item, record, index) => {
         return (
-          <div className="w-full">
-            {edit === index ? (
-              <BorderdSelect
-                name="drcr"
-                showSearch={true}
-                items={[
-                  { label: "N Unit", value: "CR" },
-                  { label: "Base Unit", value: "DR" },
-                ]}
+          <div>
+            {editIndex === index ? (
+              <BorderdInput
+                placeholder={"Unit"}
                 error={
-                  !values?.isError?.includes("drcr") && values.dirty
-                    ? "Please select Unit"
+                  !values?.isError?.includes("unit") && values.dirty
+                    ? "Please enter Unit"
                     : false
                 }
-                defaultValue={record["drcr"]?.value}
-                onChange={(_, i) => {
-                  setTypeState(i.value);
-                  updateData(index, "drcr", i);
-                }}
-                placeholder="Unit"
+                defaultValue={record["unit"] !== null ? record["unit"] : 0}
+                onChange={(e) => updateData(index, "unit", e.target.value)}
+                onInput={onlyNumbers}
               />
             ) : (
-              <p>{record["drcr"]?.children}</p>
+              <p>{record["unit"]}</p>
             )}
           </div>
         );
       },
     },
-    
+
     {
       title: "Base Unit",
-      key: "Base Unit",
-      dataIndex: "Base Unit",
+      key: "base_unit",
+      dataIndex: "base_unit",
       className: "w-[9rem]",
       render: (item, record, index) => {
         return (
-          <div className="maxw">
-            {/* {console.log(record)} */}
-            {edit === index ? (
+          <div>
+            {editIndex === index ? (
               <BorderdInput
                 placeholder={"Base Unit"}
-                disabled={typeState === "CR"} // Disable when "N Unit" is selected
                 error={
-                  !values?.isError?.includes("Base Unit") && values.dirty
+                  !values?.isError?.includes("base_unit") && values.dirty
                     ? "Please enter Base Unit"
                     : false
                 }
-                defaultValue={record["Base Unit"] !== null ? record["Base Unit"] : 0}
-
-                onChange={(e) => updateData(index, "Base Unit", typeState === "CR" ? 0 : e.target.value)}
-                onInput={onlyNumbers}
+                defaultValue={record["base_unit"] !== null ? record["base_unit"] : 0}
+                onChange={(e) => updateData(index, "base_unit", e.target.value)}
               />
             ) : (
-              <p>{record["Base Unit"]}</p>
+              <p>{record["base_unit"]}</p>
             )}
           </div>
         );
@@ -86,55 +100,52 @@ const item = [{}]
 
     {
       title: "N Unit",
-      key: "N Unit",
-      dataIndex: "N Unit",
+      key: "n_unit",
+      dataIndex: "n_unit",
       className: "w-[9rem]",
       render: (item, record, index) => {
         return (
-          <div className="maxw">
-            {edit === index ? (
+          <div>
+            {editIndex === index ? (
               <BorderdInput
                 placeholder={"N Unit"}
-                disabled={typeState === "DR"}// Disable when "Base Unit" is selected
                 error={
-                  !values?.isError?.includes("N Unit") && values.dirty
+                  !values?.isError?.includes("n_unit") && values.dirty
                     ? "Please enter N Unit"
                     : false
                 }
-                defaultValue={record["N Unit"] !== null ? record["N Unit"] : 0}
-
-                onChange={(e) => updateData(index, "N Unit", typeState === "DR" ? 0 : e.target.value)}
+                defaultValue={record["n_unit"] !== null ? record["n_unit"] : 0}
+                onChange={(e) => updateData(index, "n_unit", e.target.value)}
                 onInput={onlyNumbers}
               />
             ) : (
-              <p>{record["N Unit"]}</p>
+              <p>{record["n_unit"]}</p>
             )}
           </div>
         );
       },
     },
     {
-      title: "N Base",
-      key: "N Base",
-      dataIndex: "N Base",
+      title: "Base Unit",
+      key: "n_base_unit",
+      dataIndex: "n_base_unit",
       className: "w-[9rem]",
       render: (item, record, index) => {
         return (
-          <div className="maxw">
-            {edit === index ? (
+          <div>
+            {editIndex === index ? (
               <BorderdInput
-                placeholder={"N Base"}
+                placeholder={"Base Unit"}
                 error={
-                  !values?.isError?.includes("drcr") && values.dirty
-                    ? "Please enter N Base"
+                  !values?.isError?.includes("n_base_unit") && values.dirty
+                    ? "Please enter Base Unit"
                     : false
                 }
-                defaultValue={record["N Base"]}
-                onChange={(e) => updateData(index, "N Base", e.target.value)}
-                onInput={onlyNumbers}
+                defaultValue={record["n_base_unit"]}
+                onChange={(e) => updateData(index, "n_base_unit", e.target.value)}
               />
             ) : (
-              <p>{record["N Base"]}</p>
+              <p>{record["n_base_unit"]}</p>
             )}
           </div>
         );
@@ -146,18 +157,18 @@ const item = [{}]
       key: "action",
       dataIndex: "action",
       className: "w-[3rem]",
-      render: (_, record, index) => {
+      render: (item, record, index) => {
         return (
-          <div className="">
-            {edit !== index ? (
+          <div>
+            {editIndex !== index ? (
               <div className="flex items-center gap-5">
-                <button className="" onClick={() => setEdit(index)}>
+                <button className="" onClick={() => editItem(index)}>
                   <img src={editsvg} alt="edit" className="min-w-[18px]" />
                 </button>
                 <button
                   onClick={() =>
                     setItem(() =>
-                      item?.filter((e, i) => {
+                      data?.filter((e, i) => {
                         return i !== index;
                       })
                     )
@@ -167,57 +178,16 @@ const item = [{}]
                 </button>
               </div>
             ) : (
-              <div>
+              <div className="flex items-center gap-5">
                 <button
                   className=""
                   onClick={() => {
-                    setValues((pre) => ({
-                      dirty: true,
-                      isError: Object.keys(record)?.filter(
-                        (e) => record[e] !== ""
-                      ),
-                    }));
-                    if (
-                      record["N Unit"] === "" ||
-                      record["Base Unit"] === "" ||
-                      record["N Base"] === "" ||
-                      record["Unit"] === ""
-                    ) {
+                    const { unit, base_unit, n_unit, n_base_unit } = record;
+                    if (unit === "" || unit === undefined || base_unit === "" || base_unit === undefined || n_unit === "" || n_unit === undefined || n_base_unit === "" || n_base_unit === undefined) {
+                      toast.error("Please fill all the fields");
                       return false;
                     } else {
-                      if (
-                        formik.values.transactions?.filter(
-                          (e) => e.index === index
-                        ).length > 0
-                      ) {
-                        formik.setFieldValue("transactions", [
-                          ...formik.values.transactions?.filter(
-                            (e) => e.index !== index
-                          ),
-                          {
-                            index: index,
-                            account_name: record["account_name"].children,
-                            account_id: record["account_name"].value,
-                            credit: record["N Unit"] != null ? Number(record["N Unit"]) : 0,
-                            debit: record["Base Unit"] != null ? Number(record["Base Unit"]) : 0,
-                            drcr: record["drcr"]?.value,
-                          },
-                        ]);
-                      } else {
-                        formik.setFieldValue("transactions", [
-                          ...formik.values.transactions,
-                          {
-                            index: index,
-                            account_name: record["account_name"].children,
-                            account_id: record["account_name"].value,
-                            credit: record["N Unit"] != null ? Number(record["N Unit"]) : 0,
-                            debit: record["Base Unit"] != null ? Number(record["Base Unit"]) : 0,
-                            drcr: record["drcr"]?.value,
-                          },
-                        ]);
-                      }
-                      setEdit(false);
-                      addItem()
+                      setEditIndex(null);
                     }
                   }}
                 >
@@ -234,6 +204,17 @@ const item = [{}]
                     />
                   </svg>
                 </button>
+                <button
+                  onClick={() =>
+                    setItem(() =>
+                      data?.filter((e, i) => {
+                        return i !== index;
+                      })
+                    )
+                  }
+                >
+                  <img src={trash} className="min-w-[18px]" alt="trash" />
+                </button>
               </div>
             )}
           </div>
@@ -243,9 +224,18 @@ const item = [{}]
   ];
 
   return (
-    <div>
-      <BorderLessTable columns={columns} data={item || []} key={v4()} />
-    </div>
+    <>
+      <div className="flex w-full items-center justify-between pt-8">
+        <p className=" text-xl 2xl:text-[24px] font-semibold">Items</p>
+        <button
+          onClick={() => addItem()}
+          className=" px-4 2xl:px-6 py-2 2xl:py-3 text-sm 2xl:text-base rounded-full border hover:bg-light-gray transition-all"
+        >
+          Add Items
+        </button>
+      </div>
+      <BorderLessTable columns={columns} data={data || []} key={v4()} />
+    </>
   );
 };
 

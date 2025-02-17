@@ -3,9 +3,7 @@ import React from "react";
 import building from "../../../Assets/ventorMenuIcons/buildings.svg";
 import box from "../../../Assets/ventorMenuIcons/box.svg";
 import share from "../../../Assets/ventorMenuIcons/share.svg";
-import element from "../../../Assets/ventorMenuIcons/element-4.svg";
-import star from "../../../Assets/ventorMenuIcons/medal-star.svg";
-import reciept from "../../../Assets/ventorMenuIcons/receipt-item.svg";
+import home from "../../../Assets/ventorMenuIcons/home.svg";
 import bank from "../../../Assets/ventorMenuIcons/bank.svg";
 import { Link, useLocation } from "react-router-dom";
 
@@ -14,12 +12,10 @@ const SideBar = ({ setActive, active }) => {
   const location = useLocation();
 
   const menuItems = [
-    { path: "/inventory", label: "Warehouse", icon: building },
+    { path: "/inventory", label: "Home", icon: home },
+    { path: "/inventory/warehouse", label: "Warehouses", icon: building },
     { path: "/inventory/stock-summary", label: "Stock Summary", icon: box },
-    { path: "/inventory/units", label: "Units", icon: share },
-    { path: "/inventory/categories", label: "Categories", icon: element },
-    { path: "/inventory/brands", label: "Brands", icon: star },
-    { path: "/inventory/price-list", label: "Price List", icon: reciept },
+    { path: "/inventory/item-archive", label: "Item Archive", icon: share },
     { path: "/inventory/move-inventory", label: "Move Inventory", icon: bank },
   ];
   return (
@@ -65,12 +61,12 @@ const SideBar = ({ setActive, active }) => {
             >
               <Link className="flex items-center gap-3" to={item.path}>
                 <img src={item.icon} alt={item.label} />
-                <p
+                <div
                   className={`${active ? "hidden" : "block"
-                    } whitespace-nowrap font-semibold`}
+                    } whitespace-nowrap`}
                 >
                   {item.label}
-                </p>
+                </div>
               </Link>
             </li>
           ))}

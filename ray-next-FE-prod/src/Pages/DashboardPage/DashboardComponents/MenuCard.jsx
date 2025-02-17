@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { v4 } from "uuid";
 
 const MenuCard = ({
   color,
@@ -28,6 +29,7 @@ const MenuCard = ({
                 if (item.isButton) {
                   return (
                     <button
+                      key={v4()}
                       onClick={item?.onClick}
                       className=" flex items-center px-3 h-[28px] 2xl:h-[33px] hover:bg-dark-color text-xs 2xl:text-sm hover:text-white transition-all py-[3px] 2xl:py-[5px] rounded-full border border-gray"
                     >
@@ -37,6 +39,7 @@ const MenuCard = ({
                 } else {
                   return (
                     <Link
+                      key={v4()}
                       to={item.path}
                       className=" flex items-center px-3 h-[28px] 2xl:h-[33px] hover:bg-dark-color text-xs 2xl:text-sm hover:text-white transition-all py-[3px] 2xl:py-[5px] rounded-full border border-gray"
                     >
@@ -54,7 +57,7 @@ const MenuCard = ({
             <p className=" text-xs 2xl:text-sm">increase in total sales</p>
           </div>
           <Link className="px-4 py-2 hover:bg-transparent text-xs 2xl:text-sm hover:text-dark-color transition-all hover:border border-dark-color bg-dark-color rounded-full text-white"
-          to={`/${head?.toLowerCase()}`}>
+            to={`/${head?.toLowerCase()}`}>
             Details
           </Link>
         </div>
