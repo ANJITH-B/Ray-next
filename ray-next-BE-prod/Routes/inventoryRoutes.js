@@ -11,7 +11,8 @@ const {
 const unitController = require("../Controllers/unitController");
 const categoryController = require("../Controllers/categoryController");
 const brandController = require("../Controllers/brandController");
-
+const warehouseController = require("../Controllers/warehouseController");
+const stockSummaryController = require("../Controllers/stockSummaryController");
 
 
 router.use(authorization);
@@ -37,5 +38,17 @@ router.get("/v1/inventory/brands", brandController.getBrands);
 router.get("/v1/inventory/brands/:id", brandController.getBrandById);
 router.put("/v1/inventory/brands/:id", brandController.updateBrand);
 router.delete("/v1/inventory/brands/:id", brandController.deleteBrand);
+
+router.post("/v1/inventory/warehouses", warehouseController.createWarehouse);
+router.get("/v1/inventory/warehouses", warehouseController.getWarehouses);
+router.get("/v1/inventory/warehouses/:id", warehouseController.getWarehouseById);
+router.put("/v1/inventory/warehouses/:id", warehouseController.updateWarehouse);
+router.delete("/v1/inventory/warehouses/:id", warehouseController.deleteWarehouse);
+
+router.post("/v1/inventory/stock-summaries", stockSummaryController.createStockSummary);
+router.get("/v1/inventory/stock-summaries", stockSummaryController.getStockSummaries);
+router.get("/v1/inventory/stock-summaries/:id", stockSummaryController.getStockSummaryById);
+router.put("/v1/inventory/stock-summaries/:id", stockSummaryController.updateStockSummary);
+router.delete("/v1/inventory/stock-summaries/:id", stockSummaryController.deleteStockSummary);
 
 module.exports = router;
