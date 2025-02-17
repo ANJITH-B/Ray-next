@@ -26,8 +26,7 @@ import OtpVarification from "../Pages/SignUpPage/SignUpComponents/OtpVarificatio
 import SerialNumberVerify from "../Pages/SignUpPage/SignUpComponents/SerialNumberVerify";
 import SignUpForm from "../Pages/SignUpPage/SignUpComponents/SignUpForm";
 import SignUpPage from "../Pages/SignUpPage/SignUpPage";
-
-
+import ItemArchive from "../Pages/InventoryPage/InventorySubPages/ItemArchivePage/ItemArchive";
 export const routes = [
   {
     path: "login",
@@ -188,6 +187,49 @@ export const routes = [
     isSubRoute: true,
     
   },
+  {
+    path: "/inventory/categories",
+    component: ItemArchive,
+    IsPrivet: true,
+    isSubRoute: true,
+    
+  },
+  {
+    path: "/inventory/brands",
+    component: InventoryPage,
+    IsPrivet: true,
+    isSubRoute: true,
+    
+  },
+  {
+    path: "/inventory/price-list",
+    component: InventoryPage,
+    IsPrivet: true,
+    isSubRoute: true,
+    
+  },
+  {
+    path: "/inventory/move-inventory",
+    component: InventoryPage,
+    IsPrivet: true,
+    isSubRoute: true,
+    
+  },
+  {
+    path: "/inventory/units",
+    component: InventoryPage,
+    IsPrivet: true,
+    isSubRoute: true,
+    
+  },
+  {
+    path: "/inventory/stock-summary",
+    component: InventoryPage,
+    IsPrivet: true,
+    isSubRoute: true,
+    
+  },
+
   {
     path: "/reports",
     component: InventoryPage,
