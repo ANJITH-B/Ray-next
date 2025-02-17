@@ -188,14 +188,14 @@ export const routes = [
     
   },
   {
-    path: "/inventory/categories",
+    path: "/inventory/item-archive",
     component: ItemArchive,
     IsPrivet: true,
     isSubRoute: true,
     
   },
   {
-    path: "/inventory/brands",
+    path: "/inventory/warehouse",
     component: InventoryPage,
     IsPrivet: true,
     isSubRoute: true,
@@ -206,7 +206,6 @@ export const routes = [
     component: InventoryPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/inventory/move-inventory",
