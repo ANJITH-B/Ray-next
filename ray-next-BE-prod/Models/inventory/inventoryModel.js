@@ -9,75 +9,75 @@ const inventory = new mongoose.Schema({
     type: String,
     required: true,
   },
-  user_id:{
+  user_id: {
     type: mongoose.Schema.Types.ObjectId,
-    required:true,
-    ref:"users"
+    required: true,
+    ref: "users"
   },
   barcode: {
     type: String,
   },
-  category:{
-    required: true,
-    type: String,
-    enum:["electronics","appliances","footwear","accessories"]
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category"
   },
-  brand:{
-    type: String
+  brand: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Brand"
   },
-  default_supplier:{
+  default_supplier: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "supplier",
   },
-  country_of_origin:{
+  country_of_origin: {
     type: String
   },
-  purchase_rate:{
+  purchase_rate: {
     type: String
   },
-  margin_percent:{
+  margin_percent: {
     type: String
   },
-  description:{
+  description: {
     type: String
   },
-  image_url:{
+  image_url: {
     type: String
   },
-  excludefromstock:{
+  excludefromstock: {
     type: Boolean
   },
-  active:{
+  active: {
     type: Boolean
   },
   unit_details: {
-    unit:{
-        type: String
-      },
-    base_unit:{
-        type: String
-      },
-    n_unit:{
-        type: String
-      },
-    n_base:{
-        type: String
-      },
-    bar_code:{
-        type: String
-      },
-    opening_quantity:{
-        type: String
-      },
-    rate:{
-        type: String
-      },
-    balance:{
-        type: String
-      },
-    sale_rate:{
-        type: String
-      },
+    unit: {
+      type: String
+    },
+    base_unit: {
+      type: String
+    },
+    n_unit: {
+      type: String
+    },
+    n_base: {
+      type: String
+    },
+    bar_code: {
+      type: String
+    },
+    opening_quantity: {
+      type: String
+    },
+    rate: {
+      type: String
+    },
+    balance: {
+      type: String
+    },
+    sale_rate: {
+      type: String
+    },
   },
 });
 
