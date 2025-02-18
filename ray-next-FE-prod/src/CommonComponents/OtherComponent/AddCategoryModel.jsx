@@ -7,7 +7,7 @@ import RoundedCheckbox from "../FormInputs/RoundedCheckbox";
 import Button from "../FormInputs/Button";
 import { toast } from "react-hot-toast";
 import * as Yup from "yup";
-import { useAddCategory } from "../../Queries/InventoryQuery/InventoryQuery";
+import { useAddCategory, useUpdateCategory } from "../../Queries/InventoryQuery/InventoryQuery";
 
 const unitValidation = Yup.object().shape({
    name: Yup.string().required("Name is required"),
@@ -15,20 +15,27 @@ const unitValidation = Yup.object().shape({
    description: Yup.string().required("Description is required"),
 });
 
-const AddCategoryModel = ({ setOpen, open }) => {
+const AddCategoryModel = ({ setOpen, open, editData }) => {
    const initialValue = {
-      name: "",
-      alias: "",
-      description: "",
-      barcode_needed: false,
+      name: editData?.name || "",
+      alias: editData?.alias || "",
+      description: editData?.description || "",
+      barcode_needed: editData?.barcode_needed || false,
    };
 
    const { mutateAsync: addCategory, isLoading } = useAddCategory();
+   const { mutateAsync: updateCategory, isLoading: updateLoading } = useUpdateCategory();
+
 
    const handleSubmit = async (values) => {
-      try {
-         await addCategory(values);
-         toast.success("Category added successfully");
+         try {
+         if (editData) {
+            await updateCategory({ id: editData.id, data: values });
+            toast.success("Category updated successfully");
+         } else {
+            await addCategory(values);
+            toast.success("Category added successfully");
+         }
          setOpen(false);
       } catch (error) {
          toast.error("Something went wrong");
@@ -36,7 +43,7 @@ const AddCategoryModel = ({ setOpen, open }) => {
    };
 
    return (
-      <ModalLayout width={600} setOpen={setOpen} open={open} title="Add Category">
+      <ModalLayout width={600} setOpen={setOpen} open={open} title={editData ? "Edit Category" : "Add Category"}>
          <Formik
             initialValues={initialValue}
             validationSchema={unitValidation}
@@ -70,7 +77,7 @@ const AddCategoryModel = ({ setOpen, open }) => {
                      </div>
                      <div className="flex justify-end gap-4">
                         <Button background="bg-light-gray" text="Cancel" type="button" onClick={() => setOpen(false)} />
-                        <Button background="bg-blue text-white" text="Save" type="submit" loading={isLoading} />
+                        <Button background="bg-blue text-white" text={editData ? "Update" : "Save"} type="submit" loading={isLoading || updateLoading} />
                      </div>
                   </div>
                </Form>

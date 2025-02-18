@@ -6,7 +6,7 @@ require('dotenv').config()
 
 async function server() {
     try {
-        console.log(process.env.PORT_LOCAL)
+        console.log(process.env.PORT_LOCAL)     
         // const server = http.createServer(app);
         // if (process.env.NODE_ENV === 'production') {
         //   mongoUrl = process.env.MONGO_URL_PROD;

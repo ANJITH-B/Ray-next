@@ -4,7 +4,9 @@ import Pagination from "../../../../CommonComponents/OtherComponent/Pagination";
 import { Dropdown } from "antd";
 import BorderdSelect from "../../../../CommonComponents/FormInputs/BorderdSelect";
 import BorderdInput from "../../../../CommonComponents/FormInputs/BorderdInput";
-import { useGetCategories } from "../../../../Queries/InventoryQuery/InventoryQuery";
+import { useGetCategories, useDeleteCategory } from "../../../../Queries/InventoryQuery/InventoryQuery";
+import AddCategoryModel from "../../../../CommonComponents/OtherComponent/AddCategoryModel";
+import { toast } from "react-hot-toast";
 
 const Filter = ({ setFilter, tabIndex }) => {
    const [date, seDate] = useState();
@@ -81,6 +83,27 @@ const CategoryListTable = ({ tabIndex }) => {
    useEffect(() => {
       console.log(data?.data)
    }, [data])
+   const [open, setOpen] = useState(false);
+   const [editData, setEditData] = useState(null);
+   const { mutateAsync: deleteCategory } = useDeleteCategory();
+
+   const handleEdit = (record) => {
+      setEditData(record);
+      setOpen(true);
+   };
+
+   const handleDelete = async (record) => {
+      console.log("record", record);
+
+      try {
+         await deleteCategory(record.id); 
+         toast.success("Category deleted successfully");
+      } catch (error) {
+         toast.error("Error deleting category");
+      }
+   };
+
+
    const InvoiceColumns = [
       {
          title: "Category",
@@ -171,6 +194,7 @@ const CategoryListTable = ({ tabIndex }) => {
       },
    ];
    const categoryData = data?.data?.map((e) => ({
+      id: e?._id,
       name: e?.name,
       alias: e?.alias,
       description: e?.description === "" ? "-" : e?.description,
@@ -247,12 +271,14 @@ const CategoryListTable = ({ tabIndex }) => {
                </Dropdown>
             </div>
          </div>
-         <BordedTable
+         {/* <BordedTable
             loading={isLoading}
             columns={InvoiceColumns}
             data={categoryData}
-         />
+         /> */}
+         <BordedTable loading={isLoading} columns={InvoiceColumns} data={categoryData} onEdit={handleEdit} onDelete={handleDelete} />
          <Pagination setFilter={setFilter} filter={filter} />
+         {open && <AddCategoryModel setOpen={setOpen} open={open} editData={editData} />}
       </div>
    );
 };
