@@ -28,10 +28,8 @@ module.exports.createInventory = async (req, res) => {
     const newInventory = await inventorySchema.create({
       name,
       item_code,
-      user_id:_id,
+      user_id: _id,
       barcode,
-      category,
-      brand,
       default_supplier,
       country_of_origin,
       purchase_rate,
@@ -41,6 +39,8 @@ module.exports.createInventory = async (req, res) => {
       excludefromstock,
       active,
       unit_details,
+      ...(category && { category }),
+      ...(brand && { brand })
     });
 
     return successResponse(res, 201, "success", { data: newInventory });
@@ -51,7 +51,7 @@ module.exports.createInventory = async (req, res) => {
 
 // list all with filter
 module.exports.getAllInventory = async (req, res) => {
-  const search = req.query.search?req.query.search:"";
+  const search = req.query.search ? req.query.search : "";
   const _id = req.decoded._id;
   const perPageItems = req.query.perpageitems
     ? parseInt(req.query.perpageitems)
@@ -59,15 +59,55 @@ module.exports.getAllInventory = async (req, res) => {
   const page = req.query.page ? parseInt(req.query.page) : 1;
   try {
     const skipCount = (page - 1) * perPageItems;
-
     const pipeline = [
       {
         $match: {
           user_id: new ObjectId(_id),
           $or: [
-            { name: { $regex: search, $options: "i" } }, // Case-insensitive search on customerName
-            // Add more fields to search if needed
+            { name: { $regex: search, $options: "i" } },
           ],
+        },
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brandDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      {
+        $unwind: { path: "$brandDetails", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $unwind: { path: "$categoryDetails", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $project: {
+          _id: 1, // Keep the original _id if needed
+          name: 1,
+          item_code: 1,
+          user_id: 1,
+          barcode: 1,
+          default_supplier: 1,
+          country_of_origin: 1,
+          purchase_rate: 1,
+          margin_percent: 1,
+          description: 1,
+          image_url: 1,
+          excludefromstock: 1,
+          active: 1,
+          unit_details: 1,
+          brand: "$brandDetails.name",
+          category: "$categoryDetails.name",
         },
       },
       {
@@ -79,6 +119,7 @@ module.exports.getAllInventory = async (req, res) => {
     ];
 
     const allInventories = await inventorySchema.aggregate(pipeline).exec();
+
     const result = {
       page: page,
       perPageItems: perPageItems,
@@ -94,29 +135,29 @@ module.exports.getAllInventory = async (req, res) => {
 // handle product image upload
 // setup multer for this 
 
-module.exports.imageupload = async (req,res) =>{
+module.exports.imageupload = async (req, res) => {
 
 }
 
 // product id auto generate
-module.exports.inventoryIdGenerator = async (req,res) =>{
-    const _id = req?.decoded?._id;
-    try {
-        const allInventories = await inventorySchema.find({ user_id: _id });
-        const inventoryNumber = allInventories.length;
-  
-        return successResponse(res, 200, "success", {
-          product_id: `PRD${inventoryNumber}`,
-        });
-    } catch (error) {
-        errorResponse(res, 404, error.message);
-    }
+module.exports.inventoryIdGenerator = async (req, res) => {
+  const _id = req?.decoded?._id;
+  try {
+    const allInventories = await inventorySchema.find({ user_id: _id });
+    const inventoryNumber = allInventories.length;
+
+    return successResponse(res, 200, "success", {
+      product_id: `PRD${inventoryNumber}`,
+    });
+  } catch (error) {
+    errorResponse(res, 404, error.message);
+  }
 }
 
 // category_items_counter_api
-module.exports.categoryCounter = async (req,res) =>{
+module.exports.categoryCounter = async (req, res) => {
   try {
-    const categoryArray = ["electronics","appliances","footwear","accessories"]
+    const categoryArray = ["electronics", "appliances", "footwear", "accessories"]
     // find how many products for each cat
     const pipeline = [
       {
@@ -137,7 +178,7 @@ module.exports.categoryCounter = async (req,res) =>{
     const result = await inventorySchema.aggregate(pipeline).exec()
 
 
- 
+
     const categoryCounts = {};
 
     result.forEach((entry) => {
@@ -146,10 +187,10 @@ module.exports.categoryCounter = async (req,res) =>{
     });
 
     // Now categoryCounts contains the count of products for each category
-   return successResponse(res,200,"success",categoryCounts)
-  
+    return successResponse(res, 200, "success", categoryCounts)
+
 
   } catch (error) {
-    return errorResponse(res,500,error.message)
+    return errorResponse(res, 500, error.message)
   }
 }
