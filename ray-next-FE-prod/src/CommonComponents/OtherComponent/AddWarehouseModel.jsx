@@ -7,7 +7,7 @@ import RoundedCheckbox from "../FormInputs/RoundedCheckbox";
 import Button from "../FormInputs/Button";
 import { toast } from "react-hot-toast";
 import * as Yup from "yup";
-// import { useAddBrand } from "../../Queries/InventoryQuery/InventoryQuery";
+import { useAddWarehouse } from "../../Queries/WarehouseQuery/WarehouseQuery";
 
 const unitValidation = Yup.object().shape({
   name: Yup.string().required("Name is required"),
@@ -23,12 +23,12 @@ const AddWarehouseModel = ({ setOpen, open }) => {
     barcode_needed: false,
   };
 
-//   const { mutateAsync: addBrand, isLoading } = useAddBrand();
+  const { mutateAsync: addWarehouse, isLoading } = useAddWarehouse();
 
   const handleSubmit = async (values) => {
     try {
-    //   await addBrand(values);
-      toast.success("warehouse added successfully");
+      await addWarehouse(values);
+      toast.success("Warehouse added successfully");
       setOpen(false);
     } catch (error) {
       toast.error("Something went wrong");
@@ -70,7 +70,7 @@ const AddWarehouseModel = ({ setOpen, open }) => {
               </div>
               <div className="flex justify-end gap-4">
                 <Button background="bg-light-gray" text="Cancel" type="button" onClick={() => setOpen(false)} />
-                {/* <Button background="bg-blue text-white" text="Save" type="submit" loading={isLoading} /> */}
+                  <Button background="bg-blue text-white" text="Save" type="submit" loading={isLoading} />
               </div>
             </div>
           </Form>

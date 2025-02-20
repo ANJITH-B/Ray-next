@@ -4,7 +4,10 @@ import Pagination from "../../../../CommonComponents/OtherComponent/Pagination";
 import { Dropdown } from "antd";
 import BorderdSelect from "../../../../CommonComponents/FormInputs/BorderdSelect";
 import BorderdInput from "../../../../CommonComponents/FormInputs/BorderdInput";
-import { useGetBrands } from "../../../../Queries/InventoryQuery/InventoryQuery";
+import { useGetBrands,useDeleteBrand } from "../../../../Queries/InventoryQuery/InventoryQuery";
+import AddBrandsModel from "../../../../CommonComponents/OtherComponent/AddBrandsModel";
+import { toast } from "react-hot-toast";
+
 
 const Filter = ({ setFilter, tabIndex }) => {
    const [date, seDate] = useState();
@@ -81,6 +84,26 @@ const BrandsListTable = ({ tabIndex }) => {
    useEffect(() => {
       console.log(data?.data)
    }, [data])
+
+   const [open, setOpen] = useState(false);
+   const [editData, setEditData] = useState(null);
+   const { mutateAsync: deleteBrand } = useDeleteBrand();
+
+   const handleEdit = (record) => {
+      setEditData(record);
+      setOpen(true);
+   };
+
+   const handleDelete = async (record) => {
+      console.log("record", record);
+
+      try {
+         await deleteBrand(record.id);
+         toast.success("Brand deleted successfully");
+      } catch (error) {
+         toast.error("Error deleting brand");
+      }
+   };
    const InvoiceColumns = [
       {
          title: "Brand",
@@ -171,6 +194,7 @@ const BrandsListTable = ({ tabIndex }) => {
       },
    ];
    const brandsData = data?.data?.map((e) => ({
+      id: e?._id,
       name: e?.name,
       alias: e?.alias,
       description: e?.description === "" ? "-" : e?.description,
@@ -247,12 +271,14 @@ const BrandsListTable = ({ tabIndex }) => {
                </Dropdown>
             </div>
          </div>
-         <BordedTable
+         {/* <BordedTable
             loading={isLoading}
             columns={InvoiceColumns}
             data={brandsData}
-         />
+         /> */}
+         <BordedTable loading={isLoading} columns={InvoiceColumns} data={brandsData } onEdit={handleEdit} onDelete={handleDelete} />
          <Pagination setFilter={setFilter} filter={filter} />
+         {open && <AddBrandsModel setOpen={setOpen} open={open} editData={editData} />}
       </div>
    );
 };

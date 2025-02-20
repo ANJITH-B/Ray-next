@@ -4,7 +4,9 @@ import Pagination from "../../../../CommonComponents/OtherComponent/Pagination";
 import { Dropdown } from "antd";
 import BorderdSelect from "../../../../CommonComponents/FormInputs/BorderdSelect";
 import BorderdInput from "../../../../CommonComponents/FormInputs/BorderdInput";
-import { useGetUnits } from "../../../../Queries/InventoryQuery/InventoryQuery";
+import { useGetUnits, useDeleteUnit } from "../../../../Queries/InventoryQuery/InventoryQuery";
+import AddUnitModel from "../../../../CommonComponents/OtherComponent/AddUnitModel";
+import { toast } from "react-hot-toast";
 
 const Filter = ({ setFilter, tabIndex }) => {
    const [date, seDate] = useState();
@@ -81,6 +83,26 @@ const UnitsListTable = ({ tabIndex }) => {
    useEffect(() => {
       console.log(data?.data)
    }, [data])
+
+   const [open, setOpen] = useState(false);
+   const [editData, setEditData] = useState(null);
+   const { mutateAsync: deleteUnit } = useDeleteUnit();
+
+   const handleEdit = (record) => {
+      setEditData(record);
+      setOpen(true);
+   };
+
+   const handleDelete = async (record) => {
+      console.log("record", record);
+
+      try {
+         await deleteUnit(record.id);
+         toast.success("Unit deleted successfully");
+      } catch (error) {
+         toast.error("Error deleting unit");
+      }
+   };
    const InvoiceColumns = [
       {
          title: "Unit",
@@ -131,6 +153,7 @@ const UnitsListTable = ({ tabIndex }) => {
             );
          },
       },
+
    ];
 
    const items = [
@@ -164,6 +187,7 @@ const UnitsListTable = ({ tabIndex }) => {
       },
    ];
    const unitsData = data?.data?.map((e) => ({
+      id: e?._id,
       name: e?.name,
       subUnit: e?.subUnit,
       description: e?.description === "" ? "-" : e?.description,
@@ -240,13 +264,16 @@ const UnitsListTable = ({ tabIndex }) => {
                </Dropdown>
             </div>
          </div>
-         <BordedTable
+         {/* <BordedTable
             loading={isLoading}
             columns={InvoiceColumns}
             data={unitsData}
-         />
+         /> */}
+         <BordedTable loading={isLoading} columns={InvoiceColumns} data={unitsData} onEdit={handleEdit} onDelete={handleDelete} />
+
          <Pagination setFilter={setFilter} filter={filter} />
-      </div>
+         {open && <AddUnitModel setOpen={setOpen} open={open} editData={editData} />}     
+          </div>
    );
 };
 

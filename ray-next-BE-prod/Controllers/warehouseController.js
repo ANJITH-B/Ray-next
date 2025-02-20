@@ -3,6 +3,7 @@ const Warehouse = require("../Models/inventory/warehouseModel");
 
 exports.createWarehouse = async (req, res) => {
   try {
+    console.log('req.body', req.body);
     const warehouse = new Warehouse(req.body);
     await warehouse.save();
     res.status(201).json(warehouse);

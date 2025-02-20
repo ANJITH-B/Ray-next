@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { addBrand, addCategory, addInventory, addUnits, getBrands, getCategories, getInventory, getUnits } from "./inventoryUrls";
+import { addBrand, addCategory, addInventory, addUnits, getBrands, getCategories, getInventory, getUnits, updateUnit, deleteUnit,
+  deleteBrand,
+  updateBrand,
+  updateCategory,
+  deleteCategory,
+ } from "./inventoryUrls";
 
 const useAddInventory = () => {
   const queryClient = useQueryClient();
@@ -44,6 +49,21 @@ const useGetUnits = (data) => {
   });
 };
 
+const useUpdateUnit = () => {
+  const queryClient = useQueryClient();
+  return useMutation(({ id, data }) => updateUnit(id, data), {
+    onSuccess: () => queryClient.invalidateQueries("get_units"),
+  });
+};
+
+const useDeleteUnit = () => {
+  const queryClient = useQueryClient();
+  return useMutation(deleteUnit, {
+    onSuccess: () => queryClient.invalidateQueries("get_units"),
+  });
+};
+
+
 const useGetCategories = (data) => {
   return useQuery(["get_category", data], () => getCategories(data), {
     // staleTime: 30000,
@@ -63,6 +83,20 @@ const useAddCategory = () => {
     onError: (data) => {
       return data;
     },
+  });
+};
+
+const useUpdateCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation(({ id, data }) => updateCategory(id, data), {
+    onSuccess: () => queryClient.invalidateQueries("get_category"),
+  });
+};
+
+const useDeleteCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation(deleteCategory, {
+    onSuccess: () => queryClient.invalidateQueries("get_category"),
   });
 };
 
@@ -87,5 +121,19 @@ const useAddBrand = () => {
     },
   });
 };
+const useDeleteBrand = () => {
+  const queryClient = useQueryClient();
+  return useMutation(deleteBrand, {
+    onSuccess: () => queryClient.invalidateQueries("get_brands"),
+  });
+};
 
-export { useAddInventory, useGetInventory, useAddUnits, useGetUnits, useGetBrands, useAddBrand, useAddCategory, useGetCategories };
+const useUpdateBrand = () => {
+  const queryClient = useQueryClient();
+  return useMutation(({ id, data }) => updateBrand(id, data), {
+    onSuccess: () => queryClient.invalidateQueries("get_brands"),
+  });
+};
+
+export { useAddInventory, useGetInventory, useAddUnits, useGetUnits, useGetBrands, useAddBrand, useAddCategory,
+   useGetCategories, useUpdateUnit, useDeleteUnit, useDeleteBrand, useUpdateBrand, useUpdateCategory, useDeleteCategory };

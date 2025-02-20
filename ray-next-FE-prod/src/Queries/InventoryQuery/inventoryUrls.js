@@ -54,6 +54,22 @@ const getUnits = async (data) => {
     }
   }
 };
+const updateUnit = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`inventory/unit/${id}`, data);
+    return response;
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};
+
+const deleteUnit = async (id) => {
+  try {
+    await axiosInstance.delete(`inventory/unit/${id}`);
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};
 
 const addCategory = async (data) => {
   try {
@@ -82,6 +98,22 @@ const getCategories = async (data) => {
     }
   }
 };
+const updateCategory = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`inventory/categories/${id}`, data);
+    return response;
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};
+
+const deleteCategory = async (id) => {
+  try {
+    await axiosInstance.delete(`inventory/categories/${id}`);
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+}; 
 
 const addBrand = async (data) => {
   try {
@@ -110,5 +142,24 @@ const getBrands = async (data) => {
     }
   }
 };
+const updateBrand = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`inventory/brands/${id}`, data);
+    return response;
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};
 
-export { addInventory, getInventory, addUnits, getUnits, addCategory, getCategories, addBrand, getBrands };
+const deleteBrand = async (id) => {
+  try {
+    await axiosInstance.delete(`inventory/brands/${id}`);
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};  
+
+ 
+
+export { addInventory, getInventory, addUnits, getUnits, addCategory, getCategories, addBrand,
+   getBrands, updateUnit, deleteUnit, updateBrand, deleteBrand, updateCategory, deleteCategory };
