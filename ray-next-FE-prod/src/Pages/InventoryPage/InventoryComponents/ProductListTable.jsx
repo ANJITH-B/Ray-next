@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import BordedTable from "../../../CommonComponents/Tables/BorderdTabel";
-import avrt from "../../../Assets/CommonImages/avtr.png";
-import flag from "../../../Assets/CommonImages/flag.svg";
 
 import Pagination from "../../../CommonComponents/OtherComponent/Pagination";
-import { useGetCustomer } from "../../../Queries/CustomerQuery/CustomerQuery";
 import { Dropdown } from "antd";
 import BorderdSelect from "../../../CommonComponents/FormInputs/BorderdSelect";
-import { v4 } from "uuid";
 import BorderdInput from "../../../CommonComponents/FormInputs/BorderdInput";
-import { useGetInventory } from "../../../Queries/InventoryQuery/InventoryQuery";
+import { useGetInventory, useDeleteInventory } from "../../../Queries/InventoryQuery/InventoryQuery";
+import AddInventoryModal from "../../../CommonComponents/OtherComponent/AddInventoryModal";
+import { toast } from "react-hot-toast";
 
 const Filter = ({ setFilter, tabIndex }) => {
   const [date, seDate] = useState();
@@ -82,6 +80,26 @@ const ProductListTable = ({ tabIndex }) => {
     pageCount: 10,
   });
   const { data: inventory, isLoading } = useGetInventory(filter);
+  const [open, setOpen] = useState(false);
+   const [editData, setEditData] = useState(null);
+   const { mutateAsync: deleteInventory } = useDeleteInventory();
+
+   const handleEdit = (record) => {
+      console.log("record1", record);
+      setEditData(record);
+      setOpen(true);
+   };
+
+   const handleDelete = async (record) => {
+      console.log("record", record);
+
+      try {
+         await deleteInventory(record.id);
+         toast.success("Inventory deleted successfully");
+      } catch (error) {
+         toast.error("Error deleting inventory");
+      }
+   };
   const InvoiceColumns = [
     {
       title: "Product Code",
@@ -119,10 +137,10 @@ const ProductListTable = ({ tabIndex }) => {
       width: 150,
     },
     {
-      title: "Description",
-      key: "Description",
+      title: "Stock",
+      key: "Stock",
       className: "text-base",
-      dataIndex: "Description",
+      dataIndex: "Stock",
       width: 150,
     },
     {
@@ -182,15 +200,26 @@ const ProductListTable = ({ tabIndex }) => {
       key: "7",
     },
   ];
+  console.log("inventory", inventory?.data?.data?.data);
   const inventoryData = inventory?.data?.data?.data?.map((e) => ({
+    id: e?._id,
     "Product Code": e?.item_code,
     Catogery: { catogery: e?.category, unit: e?.unit_details?.unit },
+    Item_code: e?.item_code,
+    Bar_code: e?.barcode,
+    Valuation: e?.valuation,
+    Stock: e?.stock,
+    Stock_unit: e?.stock_unit,
+    Minimum_quantity: e?.minimum_quantity,
+    Image_url: e?.image_url,
+    Excludefromstock: e?.excludefromstock,
+    Active: e?.active,
     Brand: e?.brand,
     Name: e?.name,
-    Description: e?.description === "" ? "-" : e?.description,
+    Stock: e?.stock,
     Status: e?.active,
-
     Action: "",
+    unit: e?.unit_details,
   }));
 
   //   const invoiceData = data?.data?.data?.data?.map((e) => [
@@ -276,12 +305,14 @@ const ProductListTable = ({ tabIndex }) => {
           </Dropdown>
         </div>
       </div>
-      <BordedTable
+      {/* <BordedTable
         loading={isLoading}
         columns={InvoiceColumns}
         data={inventoryData}
-      />
+      /> */}
+      <BordedTable loading={isLoading} columns={InvoiceColumns} data={inventoryData} onEdit={handleEdit} onDelete={handleDelete} />
       <Pagination setFilter={setFilter} filter={filter}/>
+      {open && <AddInventoryModal setOpen={setOpen} open={open} editData={editData} />}
     </div>
   );
 };

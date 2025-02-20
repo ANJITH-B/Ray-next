@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import BorderdInput from "../../../CommonComponents/FormInputs/BorderdInput";
+import BorderdSelect from "../../../CommonComponents/FormInputs/BorderdSelect";
 import { v4 } from "uuid";
 import { onlyNumbers } from "../../../Utilities/inputRestrictions";
 import editsvg from "../../../Assets/CommonImages/edit.svg";
 import trash from "../../../Assets/CommonImages/trash.svg";
 import BorderLessTable from "../../../CommonComponents/Tables/BorderLessTable";
 import toast from "react-hot-toast";
-
+import { useGetUnits } from "../../../Queries/InventoryQuery/InventoryQuery";
 const ProductUnitTable = ({ data, setItem }) => {
   const [editIndex, setEditIndex] = useState(0);
+  const { data: units } = useGetUnits({ pageNo: 1 });
+  const unitOptions = units?.data?.map((unit) => ({ label: unit.name, value: unit._id })) || [];
   const editItem = (index) => {
     const { unit, base_unit, n_unit, n_base_unit } = data[editIndex > data?.length - 1 ? data?.length - 1 : editIndex];
     if (unit === "" || unit === undefined || base_unit === "" || base_unit === undefined || n_unit === "" || n_unit === undefined || n_base_unit === "" || n_base_unit === undefined) {
@@ -71,31 +74,51 @@ const ProductUnitTable = ({ data, setItem }) => {
       },
     },
 
+    // {
+    //   title: "Base Unit",
+    //   key: "base_unit",
+    //   dataIndex: "base_unit",
+    //   className: "w-[9rem]",
+    //   render: (item, record, index) => {
+    //     return (
+    //       <div>
+    //         {editIndex === index ? (
+    //           <BorderdInput
+    //             placeholder={"Base Unit"}
+    //             error={
+    //               !values?.isError?.includes("base_unit") && values.dirty
+    //                 ? "Please enter Base Unit"
+    //                 : false
+    //             }
+    //             defaultValue={record["base_unit"] !== null ? record["base_unit"] : 0}
+    //             onChange={(e) => updateData(index, "base_unit", e.target.value)}
+    //           />
+    //         ) : (
+    //           <p>{record["base_unit"]}</p>
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    // },
+
     {
       title: "Base Unit",
       key: "base_unit",
       dataIndex: "base_unit",
       className: "w-[9rem]",
-      render: (item, record, index) => {
-        return (
-          <div>
-            {editIndex === index ? (
-              <BorderdInput
-                placeholder={"Base Unit"}
-                error={
-                  !values?.isError?.includes("base_unit") && values.dirty
-                    ? "Please enter Base Unit"
-                    : false
-                }
-                defaultValue={record["base_unit"] !== null ? record["base_unit"] : 0}
-                onChange={(e) => updateData(index, "base_unit", e.target.value)}
-              />
-            ) : (
-              <p>{record["base_unit"]}</p>
-            )}
-          </div>
-        );
-      },
+      render: (item, record, index) => (
+        editIndex === index ? (
+          <BorderdSelect
+            placeholder="Select Base Unit"
+            items={unitOptions}
+            // defaultValue={record["base_unit"] || ""}
+            onChange={(e) => updateData(index, "base_unit", e)}
+            value={record["base_unit"]}
+          />
+        ) : (
+          <p>{units?.data?.find((u) => u._id === record["base_unit"])?.name || ""}</p>
+        )
+      ),
     },
 
     {
@@ -125,31 +148,51 @@ const ProductUnitTable = ({ data, setItem }) => {
         );
       },
     },
+    // {
+    //   title: "Base Unit",
+    //   key: "n_base_unit",
+    //   dataIndex: "n_base_unit",
+    //   className: "w-[9rem]",
+    //   render: (item, record, index) => {
+    //     return (
+    //       <div>
+    //         {editIndex === index ? (
+    //           <BorderdInput
+    //             placeholder={"Base Unit"}
+    //             error={
+    //               !values?.isError?.includes("n_base_unit") && values.dirty
+    //                 ? "Please enter Base Unit"
+    //                 : false
+    //             }
+    //             defaultValue={record["n_base_unit"]}
+    //             onChange={(e) => updateData(index, "n_base_unit", e.target.value)}
+    //           />
+    //         ) : (
+    //           <p>{record["n_base_unit"]}</p>
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    // },
+
     {
-      title: "Base Unit",
+      title: "N Base Unit",
       key: "n_base_unit",
       dataIndex: "n_base_unit",
       className: "w-[9rem]",
-      render: (item, record, index) => {
-        return (
-          <div>
-            {editIndex === index ? (
-              <BorderdInput
-                placeholder={"Base Unit"}
-                error={
-                  !values?.isError?.includes("n_base_unit") && values.dirty
-                    ? "Please enter Base Unit"
-                    : false
-                }
-                defaultValue={record["n_base_unit"]}
-                onChange={(e) => updateData(index, "n_base_unit", e.target.value)}
-              />
-            ) : (
-              <p>{record["n_base_unit"]}</p>
-            )}
-          </div>
-        );
-      },
+      render: (item, record, index) => (
+        editIndex === index ? (
+          <BorderdSelect
+            placeholder={"Select N Base Unit"}
+            items={unitOptions}
+            // defaultValue={record["n_base_unit"] || ""}
+            onChange={(e) => updateData(index, "n_base_unit", e)}
+            value={record["n_base_unit"]}
+          />
+        ) : (
+          <p>{units?.data?.find((u) => u._id === record["n_base_unit"])?.name || ""}</p>
+        )
+      ),
     },
 
     {

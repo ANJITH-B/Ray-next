@@ -12,6 +12,14 @@ const addInventory = async (data) => {
     }
   }
 };
+const updateInventory = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`inventory/${id}`, data);
+    return response;
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};
 const getInventory = async (data) => {
   try {
     const response = await axiosInstance.get(
@@ -27,6 +35,13 @@ const getInventory = async (data) => {
   }
 };
 
+const deleteInventory = async (id) => {
+  try {
+    await axiosInstance.delete(`inventory/${id}`);
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};
 const addUnits = async (data) => {
   try {
     const response = await axiosInstance.post(`inventory/unit`, data);
@@ -162,4 +177,5 @@ const deleteBrand = async (id) => {
  
 
 export { addInventory, getInventory, addUnits, getUnits, addCategory, getCategories, addBrand,
-   getBrands, updateUnit, deleteUnit, updateBrand, deleteBrand, updateCategory, deleteCategory };
+   getBrands, updateUnit, deleteUnit, updateBrand, deleteBrand, updateCategory, deleteCategory, 
+   deleteInventory, updateInventory };
