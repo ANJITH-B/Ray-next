@@ -4,6 +4,8 @@ import { addBrand, addCategory, addInventory, addUnits, getBrands, getCategories
   updateBrand,
   updateCategory,
   deleteCategory,
+  deleteInventory,  
+  updateInventory,
  } from "./inventoryUrls";
 
 const useAddInventory = () => {
@@ -18,7 +20,7 @@ const useAddInventory = () => {
       return data;
     },
   });
-};
+};  
 const useGetInventory = (data) => {
   return useQuery(["get_inventory", data], () => getInventory(data), {
     // staleTime: 30000,
@@ -26,6 +28,20 @@ const useGetInventory = (data) => {
     refetchOnWindowFocus: false,
   });
 };
+const useUpdateInventory = () => {
+  const queryClient = useQueryClient();
+  return useMutation(({ id, data }) => updateInventory(id, data), {
+    onSuccess: () => queryClient.invalidateQueries("get_inventory"),
+  });
+};
+
+const useDeleteInventory = () => {
+  const queryClient = useQueryClient();
+  return useMutation(deleteInventory, {
+    onSuccess: () => queryClient.invalidateQueries("get_inventory"),
+  });
+};
+
 
 const useAddUnits = () => {
   const queryClient = useQueryClient();
@@ -136,4 +152,5 @@ const useUpdateBrand = () => {
 };
 
 export { useAddInventory, useGetInventory, useAddUnits, useGetUnits, useGetBrands, useAddBrand, useAddCategory,
-   useGetCategories, useUpdateUnit, useDeleteUnit, useDeleteBrand, useUpdateBrand, useUpdateCategory, useDeleteCategory };
+   useGetCategories, useUpdateUnit, useDeleteUnit, useDeleteBrand, useUpdateBrand, useUpdateCategory, useDeleteCategory, 
+   useDeleteInventory, useUpdateInventory };

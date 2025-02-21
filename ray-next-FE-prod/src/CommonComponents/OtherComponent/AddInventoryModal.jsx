@@ -1,14 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import ModalLayout from "./ModalLayout";
 import BorderdInput from "../FormInputs/BorderdInput";
 import BorderdSelect from "../FormInputs/BorderdSelect";
 import { Form, Formik } from "formik";
 import RoundedCheckbox from "../FormInputs/RoundedCheckbox";
 import Button from "../FormInputs/Button";
-import { useAddInventory, useGetBrands, useGetCategories } from "../../Queries/InventoryQuery/InventoryQuery";
+import { useAddInventory, useGetBrands, useGetCategories, useUpdateInventory } from "../../Queries/InventoryQuery/InventoryQuery";
 import { toast } from "react-hot-toast";
 import * as Yup from "yup";
-import { useGetSupplier } from "../../Queries/PurchaseQuery/PurchaseQuery";
 import ProductUnitTable from "../../Pages/InventoryPage/InventoryComponents/ProductUnitTable";
 import { BarcodeGenerator } from "../../Pages/InventoryPage/InventoryComponents/BarcodeScanner";
 import html2canvas from "html2canvas";
@@ -19,12 +18,24 @@ const inventoryValidation = () => {
     item_code: Yup.string().required("Item code is required"),
     barcode: Yup.string().required("Barcode is required"),
     stock: Yup.string().required("Stoke is required"),
+    minimum_quantity: Yup.string().required("Minimum quantity is required"),
+    // stock_unit: Yup.string().required("Stock unit is required"),
+    // category: Yup.string().required("Category is required"),
+    // brand: Yup.string().required("Brand is required"),
+    // valuation: Yup.string().required("Valuation is required"),
   });
 };
-const AddInventoryModal = ({ setOpen, open }) => {
+const AddInventoryModal = ({ setOpen, open, editData }) => {
   const [imgPreview, setImgPreview] = useState("");
+  const initialUnits = editData?.unit || [{}];
+
   const [units, setUnits] = useState([{}]);
   const barcodeRef = useRef(null);
+  useEffect(() => {
+    if (editData) {
+      setUnits(initialUnits);
+    }
+  }, []);
 
   const downloadBarcode = async () => {
     if (!barcodeRef.current) return;
@@ -36,34 +47,33 @@ const AddInventoryModal = ({ setOpen, open }) => {
   };
 
   const initialValue = {
-    name: "",
-    item_code: "",
-    barcode: "",
-    category: "",
-    brand: "",
-    valuation: "",
-    country_of_origin: "",
-    purchase_rate: "",
-    margin_percent: "",
-    description: "",
-    image_url: "",
-    excludefromstock: true,
-    active: true,
-    unit: "",
-    base_unit: "",
-    n_unit: "",
-    n_base: "",
-    bar_code: "",
-    opening_quantity: "",
-    rate: "",
-    balance: "",
-    sale_rate: "",
+    name: editData?.Name || "",
+    item_code: editData?.Item_code || "",
+    barcode: editData?.Bar_code || "",
+    category: editData?.category_id || "",
+    brand: editData?.brand_id || "",
+    valuation: editData?.Valuation || "",
+    stock: editData?.Stock || "",
+    stock_unit: editData?.Stock_unit || "",
+    minimum_quantity: editData?.Minimum_quantity || "",
+    image_url: editData?.Image_url || "",
+    excludefromstock: editData?.Excludefromstock || true,
+    active: editData?.Active || true,
+    base_unit: editData?.base_unit || "",
+    n_unit: editData?.n_unit || "",
+    n_base: editData?.n_base || "",
+    bar_code: editData?.bar_code || "",
+    opening_quantity: editData?.opening_quantity || "",
+    rate: editData?.rate || "",
+    balance: editData?.balance || "",
+    sale_rate: editData?.sale_rate || "",
   };
 
   const { mutateAsync: addInventory, isLoading } = useAddInventory();
+  const { mutateAsync: updateInventory, isLoading: updateLoading } = useUpdateInventory();
   const { data: category } = useGetCategories({ pageNo: 1 });
   const { data: brands } = useGetBrands({ pageNo: 1 });
-  const handleSubmit = (values, { resetForm }) => {
+  const handleSubmit = async (values, { resetForm }) => {
     const data = {
       name: values?.name,
       item_code: values?.item_code,
@@ -78,7 +88,10 @@ const AddInventoryModal = ({ setOpen, open }) => {
       image_url: imgPreview,
       excludefromstock: values?.excludefromstock,
       active: values?.active,
-      units
+      unit_details: units,
+      stock: values?.stock,
+      stock_unit: values?.stock_unit,
+      minimum_quantity: values?.minimum_quantity,
       // unit_details: {
       //   unit: values?.unit,
       //   base_unit: values?.base_unit,
@@ -91,20 +104,31 @@ const AddInventoryModal = ({ setOpen, open }) => {
       //   sale_rate: values?.sales,
       // },
     };
-
-    addInventory(data)
-      .then((res) => {
-        if (res?.status === 500) {
-          toast.error("Something went wrong");
-        } else {
-          toast.success("Inventory added");
-          setOpen(false);
-          resetForm();
-        }
-      })
-      .catch((err) => {
-        toast.error("Something went wrong");
-      });
+    try {
+      console.log('data32', data);
+      if (editData) {
+        await updateInventory({ id: editData.id, data });
+        toast.success("Inventory updated");
+        setOpen(false);
+        resetForm();
+      } else {
+        await addInventory(data)
+          .then((res) => {
+            if (res?.status === 500) {
+              toast.error("Something went wrong");
+            } else {
+              toast.success("Inventory added");
+              setOpen(false);
+              resetForm();
+            }
+          })
+          .catch((err) => {
+            toast.error("Something went wrong");
+          });
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
   };
 
   const categoryData = category?.data?.map((e) => {
@@ -125,7 +149,7 @@ const AddInventoryModal = ({ setOpen, open }) => {
       width={1200}
       setOpen={setOpen}
       open={open}
-      title={"Add Product"}
+      title={editData ? "Edit Product" : "Add Product"}
     >
       <Formik
         initialValues={initialValue}
@@ -189,6 +213,7 @@ const AddInventoryModal = ({ setOpen, open }) => {
                         id="category"
                         placeholder="Select"
                         items={categoryData}
+                        value={values.category}
                       />
                     </div>
                     <div className="flex-[.8]">
@@ -198,6 +223,7 @@ const AddInventoryModal = ({ setOpen, open }) => {
                         id="brand"
                         placeholder="Select"
                         items={brandData}
+                        value={values.brand}
                       />
                     </div>
                   </div>
@@ -215,6 +241,7 @@ const AddInventoryModal = ({ setOpen, open }) => {
                         ]}
                         disabled
                         defaultValue="FIFO"
+                        value={values.valuation}
                       />
                     </div>
                     <div className="flex-1">
@@ -229,6 +256,7 @@ const AddInventoryModal = ({ setOpen, open }) => {
                             placeholder="Enter stock"
                           />
                         </div>
+
                         <div className="flex-[.5]">
                           <BorderdSelect
                             onChange={(e) => setFieldValue("stock_unit", e)}
@@ -242,6 +270,16 @@ const AddInventoryModal = ({ setOpen, open }) => {
                           />
                         </div>
                       </div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm mb-2">Minimum Quantity</p>
+                      <BorderdInput
+                        formik={true}
+                        name="minimum_quantity"
+                        id="minimum_quantity"
+                        error={errors.minimum_quantity}
+                        placeholder="Enter minimum quantity"
+                      />
                     </div>
                   </div>
                 </div>
@@ -262,8 +300,11 @@ const AddInventoryModal = ({ setOpen, open }) => {
                         htmlFor="product-image"
                       >
                         <div>
-                          {imgPreview ? (
-                            <img src={imgPreview} alt="image" />
+                          {/* {imgPreview ? (
+                              <img src={imgPreview} alt="image" />
+                            ) : ( */}
+                          {imgPreview || values.image_url ? (
+                            <img src={imgPreview || values.image_url} alt="image" className="h-40 w-40 object-cover" />
                           ) : (
                             <svg
                               width="56"
@@ -329,8 +370,8 @@ const AddInventoryModal = ({ setOpen, open }) => {
                   <Button
                     background={"bg-blue text-white"}
                     type="submit"
-                    text={"Save"}
-                    loading={isLoading}
+                    text={editData ? "Update" : "Save"}
+                    loading={isLoading || updateLoading}
                   />
                 </div>
               </div>

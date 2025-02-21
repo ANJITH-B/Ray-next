@@ -11,15 +11,15 @@ import { useAddWarehouse } from "../../Queries/WarehouseQuery/WarehouseQuery";
 
 const unitValidation = Yup.object().shape({
   name: Yup.string().required("Name is required"),
-  alias: Yup.string().required("Alias is required"),
-  description: Yup.string().required("Description is required"),
+  warehouseCode: Yup.string().required("Warehouse Code is required"),
+  location: Yup.string().required("Location is required"),
 });
 
 const AddWarehouseModel = ({ setOpen, open }) => {
   const initialValue = {
     name: "",
-    alias: "",
-    description: "",
+    warehouseCode: "",
+    location: "",
     barcode_needed: false,
   };
 
@@ -51,15 +51,15 @@ const AddWarehouseModel = ({ setOpen, open }) => {
                   <BorderdInput formik={true} name="name" error={errors.name} placeholder="Enter name" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm mb-2">Alias</p>
-                  <BorderdInput formik={true} name="alias" error={errors.alias} placeholder="Enter alias" />
+                  <p className="text-sm mb-2">Warehouse Code</p>
+                  <BorderdInput formik={true} name="warehouseCode" error={errors.warehouseCode} placeholder="Enter Warehouse Code" />
                 </div>
               </div>
               <div>
-                <p className="text-sm mb-2">Description</p>
-                <BorderdTextArea name="description"
-                  value={values.description}
-                  onChange={(e) => setFieldValue("description", e.target.value)} placeholder="Enter description" />
+                <p className="text-sm mb-2">Location</p>
+                <BorderdTextArea name="location"
+                  value={values.location}
+                  onChange={(e) => setFieldValue("location", e.target.value)} placeholder="Enter location" />
               </div>
               <div className="flex items-center gap-3">
                 <RoundedCheckbox name="barcode_needed"
@@ -70,7 +70,7 @@ const AddWarehouseModel = ({ setOpen, open }) => {
               </div>
               <div className="flex justify-end gap-4">
                 <Button background="bg-light-gray" text="Cancel" type="button" onClick={() => setOpen(false)} />
-                  <Button background="bg-blue text-white" text="Save" type="submit" loading={isLoading} />
+                <Button background="bg-blue text-white" text="Save" type="submit" loading={isLoading} />
               </div>
             </div>
           </Form>

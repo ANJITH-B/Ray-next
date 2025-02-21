@@ -112,11 +112,18 @@ const UnitsListTable = ({ tabIndex }) => {
          width: 150,
       },
       {
-         title: "Sub Unit",
-         key: "subUnit",
+         title: "Abbreviation",
+         key: "abbreviation",
          className: "text-base",
-         dataIndex: "subUnit",
+         dataIndex: "abbreviation",
          width: 170,
+      },
+      {
+         title: "Decimal Places",
+         key: "decimal_places",
+         className: "text-base",
+         dataIndex: "decimal_places",
+         width: 150,
       },
       {
          title: "Description",
@@ -189,7 +196,8 @@ const UnitsListTable = ({ tabIndex }) => {
    const unitsData = data?.data?.map((e) => ({
       id: e?._id,
       name: e?.name,
-      subUnit: e?.subUnit,
+      abbreviation: e?.abbreviation,
+      decimal_places: e?.decimal_places,
       description: e?.description === "" ? "-" : e?.description,
       products: e?.products?.length ?? 0,
       updated: new Date(e?.updatedAt)?.toLocaleDateString(),

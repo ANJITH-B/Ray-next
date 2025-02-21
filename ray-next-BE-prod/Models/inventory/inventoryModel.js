@@ -25,20 +25,7 @@ const inventory = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Brand"
   },
-  default_supplier: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "supplier",
-  },
-  country_of_origin: {
-    type: String
-  },
-  purchase_rate: {
-    type: String
-  },
-  margin_percent: {
-    type: String
-  },
-  description: {
+  valuation: {
     type: String
   },
   image_url: {
@@ -50,35 +37,49 @@ const inventory = new mongoose.Schema({
   active: {
     type: Boolean
   },
-  unit_details: {
+  stock: {
+    type: Number
+  },
+  stock_unit: {
+    type: String
+  },
+  minimum_quantity: {
+    type: Number
+  },
+  unit_details: [{
     unit: {
       type: String
     },
     base_unit: {
-      type: String
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "units"
     },
     n_unit: {
       type: String
     },
-    n_base: {
-      type: String
+    n_base_unit: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "units"
     },
-    bar_code: {
-      type: String
-    },
-    opening_quantity: {
-      type: String
-    },
-    rate: {
-      type: String
-    },
-    balance: {
-      type: String
-    },
-    sale_rate: {
-      type: String
-    },
-  },
+    // n_base: {
+    //   type: String
+    // },
+    // bar_code: {
+    //   type: String
+    // },
+    // opening_quantity: {
+    //   type: String
+    // },
+    // rate: {
+    //   type: String
+    // },
+    // balance: {
+    //   type: String
+    // },
+    // sale_rate: {
+    //   type: String
+    // },
+  }],
 });
 
 module.exports.inventorySchema = mongoose.model("inventory", inventory);

@@ -4,7 +4,6 @@ const successResponse = require("../Utils/successResponse");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
-// create a inventory product
 module.exports.createInventory = async (req, res) => {
   const _id = req.decoded._id;
   const {
@@ -13,16 +12,17 @@ module.exports.createInventory = async (req, res) => {
     barcode,
     category,
     brand,
-    default_supplier,
-    country_of_origin,
-    purchase_rate,
-    margin_percent,
-    description,
+    valuation,
+    stock,
+    stock_unit,
+    minimum_quantity,
     image_url,
     excludefromstock,
     active,
     unit_details,
   } = req.body;
+  console.log('unit_details', unit_details);
+  
 
   try {
     const newInventory = await inventorySchema.create({
@@ -30,11 +30,10 @@ module.exports.createInventory = async (req, res) => {
       item_code,
       user_id: _id,
       barcode,
-      default_supplier,
-      country_of_origin,
-      purchase_rate,
-      margin_percent,
-      description,
+      stock,
+      stock_unit,
+      minimum_quantity,
+      valuation,
       image_url,
       excludefromstock,
       active,
@@ -48,6 +47,72 @@ module.exports.createInventory = async (req, res) => {
     return errorResponse(res, 500, error.message);
   }
 };
+
+// module.exports.updateInventory = async (req, res) => {
+//   const { id } = req.params;
+//   const { name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details } = req.body;
+//   console.log('name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details ', name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details );
+//   try {
+//     const updatedInventory = await inventorySchema.findByIdAndUpdate(id, { name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details }, { new: true });
+//     return successResponse(res, 200, "success", { data: updatedInventory });
+//   } catch (error) {
+//     return errorResponse(res, 500, error.message);
+//   }
+// };
+
+module.exports.updateInventory = async (req, res) => {
+  const { id } = req.params;
+  const {
+    name,
+    item_code,
+    barcode,
+    category,
+    brand,
+    valuation,
+    stock,
+    stock_unit,
+    minimum_quantity,
+    image_url,
+    excludefromstock,
+    active,
+    unit_details
+  } = req.body;
+  console.log('id, name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details ', id, name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details );
+
+  try {
+    const updatedInventory = await inventorySchema.findByIdAndUpdate(
+      id,
+      {
+        name,
+        item_code,
+        barcode,
+        category,
+        brand,
+        valuation,
+        stock,
+        stock_unit,
+        minimum_quantity,
+        image_url,
+        excludefromstock,
+        active,
+        unit_details: unit_details || [] 
+      },
+      { new: true, runValidators: true }
+    );
+    console.log('updatedInventory', updatedInventory);
+
+    if (!updatedInventory) {
+      return errorResponse(res, 404, "Inventory item not found");
+    }
+
+    return successResponse(res, 200, "Inventory updated successfully", {
+      data: updatedInventory,
+    });
+  } catch (error) {
+    return errorResponse(res, 500, error.message);
+  }
+};
+
 
 // list all with filter
 module.exports.getAllInventory = async (req, res) => {
@@ -106,8 +171,20 @@ module.exports.getAllInventory = async (req, res) => {
           excludefromstock: 1,
           active: 1,
           unit_details: 1,
-          brand: "$brandDetails.name",
-          category: "$categoryDetails.name",
+          // brand: "$brandDetails.name",
+          // category: "$categoryDetails.name",
+          brand: {
+            id: "$brandDetails._id",
+            name: "$brandDetails.name",
+          },
+          category: {
+            id: "$categoryDetails._id",
+            name: "$categoryDetails.name",
+          },
+          valuation: 1,
+          stock: 1,
+          stock_unit: 1,
+          minimum_quantity: 1,
         },
       },
       {
@@ -194,3 +271,13 @@ module.exports.categoryCounter = async (req, res) => {
     return errorResponse(res, 500, error.message)
   }
 }
+
+
+module.exports.deleteInventory = async (req, res) => {
+  try {
+    await inventorySchema.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Inventory deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
