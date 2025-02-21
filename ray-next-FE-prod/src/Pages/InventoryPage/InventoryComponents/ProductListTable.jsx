@@ -117,7 +117,7 @@ const ProductListTable = ({ tabIndex }) => {
         return (
           <div className=" ">
             <p className="">{item?.catogery}</p>
-            <p className="text-xs opacity-50">{item?.unit} items</p>
+            <p className="text-xs opacity-50">{item?.stock} items</p>
           </div>
         );
       },
@@ -204,7 +204,8 @@ const ProductListTable = ({ tabIndex }) => {
   const inventoryData = inventory?.data?.data?.data?.map((e) => ({
     id: e?._id,
     "Product Code": e?.item_code,
-    Catogery: { catogery: e?.category, unit: e?.unit_details?.unit },
+    Catogery: { catogery: e?.category?.name, stock: e?.stock },
+    category_id: e?.category?.id,
     Item_code: e?.item_code,
     Bar_code: e?.barcode,
     Valuation: e?.valuation,
@@ -214,7 +215,8 @@ const ProductListTable = ({ tabIndex }) => {
     Image_url: e?.image_url,
     Excludefromstock: e?.excludefromstock,
     Active: e?.active,
-    Brand: e?.brand,
+    Brand: e?.brand?.name,
+    brand_id: e?.brand?.id,
     Name: e?.name,
     Stock: e?.stock,
     Status: e?.active,

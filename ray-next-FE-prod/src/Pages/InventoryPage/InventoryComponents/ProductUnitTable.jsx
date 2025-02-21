@@ -13,14 +13,14 @@ const ProductUnitTable = ({ data, setItem }) => {
   const { data: units } = useGetUnits({ pageNo: 1 });
   const unitOptions = units?.data?.map((unit) => ({ label: unit.name, value: unit._id })) || [];
   const editItem = (index) => {
-    const { unit, base_unit, n_unit, n_base_unit } = data[editIndex > data?.length - 1 ? data?.length - 1 : editIndex];
-    if (unit === "" || unit === undefined || base_unit === "" || base_unit === undefined || n_unit === "" || n_unit === undefined || n_base_unit === "" || n_base_unit === undefined) {
-      toast.error("Please fill all the fields");
-      return false;
-    }
-    else {
-      setEditIndex(index)
-    }
+    // const { unit, base_unit, n_unit, n_base_unit } = data[editIndex > data?.length - 1 ? data?.length - 1 : editIndex];
+    // if (unit === "" || unit === undefined || base_unit === "" || base_unit === undefined || n_unit === "" || n_unit === undefined || n_base_unit === "" || n_base_unit === undefined) {
+    //   toast.error("Please fill all the fields");
+    //   return false;
+    // }
+    // else {
+    //   setEditIndex(index)
+    // }
   }
 
   const addItem = () => {
