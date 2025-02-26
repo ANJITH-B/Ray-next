@@ -281,3 +281,145 @@ module.exports.deleteInventory = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+module.exports.getLowStock = async (req, res) => {
+  const search = req.query.search ? req.query.search : "";
+  const _id = req.decoded._id;
+  const perPageItems = req.query.perpageitems ? parseInt(req.query.perpageitems) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
+
+  try {
+    const skipCount = (page - 1) * perPageItems;
+    const pipeline = [
+      {
+        $match: {
+          user_id: new ObjectId(_id),
+          stock: { $lt: "$minimum_quantity" }, 
+          $or: [{ name: { $regex: search, $options: "i" } }],
+        },
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brandDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      {
+        $unwind: { path: "$brandDetails", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $unwind: { path: "$categoryDetails", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          item_code: 1,
+          stock: 1,
+          minimum_quantity: 1,
+          active: 1,
+          brand: { id: "$brandDetails._id", name: "$brandDetails.name" },
+          category: { id: "$categoryDetails._id", name: "$categoryDetails.name" },
+        },
+      },
+      {
+        $skip: skipCount,
+      },
+      {
+        $limit: perPageItems,
+      },
+    ];
+
+    const lowStockItems = await inventorySchema.aggregate(pipeline).exec();
+    const result = {
+      page: page,
+      perPageItems: perPageItems,
+      data: lowStockItems,
+    };
+
+    return successResponse(res, 200, "Low stock items retrieved successfully", result);
+  } catch (error) {
+    return errorResponse(res, 500, error.message);
+  }
+};
+
+module.exports.getNegativeStock = async (req, res) => {
+  const search = req.query.search ? req.query.search : "";
+  const _id = req.decoded._id;
+  const perPageItems = req.query.perpageitems ? parseInt(req.query.perpageitems) : 10;
+  const page = req.query.page ? parseInt(req.query.page) : 1;
+
+  try {
+    const skipCount = (page - 1) * perPageItems;
+    const pipeline = [
+      {
+        $match: {
+          user_id: new ObjectId(_id),
+          stock: { $lt: 0 },
+          $or: [{ name: { $regex: search, $options: "i" } }],
+        },
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brandDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      {
+        $unwind: { path: "$brandDetails", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $unwind: { path: "$categoryDetails", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          item_code: 1,
+          stock: 1,
+          minimum_quantity: 1,
+          active: 1,
+          brand: { id: "$brandDetails._id", name: "$brandDetails.name" },
+          category: { id: "$categoryDetails._id", name: "$categoryDetails.name" },
+        },
+      },
+      {
+        $skip: skipCount,
+      },
+      {
+        $limit: perPageItems,
+      },
+    ];
+
+    const negativeStockItems = await inventorySchema.aggregate(pipeline).exec();
+    const result = {
+      page: page,
+      perPageItems: perPageItems,
+      data: negativeStockItems,
+    };
+
+    return successResponse(res, 200, "Negative stock items retrieved successfully", result);
+  } catch (error) {
+    return errorResponse(res, 500, error.message);
+  }
+};

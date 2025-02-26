@@ -7,7 +7,8 @@ import Button from "../../CommonComponents/FormInputs/Button";
 import { Tabs } from "antd";
 import ProductListTable from "./InventoryComponents/ProductListTable";
 import AddInventoryModal from "../../CommonComponents/OtherComponent/AddInventoryModal";
-
+import LowStockProductListTable from "./InventoryComponents/LowStockProductListTable";
+import NegativeStockProductListTable from "./InventoryComponents/NagetiveStockProductListTable";  
 const InventoryPage = () => {
   const [open, setOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState("1");
@@ -23,12 +24,12 @@ const InventoryPage = () => {
     {
       key: "2",
       label: "Low stock",
-      children: <ProductListTable tabIndex={tabIndex} />,
+      children: <LowStockProductListTable tabIndex={tabIndex} />,
     },
     {
       key: "3",
       label: "Negative Stock",
-      children: <ProductListTable tabIndex={tabIndex} />,
+      children: <NegativeStockProductListTable tabIndex={tabIndex} />,
     },
   ];
   return (
