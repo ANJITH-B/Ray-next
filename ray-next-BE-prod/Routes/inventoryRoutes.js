@@ -9,6 +9,8 @@ const {
   categoryCounter,
   deleteInventory,
   updateInventory,
+  getLowStock, 
+  getNegativeStock
 } = require("../Controllers/inventoryController");
 const unitController = require("../Controllers/unitController");
 const categoryController = require("../Controllers/categoryController");
@@ -24,6 +26,8 @@ router.get("/v1/inventoryid", inventoryIdGenerator);
 router.get("/v1/inventory/category", categoryCounter);
 router.delete("/v1/inventory/:id", deleteInventory);
 router.put("/v1/inventory/:id", updateInventory);
+router.get("/v1/inventory/low-stock", getLowStock);
+router.get("/v1/inventory/negative-stock", getNegativeStock);
 
 router.post("/v1/inventory/unit", unitController.createUnit);
 router.get("/v1/inventory/unit", unitController.getUnits);

@@ -35,6 +35,26 @@ const getInventory = async (data) => {
   }
 };
 
+const getLowStock = async (data) => {
+  try {
+    const response = await axiosInstance.get(`inventory/low-stock?${data.search ? "search=" + data.search : ""}`);
+    console.log("response123", response);
+    return response;
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};
+
+
+const getNegativeStock = async (data) => {
+  try {
+    const response = await axiosInstance.get(`inventory/negative-stock?${data.search ? "search=" + data.search : ""}`);
+    return response;
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+
+};
 const deleteInventory = async (id) => {
   try {
     await axiosInstance.delete(`inventory/${id}`);
@@ -178,4 +198,4 @@ const deleteBrand = async (id) => {
 
 export { addInventory, getInventory, addUnits, getUnits, addCategory, getCategories, addBrand,
    getBrands, updateUnit, deleteUnit, updateBrand, deleteBrand, updateCategory, deleteCategory, 
-   deleteInventory, updateInventory };
+   deleteInventory, updateInventory, getLowStock, getNegativeStock };

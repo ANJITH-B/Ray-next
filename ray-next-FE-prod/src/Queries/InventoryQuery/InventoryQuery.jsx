@@ -6,6 +6,8 @@ import { addBrand, addCategory, addInventory, addUnits, getBrands, getCategories
   deleteCategory,
   deleteInventory,  
   updateInventory,
+  getLowStock,
+  getNegativeStock
  } from "./inventoryUrls";
 
 const useAddInventory = () => {
@@ -23,6 +25,20 @@ const useAddInventory = () => {
 };  
 const useGetInventory = (data) => {
   return useQuery(["get_inventory", data], () => getInventory(data), {
+    // staleTime: 30000,
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+  });
+};
+const useGetLowStock = (data) => {
+  return useQuery(["get_low_stock", data], () => getLowStock(data), {
+    // staleTime: 30000,
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+  });
+};
+const useGetNegativeStock = (data) => {
+  return useQuery(["get_negative_stock", data], () => getNegativeStock(data), {
     // staleTime: 30000,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
@@ -153,4 +169,4 @@ const useUpdateBrand = () => {
 
 export { useAddInventory, useGetInventory, useAddUnits, useGetUnits, useGetBrands, useAddBrand, useAddCategory,
    useGetCategories, useUpdateUnit, useDeleteUnit, useDeleteBrand, useUpdateBrand, useUpdateCategory, useDeleteCategory, 
-   useDeleteInventory, useUpdateInventory };
+   useDeleteInventory, useUpdateInventory, useGetLowStock, useGetNegativeStock };

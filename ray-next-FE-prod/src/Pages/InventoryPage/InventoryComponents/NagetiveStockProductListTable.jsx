@@ -4,7 +4,7 @@ import Pagination from "../../../CommonComponents/OtherComponent/Pagination";
 import { Dropdown } from "antd";
 import BorderdSelect from "../../../CommonComponents/FormInputs/BorderdSelect";
 import BorderdInput from "../../../CommonComponents/FormInputs/BorderdInput";
-import { useGetInventory, useDeleteInventory } from "../../../Queries/InventoryQuery/InventoryQuery";
+import { useGetNegativeStock, useDeleteInventory } from "../../../Queries/InventoryQuery/InventoryQuery";
 import AddInventoryModal from "../../../CommonComponents/OtherComponent/AddInventoryModal";
 import { toast } from "react-hot-toast";
 
@@ -73,12 +73,12 @@ const Filter = ({ setFilter, tabIndex }) => {
     </Dropdown>
   );
 };
-const ProductListTable = ({ tabIndex }) => {
+const NegativeStockProductListTable = ({ tabIndex }) => {
   const [filter, setFilter] = useState({
     pageNo: 1,
     pageCount: 10,
   });
-  const { data: inventory, isLoading } = useGetInventory(filter);
+  const { data: inventory, isLoading } = useGetNegativeStock(filter);
   const [open, setOpen] = useState(false);
    const [editData, setEditData] = useState(null);
    const { mutateAsync: deleteInventory } = useDeleteInventory();
@@ -318,4 +318,4 @@ const ProductListTable = ({ tabIndex }) => {
   );
 };
 
-export default ProductListTable;
+export default NegativeStockProductListTable;
