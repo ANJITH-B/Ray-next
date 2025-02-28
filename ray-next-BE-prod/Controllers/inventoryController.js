@@ -3,6 +3,7 @@ const errorResponse = require("../Utils/errorResponse");
 const successResponse = require("../Utils/successResponse");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
+const Notification = require("../Models/notificationModel");
 
 module.exports.createInventory = async (req, res) => {
   const _id = req.decoded._id;
@@ -41,6 +42,13 @@ module.exports.createInventory = async (req, res) => {
       ...(category && { category }),
       ...(brand && { brand })
     });
+
+    const notification = new Notification({
+      message: `New Inventory Added: ${newInventory.name}`,
+      type: "success",
+    });
+    await notification.save();
+    req.io.emit("receive_notification", notification);
 
     return successResponse(res, 201, "success", { data: newInventory });
   } catch (error) {
@@ -294,7 +302,7 @@ module.exports.getLowStock = async (req, res) => {
       {
         $match: {
           user_id: new ObjectId(_id),
-          stock: { $lt: "$minimum_quantity" }, 
+          $expr: { $gt: ["$minimum_quantity", "$stock"] },
           $or: [{ name: { $regex: search, $options: "i" } }],
         },
       },

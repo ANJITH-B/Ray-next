@@ -12,32 +12,67 @@ const ProductUnitTable = ({ data, setItem }) => {
   const [editIndex, setEditIndex] = useState(0);
   const { data: units } = useGetUnits({ pageNo: 1 });
   const unitOptions = units?.data?.map((unit) => ({ label: unit.name, value: unit._id })) || [];
-  const editItem = (index) => {
-    // const { unit, base_unit, n_unit, n_base_unit } = data[editIndex > data?.length - 1 ? data?.length - 1 : editIndex];
-    // if (unit === "" || unit === undefined || base_unit === "" || base_unit === undefined || n_unit === "" || n_unit === undefined || n_base_unit === "" || n_base_unit === undefined) {
-    //   toast.error("Please fill all the fields");
-    //   return false;
-    // }
-    // else {
-    //   setEditIndex(index)
-    // }
-  }
+  // const editItem = (index) => {
+  //   const { unit, base_unit, n_unit, n_base_unit } = data[editIndex > data?.length - 1 ? data?.length - 1 : editIndex];
+  //   if (unit === "" || unit === undefined || base_unit === "" || base_unit === undefined || n_unit === "" || n_unit === undefined || n_base_unit === "" || n_base_unit === undefined) {
+  //     toast.error("Please fill all the fields");
+  //     return false;
+  //   }
+  //   else {
+  //     setEditIndex(index)
+  //   }
+  // }
 
-  const addItem = () => {
-    if (!data?.length) {
-      setItem([{}]);
-      setEditIndex(0)
-      return
+  const editItem = (index) => {
+    // Ensure the index is valid
+    if (index < 0 || index >= data.length) {
+      toast.error("Invalid item index.");
+      return;
     }
-    const { unit, base_unit, n_unit, n_base_unit } = data[editIndex > data?.length - 1 ? data?.length - 1 : editIndex];
-    if (unit === "" || unit === undefined || base_unit === "" || base_unit === undefined || n_unit === "" || n_unit === undefined || n_base_unit === "" || n_base_unit === undefined) {
+
+    const { unit, base_unit, n_unit, n_base_unit } = data[index]; // Changing from editIndex to index
+
+    if (!unit || !base_unit || !n_unit || !n_base_unit) {
       toast.error("Please fill all the fields");
       return false;
+    } else {
+      setEditIndex(index);
     }
-    else {
-      setItem([...data, {}]);
-      setEditIndex(data.length);
+  };
+
+  // const addItem = () => {
+  //   if (!data?.length) {
+  //     setItem([{}]);
+  //     setEditIndex(0)
+  //     return
+  //   }
+  //   const { unit, base_unit, n_unit, n_base_unit } = data[editIndex > data?.length - 1 ? data?.length - 1 : editIndex];
+  //   if (unit === "" || unit === undefined || base_unit === "" || base_unit === undefined || n_unit === "" || n_unit === undefined || n_base_unit === "" || n_base_unit === undefined) {
+  //     toast.error("Please fill all the fields");
+  //     return false;
+  //   }
+  //   else {
+  //     setItem([...data, {}]);
+  //     setEditIndex(data.length);
+  //   }
+  // };
+console.log('editIndex1',editIndex);
+
+const addItem = () => {
+  if (editIndex) {
+      console.log('editIndex2',editIndex);
+
+      const { unit, base_unit, n_unit, n_base_unit } = data[editIndex] || {};
+      if (!unit || !base_unit || !n_unit || !n_base_unit) {
+        toast.error("Please fill all the fields");
+        return false;
+      }
     }
+
+
+
+    setItem([...data, {}]);
+    setEditIndex(data.length);
   };
 
   const updateData = (rowIndex, key, value) => {
@@ -230,7 +265,9 @@ const ProductUnitTable = ({ data, setItem }) => {
                       toast.error("Please fill all the fields");
                       return false;
                     } else {
-                      setEditIndex(null);
+                      // setEditIndex(null);
+                      setItem([...data, {}]);
+                      setEditIndex(data.length);
                     }
                   }}
                 >
@@ -249,11 +286,14 @@ const ProductUnitTable = ({ data, setItem }) => {
                 </button>
                 <button
                   onClick={() =>
+                  {
                     setItem(() =>
                       data?.filter((e, i) => {
                         return i !== index;
                       })
                     )
+                    setEditIndex(null)
+                  }
                   }
                 >
                   <img src={trash} className="min-w-[18px]" alt="trash" />
@@ -273,6 +313,7 @@ const ProductUnitTable = ({ data, setItem }) => {
         <button
           onClick={() => addItem()}
           className=" px-4 2xl:px-6 py-2 2xl:py-3 text-sm 2xl:text-base rounded-full border hover:bg-light-gray transition-all"
+          type="button"
         >
           Add Items
         </button>
