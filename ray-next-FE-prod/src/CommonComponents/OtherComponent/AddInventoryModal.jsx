@@ -34,6 +34,8 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
   useEffect(() => {
     if (editData) {
       setUnits(initialUnits);
+    }else{
+      setUnits([{}])
     }
   }, []);
 
@@ -203,7 +205,7 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
                     <BarcodeGenerator value={values.barcode} />
                   </div>
 
-                  <div className="mb-6 flex items-center gap-6">
+                  {editData ? <div className="mb-6 flex items-center gap-6">
                     <div className="flex-1">
                       <p className="text-sm mb-2">Catogery</p>
                       <BorderdSelect
@@ -226,7 +228,29 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
                         value={values.brand}
                       />
                     </div>
-                  </div>
+                  </div> :
+                  <div className="mb-6 flex items-center gap-6">
+                    <div className="flex-1">
+                      <p className="text-sm mb-2">Catogery</p>
+                      <BorderdSelect
+                        onChange={(e) => {
+                          setFieldValue("category", e);
+                        }}
+                        id="category"
+                        placeholder="Select"
+                        items={categoryData}
+                      />
+                    </div>
+                    <div className="flex-[.8]">
+                      <p className="text-sm mb-2">Brand</p>
+                      <BorderdSelect
+                        onChange={(e) => setFieldValue("brand", e)}
+                        id="brand"
+                        placeholder="Select"
+                        items={brandData}
+                      />
+                    </div>
+                  </div>}
                   <div className="flex items-center gap-6">
                     <div className="flex-[.4]">
                       <p className="text-sm mb-2">Valuation</p>
@@ -241,7 +265,8 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
                         ]}
                         disabled
                         defaultValue="FIFO"
-                        value={values.valuation}
+                        // value={values.valuation}
+                        value={'FIFO'}
                       />
                     </div>
                     <div className="flex-1">

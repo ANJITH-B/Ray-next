@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef,useState  } from "react";
 import menu from "../../Assets/CommonImages/menu.svg";
 import logo from "../../Assets/CommonImages/RayNext.svg";
 import avtar from "../../Assets/CommonImages/avtar.png";
@@ -12,11 +12,15 @@ import purchase from "../../Assets/HeaderIcons/purchase.svg";
 import reciept from "../../Assets/HeaderIcons/reciept.svg";
 import sale from "../../Assets/HeaderIcons/sale.svg";
 import report from "../../Assets/HeaderIcons/report.svg";
+import NotificationModal from "../../CommonComponents/OtherComponent/NotificationModal";
+import { useSocket } from "../../Context/SocketContext";
 
 import "../layoutStyle.scss";
 import DateSelect from "../../Pages/DashboardPage/DashboardComponents/DateSelect";
 const Header = () => {
   const navigate = useNavigate();
+  const { notifications } = useSocket() || {};
+  const [showNotifications, setShowNotifications] = useState(false);
   const items = [
     {
       label: (
@@ -166,7 +170,7 @@ const Header = () => {
         </div> :
         <DateSelect />
         }
-        <div className="flex items-center gap-3   bg-light-gray rounded-full overflow-hidden  w-[40px] h-[40px] 2xl:w-[56px] 2xl:h-[56px] py-2 px-3 2xl:px-4">
+        <div onClick={() => setShowNotifications(!showNotifications)} className="flex items-center gap-3   bg-light-gray rounded-full overflow-hidden  w-[40px] h-[40px] 2xl:w-[56px] 2xl:h-[56px] py-2 px-3 2xl:px-4">
           <svg
             width="24"
             height="24"
@@ -198,6 +202,9 @@ const Header = () => {
             />
           </svg>
         </div>
+        {notifications?.length > 0 && (
+          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{notifications.length}</span>
+        )}
         <div className="flex items-center gap-3 bg-light-gray rounded-full overflow-hidden w-[40px] h-[40px] 2xl:w-[56px] 2xl:h-[56px]  py-2 px-3 2xl:px-4">
           <svg
             width="24"
@@ -263,6 +270,7 @@ const Header = () => {
         </div>
       </div>
       </div>
+      {showNotifications && <NotificationModal isOpen={showNotifications} onClose={() => setShowNotifications(false)} />}
     </header>
   );
 };

@@ -30,13 +30,21 @@
 
 
 import { Table } from "antd";
-import React from "react";
+import React,{useState} from "react";
 import "./tableStyle.scss";
 import editsvg from "../../Assets/CommonImages/edit.svg";
 import trash from "../../Assets/CommonImages/trash.svg";
 import { Popconfirm } from "antd";
 
 const BordedTable = ({ columns, data, onEdit, onDelete, ...rest }) => {
+  const [isEditHover, setIsEditHover] = useState(false);
+  const okButtonStyle = {
+    backgroundColor: isEditHover ? 'white' : 'white',
+    color: isEditHover ? '#4a9ce8' : 'black',
+    border: `1px solid ${isEditHover ? '#4a9ce8' : 'transparent'}`,
+    transition: 'background-color 0.3s ease, color 0.3s ease, border 0.3s ease',
+  };
+
   const updatedColumns = [
     ...columns,
     {
@@ -50,6 +58,11 @@ const BordedTable = ({ columns, data, onEdit, onDelete, ...rest }) => {
             onConfirm={() => onEdit(record)}
             okText="Yes"
             cancelText="No"
+            okButtonProps={{
+              style: okButtonStyle,
+              onMouseEnter: () => setIsEditHover(true),
+              onMouseLeave: () => setIsEditHover(false),
+            }}
           >
             <img src={editsvg} alt="Edit" className="w-5 h-5" />
           </Popconfirm>
@@ -58,6 +71,11 @@ const BordedTable = ({ columns, data, onEdit, onDelete, ...rest }) => {
             onConfirm={() => onDelete(record)}
             okText="Yes"
             cancelText="No"
+            okButtonProps={{
+              style: okButtonStyle,
+              onMouseEnter: () => setIsEditHover(true),
+              onMouseLeave: () => setIsEditHover(false),
+            }}
           >
             <img src={trash} alt="Delete" className="w-5 h-5" />
           </Popconfirm>

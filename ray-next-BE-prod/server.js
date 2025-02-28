@@ -1,10 +1,14 @@
 const app  = require("./app.js");
 const http = require('http');
 const mongoose = require("mongoose")
+const socketIo = require("./socket");
 require('dotenv').config()
 
+const server = http.createServer(app);
+socketIo.initialize(server);
 
-async function server() {
+
+async function startServer() {
     try {
         console.log(process.env.PORT_LOCAL)     
         // const server = http.createServer(app);
@@ -28,4 +32,4 @@ mongoose.connection.on('connected', () => {
     }
 }
 
-server();
+startServer();
