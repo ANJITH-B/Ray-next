@@ -8,21 +8,21 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [notifications, setNotifications] = useState([]);
 
-  useEffect(() => {
-    const newSocket = io("http://localhost:5000");          
-    setSocket(newSocket);
+  // useEffect(() => {
+  //   const newSocket = io("http://localhost:5000");          
+  //   setSocket(newSocket);
 
-    axios.get("http://localhost:5000/api/v1/notifications")
-      .then((res) => setNotifications(res.data))
-      .catch((err) => console.error("Error fetching notifications:", err));
+  //   axios.get("http://localhost:5000/api/v1/notifications")
+  //     .then((res) => setNotifications(res.data))
+  //     .catch((err) => console.error("Error fetching notifications:", err));
 
-    newSocket.on("new_notification", (data) => {
-      setNotifications((prev) => [data, ...prev]);
-    });
+  //   newSocket.on("new_notification", (data) => {
+  //     setNotifications((prev) => [data, ...prev]);
+  //   });
 
-    return () => newSocket.close();
-  }, []);
-  console.log('socket',socket);
+  //   return () => newSocket.close();
+  // }, []);
+  // console.log('socket',socket);
 
   return (
     <SocketContext.Provider value={{ socket, notifications, setNotifications }}>

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SideBar from "../../InventoryComponents/SideBar";
 import { Link } from "react-router-dom";
 import printer from "../../../../Assets/CommonImages/printer.svg";
@@ -8,11 +8,16 @@ import Button from "../../../../CommonComponents/FormInputs/Button";
 import { Tabs } from "antd";
 import ProductListTable from "../../InventoryComponents/ProductListTable";
 import AddWarehouseModel from "../../../../CommonComponents/OtherComponent/AddWarehouseModel";
+import WarehouseSelect from "./WarehouseSelect";
+import { useGetWarehouses } from "../../../../Queries/WarehouseQuery/WarehouseQuery";
 
 const WarehousePage = () => {
   const [open, setOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState("1");
   const [active, setActive] = useState(true);
+
+  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const { data: warehouses, isLoading } = useGetWarehouses();
 
 
   const tabItems = [
@@ -27,6 +32,11 @@ const WarehousePage = () => {
       children: <ProductListTable tabIndex={tabIndex} />,
     },
   ];
+
+  const handleWarehouseSelect = (value) => {
+    setSelectedWarehouse(value);
+  };
+
   return (
     <div className="px-8 pt-8 max-w-[1512px]    m-auto ">
       <div>
@@ -42,16 +52,23 @@ const WarehousePage = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="rounded-full flex items-center justify-center min-w-[40px] 2xl:min-w-[56px] min-h-[40px] 2xl:min-h-[56px] bg-light-gray">
+            {/* <div className="rounded-full flex items-center justify-center min-w-[40px] 2xl:min-w-[56px] min-h-[40px] 2xl:min-h-[56px] bg-light-gray">
               <img src={printer} alt="printer" className=" w-5 2xl:w-8" />
-            </div>
-            <div>
+            </div> */}
+            {/* <div>
               <button className="rounded-full h-[40px] 2xl:h-[56px] flex items-center gap-2 justify-center py-4 px-8 bg-green">
                 <img src={excel} alt="excel" />
                 <div className="whitespace-nowrap 2xl:text-base text-sm text-white">
                   Export
                 </div>
               </button>
+            </div> */}
+            <div>
+              <WarehouseSelect
+                warehouses={warehouses}
+                onSelect={handleWarehouseSelect}
+                loading={isLoading}
+              />
             </div>
             <Button
               onClick={() => setOpen(tabIndex)}
@@ -60,6 +77,10 @@ const WarehousePage = () => {
             />
           </div>
         </div>
+
+
+
+
         <Tabs
           onChange={(e) => setTabIndex(e)}
           className="history-tab"

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../middlewares/multer");
 
 const authorization = require("../middlewares/authorization");
 const {
@@ -20,12 +21,14 @@ const stockSummaryController = require("../Controllers/stockSummaryController");
 
 
 router.use(authorization);
-router.post("/v1/inventory", createInventory);
+// router.post("/v1/inventory", createInventory);
+// router.put("/v1/inventory/:id", updateInventory);
+router.post("/v1/inventory", upload.single('image_url'), createInventory);
+router.put("/v1/inventory/:id", upload.single('image_url'), updateInventory);
 router.get("/v1/inventory", getAllInventory);
 router.get("/v1/inventoryid", inventoryIdGenerator);
 router.get("/v1/inventory/category", categoryCounter);
 router.delete("/v1/inventory/:id", deleteInventory);
-router.put("/v1/inventory/:id", updateInventory);
 router.get("/v1/inventory/low-stock", getLowStock);
 router.get("/v1/inventory/negative-stock", getNegativeStock);
 

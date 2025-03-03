@@ -34,10 +34,12 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
   useEffect(() => {
     if (editData) {
       setUnits(initialUnits);
-    }else{
+      setImgPreview(editData?.image_url || "");
+    } else {
       setUnits([{}])
+      setImgPreview("");
     }
-  }, []);
+  }, [editData]);
 
   const downloadBarcode = async () => {
     if (!barcodeRef.current) return;
@@ -75,59 +77,70 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
   const { mutateAsync: updateInventory, isLoading: updateLoading } = useUpdateInventory();
   const { data: category } = useGetCategories({ pageNo: 1 });
   const { data: brands } = useGetBrands({ pageNo: 1 });
+  // const handleSubmit = async (values, { resetForm }) => {
+  //   const data = {
+  //     name: values?.name,
+  //     item_code: values?.item_code,
+  //     barcode: values?.barcode,
+  //     category: values?.category,
+  //     brand: values?.brand,
+  //     valuation: values?.valuation,
+  //     image_url: imgPreview,
+  //     excludefromstock: values?.excludefromstock,
+  //     active: values?.active,
+  //     unit_details: units,
+  //     stock: values?.stock,
+  //     stock_unit: values?.stock_unit,
+  //     minimum_quantity: values?.minimum_quantity,
+
+  //   };
+  //   try {
+  //     if (editData) {
+  //       await updateInventory({ id: editData.id, data });
+  //       toast.success("Inventory updated");
+  //       setOpen(false);
+  //       resetForm();
+  //     } else {
+  //       await addInventory(data)
+  //         .then((res) => {
+  //           if (res?.status === 500) {
+  //             toast.error("Something went wrong");
+  //           } else {
+  //             toast.success("Inventory added");
+  //             setOpen(false);
+  //             resetForm();
+  //           }
+  //         })
+  //         .catch((err) => {
+  //           toast.error("Something went wrong");
+  //         });
+  //     }
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+  //   }
+  // };
   const handleSubmit = async (values, { resetForm }) => {
-    const data = {
-      name: values?.name,
-      item_code: values?.item_code,
-      barcode: values?.barcode,
-      category: values?.category,
-      brand: values?.brand,
-      valuation: values?.valuation,
-      // country_of_origin: values?.country_of_origin,
-      // purchase_rate: values?.purchase_rate,
-      // margin_percent: values?.margin_percent,
-      // description: values?.description,
-      image_url: imgPreview,
-      excludefromstock: values?.excludefromstock,
-      active: values?.active,
-      unit_details: units,
-      stock: values?.stock,
-      stock_unit: values?.stock_unit,
-      minimum_quantity: values?.minimum_quantity,
-      // unit_details: {
-      //   unit: values?.unit,
-      //   base_unit: values?.base_unit,
-      //   n_unit: values?.n_unit,
-      //   n_base: values?.n_base,
-      //   bar_code: values?.bar_code,
-      //   opening_quantity: values?.opening_quantity,
-      //   rate: values?.rate,
-      //   balance: values?.balance,
-      //   sale_rate: values?.sales,
-      // },
-    };
+    const formData = new FormData();
+    console.log("values1", values);
+    console.log('imgPreview:', imgPreview);
+    console.log('Image URL:', process.env.REACT_APP_IMAGE_URL + values.image_url);
+
+
+    Object.keys(values).forEach(key => {
+      formData.append(key, values[key]);
+    });
+    formData.append("unit_details", JSON.stringify(units));
+
     try {
-      console.log('data32', data);
       if (editData) {
-        await updateInventory({ id: editData.id, data });
+        await updateInventory({ id: editData.id, data: formData });
         toast.success("Inventory updated");
-        setOpen(false);
-        resetForm();
       } else {
-        await addInventory(data)
-          .then((res) => {
-            if (res?.status === 500) {
-              toast.error("Something went wrong");
-            } else {
-              toast.success("Inventory added");
-              setOpen(false);
-              resetForm();
-            }
-          })
-          .catch((err) => {
-            toast.error("Something went wrong");
-          });
+        await addInventory(formData);
+        toast.success("Inventory added");
       }
+      setOpen(false);
+      resetForm();
     } catch (error) {
       toast.error("Something went wrong");
     }
@@ -146,6 +159,10 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
     };
   });
 
+
+
+
+
   return (
     <ModalLayout
       width={1200}
@@ -163,6 +180,7 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
         }}
       >
         {({ errors, setFieldValue, values }) => (
+
           <Form>
             <div className=" flex flex-col pb-8">
               <div className=" flex gap-8">
@@ -229,28 +247,28 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
                       />
                     </div>
                   </div> :
-                  <div className="mb-6 flex items-center gap-6">
-                    <div className="flex-1">
-                      <p className="text-sm mb-2">Catogery</p>
-                      <BorderdSelect
-                        onChange={(e) => {
-                          setFieldValue("category", e);
-                        }}
-                        id="category"
-                        placeholder="Select"
-                        items={categoryData}
-                      />
-                    </div>
-                    <div className="flex-[.8]">
-                      <p className="text-sm mb-2">Brand</p>
-                      <BorderdSelect
-                        onChange={(e) => setFieldValue("brand", e)}
-                        id="brand"
-                        placeholder="Select"
-                        items={brandData}
-                      />
-                    </div>
-                  </div>}
+                    <div className="mb-6 flex items-center gap-6">
+                      <div className="flex-1">
+                        <p className="text-sm mb-2">Catogery</p>
+                        <BorderdSelect
+                          onChange={(e) => {
+                            setFieldValue("category", e);
+                          }}
+                          id="category"
+                          placeholder="Select"
+                          items={categoryData}
+                        />
+                      </div>
+                      <div className="flex-[.8]">
+                        <p className="text-sm mb-2">Brand</p>
+                        <BorderdSelect
+                          onChange={(e) => setFieldValue("brand", e)}
+                          id="brand"
+                          placeholder="Select"
+                          items={brandData}
+                        />
+                      </div>
+                    </div>}
                   <div className="flex items-center gap-6">
                     <div className="flex-[.4]">
                       <p className="text-sm mb-2">Valuation</p>
@@ -308,7 +326,7 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
                     </div>
                   </div>
                 </div>
-                <div className="flex-1">
+                {/* <div className="flex-1">
                   <div className="h-full">
                     <p className="mb-4 font-medium text-xl">Product Image</p>
                     <div className="w-full overflow-hidden h-4/5 border-2 border-dashed rounded-xl border-border-gray flex items-center justify-center">
@@ -325,9 +343,6 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
                         htmlFor="product-image"
                       >
                         <div>
-                          {/* {imgPreview ? (
-                              <img src={imgPreview} alt="image" />
-                            ) : ( */}
                           {imgPreview || values.image_url ? (
                             <img src={imgPreview || values.image_url} alt="image" className="h-40 w-40 object-cover" />
                           ) : (
@@ -366,7 +381,114 @@ const AddInventoryModal = ({ setOpen, open, editData }) => {
                       </label>
                     </div>
                   </div>
+                </div> */}
+
+                <div className="flex-1">
+                  <div className="h-full">
+                    <p className="mb-4 font-medium text-xl">Product Image</p>
+                    {/* <div className="w-full h-40 border-2 border-dashed rounded-xl border-border-gray flex items-center justify-center"> */}
+                    <div className="w-full overflow-hidden h-4/5 border-2 border-dashed rounded-xl border-border-gray flex items-center justify-center">
+
+                      <input
+                        type="file"
+                        onChange={(e) => {
+                          setImgPreview(URL.createObjectURL(e.target.files[0]));
+                          setFieldValue("image_url", e.currentTarget.files[0]);
+                        }}
+                        hidden
+                        id="product-image"
+                      />
+                      {/* <label
+                        htmlFor="product-image"
+                        className="flex flex-col items-center cursor-pointer w-full h-full justify-center"
+                      >
+                        {imgPreview || values.image_url ? (
+                          <img src={imgPreview || (process.env.REACT_APP_IMAGE_URL + values.image_url)} alt="image" className="h-40 w-40 object-cover" />
+                        )
+                          : (
+                            <svg
+                              width="56"
+                              height="56"
+                              viewBox="0 0 56 56"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M20.9994 51.3346H34.9994C46.666 51.3346 51.3327 46.668 51.3327 35.0013V21.0013C51.3327 9.33464 46.666 4.66797 34.9994 4.66797H20.9994C9.33268 4.66797 4.66602 9.33464 4.66602 21.0013V35.0013C4.66602 46.668 9.33268 51.3346 20.9994 51.3346Z"
+                                stroke="#CDCDCD"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              <path
+                                d="M21.0007 23.3333C23.578 23.3333 25.6673 21.244 25.6673 18.6667C25.6673 16.0893 23.578 14 21.0007 14C18.4233 14 16.334 16.0893 16.334 18.6667C16.334 21.244 18.4233 23.3333 21.0007 23.3333Z"
+                                stroke="#CDCDCD"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              <path
+                                d="M6.23047 44.2186L17.7338 36.4953C19.5771 35.2586 22.2371 35.3986 23.8938 36.8219L24.6638 37.4986C26.4838 39.0619 29.4238 39.0619 31.2438 37.4986L40.9505 29.1686C42.7705 27.6053 45.7105 27.6053 47.5305 29.1686L51.3338 32.4353"
+                                stroke="#CDCDCD"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          )}
+                        <p className="font-semibold text-gray">Add Image</p>
+                      </label> */}
+
+                      <label
+                        htmlFor="product-image"
+                        className="flex flex-col items-center cursor-pointer w-full h-full justify-center"
+                      >
+                        {imgPreview ? (
+                          <img src={imgPreview} alt="Preview" className="h-40 w-40 object-cover" />
+                        ) : values.image_url ? (
+                          <img
+                            src={`${process.env.REACT_APP_IMAGE_URL}${values.image_url}`}
+                            alt="Stored"
+                            className="h-40 w-40 object-cover"
+                          />
+                        ) : (
+                          <svg
+                            width="56"
+                            height="56"
+                            viewBox="0 0 56 56"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M20.9994 51.3346H34.9994C46.666 51.3346 51.3327 46.668 51.3327 35.0013V21.0013C51.3327 9.33464 46.666 4.66797 34.9994 4.66797H20.9994C9.33268 4.66797 4.66602 9.33464 4.66602 21.0013V35.0013C4.66602 46.668 9.33268 51.3346 20.9994 51.3346Z"
+                              stroke="#CDCDCD"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M21.0007 23.3333C23.578 23.3333 25.6673 21.244 25.6673 18.6667C25.6673 16.0893 23.578 14 21.0007 14C18.4233 14 16.334 16.0893 16.334 18.6667C16.334 21.244 18.4233 23.3333 21.0007 23.3333Z"
+                              stroke="#CDCDCD"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M6.23047 44.2186L17.7338 36.4953C19.5771 35.2586 22.2371 35.3986 23.8938 36.8219L24.6638 37.4986C26.4838 39.0619 29.4238 39.0619 31.2438 37.4986L40.9505 29.1686C42.7705 27.6053 45.7105 27.6053 47.5305 29.1686L51.3338 32.4353"
+                              stroke="#CDCDCD"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                        <p className="font-semibold text-gray">Add Image</p>
+                      </label>
+                    </div>
+                  </div>
                 </div>
+
+
               </div>
               <ProductUnitTable data={units} setItem={setUnits} />
             </div>
