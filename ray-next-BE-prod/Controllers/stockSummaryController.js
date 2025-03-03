@@ -3,6 +3,11 @@ const StockSummary = require("../Models/inventory/stockSummaryModel");
 
 exports.createStockSummary = async (req, res) => {
   try {
+    const existingWarehouse = await Warehouse.findOne({ warehouseCode: req.body.warehouseCode });
+    
+    if (existingWarehouse) {
+      return res.status(400).json({ message: "Warehouse code already exists. Please use a different code." });
+    }
     const stock = new StockSummary(req.body);
     await stock.save();
     res.status(201).json(stock);
