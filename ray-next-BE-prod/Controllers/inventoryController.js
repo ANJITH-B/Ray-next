@@ -6,6 +6,8 @@ const ObjectId = mongoose.Types.ObjectId;
 const Notification = require("../Models/notificationModel");
 
 module.exports.createInventory = async (req, res) => {
+  console.log('createInventory start');
+  
   const _id = req.decoded._id;
   const {
     name,
@@ -17,12 +19,29 @@ module.exports.createInventory = async (req, res) => {
     stock,
     stock_unit,
     minimum_quantity,
-    image_url,
+    // image_url,
     excludefromstock,
     active,
     unit_details,
   } = req.body;
-  console.log('unit_details', unit_details);
+  const imageUrl = req.file ? req.file.filename : null;
+  // console.log('unit_details', unit_details);
+  console.log(
+    "create details",_id,name,
+    item_code,
+    barcode,
+    category,
+    brand,
+    valuation,
+    stock,
+    stock_unit,
+    minimum_quantity,
+    excludefromstock,
+    active,
+    unit_details,
+    imageUrl
+  );
+  
   
 
   try {
@@ -35,19 +54,22 @@ module.exports.createInventory = async (req, res) => {
       stock_unit,
       minimum_quantity,
       valuation,
-      image_url,
+      // image_url,
+      image_url: imageUrl,
       excludefromstock,
       active,
-      unit_details,
+      unit_details: JSON.parse(unit_details) || [],
       ...(category && { category }),
       ...(brand && { brand })
     });
 
+    console.log('newInventory',newInventory);
     const notification = new Notification({
       message: `New Inventory Added: ${newInventory.name}`,
       type: "success",
     });
     await notification.save();
+    
     req.io.emit("receive_notification", notification);
 
     return successResponse(res, 201, "success", { data: newInventory });
@@ -56,19 +78,9 @@ module.exports.createInventory = async (req, res) => {
   }
 };
 
-// module.exports.updateInventory = async (req, res) => {
-//   const { id } = req.params;
-//   const { name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details } = req.body;
-//   console.log('name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details ', name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details );
-//   try {
-//     const updatedInventory = await inventorySchema.findByIdAndUpdate(id, { name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details }, { new: true });
-//     return successResponse(res, 200, "success", { data: updatedInventory });
-//   } catch (error) {
-//     return errorResponse(res, 500, error.message);
-//   }
-// };
-
 module.exports.updateInventory = async (req, res) => {
+  console.log("updateInventory start");
+  
   const { id } = req.params;
   const {
     name,
@@ -85,8 +97,21 @@ module.exports.updateInventory = async (req, res) => {
     active,
     unit_details
   } = req.body;
-  console.log('id, name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details ', id, name, item_code, barcode, category, brand, valuation, stock, stock_unit, minimum_quantity, image_url, excludefromstock, active, unit_details );
+  const imageUrl = req.file ? req.file.filename : (image_url? image_url:null);
 
+  console.log('update data',id,name,
+    item_code,
+    barcode,
+    category,
+    brand,
+    valuation,
+    stock,
+    stock_unit,
+    minimum_quantity,
+    excludefromstock,
+    active,
+    unit_details,imageUrl);
+  
   try {
     const updatedInventory = await inventorySchema.findByIdAndUpdate(
       id,
@@ -100,10 +125,10 @@ module.exports.updateInventory = async (req, res) => {
         stock,
         stock_unit,
         minimum_quantity,
-        image_url,
+        image_url: imageUrl || null,
         excludefromstock,
         active,
-        unit_details: unit_details || [] 
+        unit_details: JSON.parse(unit_details) || [] 
       },
       { new: true, runValidators: true }
     );

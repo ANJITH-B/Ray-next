@@ -4,6 +4,11 @@ const Warehouse = require("../Models/inventory/warehouseModel");
 exports.createWarehouse = async (req, res) => {
   try {
     console.log('req.body', req.body);
+    const existingWarehouse = await Warehouse.findOne({ warehouseCode: req.body.warehouseCode });
+    
+    if (existingWarehouse) {
+      return res.status(400).json({ message: "Warehouse code already exists. Please use a different code." });
+    }
     const warehouse = new Warehouse(req.body);
     await warehouse.save();
     res.status(201).json(warehouse);

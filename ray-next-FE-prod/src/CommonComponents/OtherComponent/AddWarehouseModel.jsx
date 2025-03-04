@@ -31,7 +31,11 @@ const AddWarehouseModel = ({ setOpen, open }) => {
       toast.success("Warehouse added successfully");
       setOpen(false);
     } catch (error) {
-      toast.error("Something went wrong");
+      // toast.error("Something went wrong");
+      console.log('error.response?.data?.message',error);
+      
+      const errorMessage = error.message || "Something went wrong";
+      toast.error(errorMessage);
     }
   };
 
