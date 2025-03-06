@@ -4,7 +4,8 @@ import "./formInputStyle.scss";
 import dayjs from "dayjs";
 
 export const BordedDateRangePicker = ({ onChange, ...rest }) => {
-  const accstartdate = JSON.parse(localStorage.getItem("accstartdate"));
+  const accstartdate =
+    JSON.parse(localStorage.getItem("accstartdate")) ?? dayjs();
   const date = JSON.parse(localStorage.getItem("peroid_date")) ?? [
     accstartdate,
     dayjs().toISOString(),
