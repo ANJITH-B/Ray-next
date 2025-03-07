@@ -12,6 +12,8 @@ const LogBookTable = ({ filter, setFilter }) => {
   const [selectedDescription, setSelectedDescription] = useState([]);
 
   const showDescription = (desc) => {
+    console.log('desc',desc);
+    
     setSelectedDescription(desc);
     setIsModalVisible(true);
   };
@@ -103,6 +105,33 @@ const LogBookTable = ({ filter, setFilter }) => {
       </div>
 
       <Modal
+  title="Log Description"
+  open={isModalVisible}
+  onCancel={() => setIsModalVisible(false)}
+  footer={[
+    <Button key="close" onClick={() => setIsModalVisible(false)}>
+      Close
+    </Button>,
+  ]}
+>
+  <ul className="list-disc pl-4">
+    {selectedDescription.map((item, index) => (
+      <li key={index}>
+        <strong>{item?.field}: </strong> 
+        {typeof item?.oldValue === "object" && item?.oldValue !== null
+          ? JSON.stringify(item?.oldValue, null, 2)
+          : item?.oldValue} 
+        ➝ 
+        {typeof item?.newValue === "object" && item?.newValue !== null
+          ? JSON.stringify(item?.newValue, null, 2)
+          : item?.newValue}
+      </li>
+    ))}
+  </ul>
+</Modal>
+
+
+      {/* <Modal
         title="Log Description"
         open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
@@ -115,11 +144,11 @@ const LogBookTable = ({ filter, setFilter }) => {
         <ul className="list-disc pl-4">
           {selectedDescription.map((item, index) => (
             <li key={index}>
-              <strong>{item.field}: </strong> {item.oldValue} ➝ {item.newValue}
+              <strong>{item?.field}: </strong> {item?.oldValue} ➝ {item?.newValue}
             </li>
           ))}
         </ul>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };

@@ -20,6 +20,8 @@ const {
   regularAccountSchema,
 } = require("../Models/accounts/chartRegularAccountModel");
 const accountBookTransaction = require("../Utils/accountBookTransaction");
+const createSystemLog = require("../Utils/createSystemLog");
+
 const ObjectId = mongoose.Types.ObjectId;
 // # invoice
 
@@ -116,6 +118,13 @@ module.exports.createSalesInvoice = async (req, res) => {
       // console.log("Items added successfully:", insertedItems);
 
       // console.log(newInvoice + "jjjjjjjj")
+      const logFields = Object.keys(req.body).map((field) => ({
+        field,
+        oldValue: null,
+        newValue: req.body[field],
+      }));
+  
+      await createSystemLog(req.decoded._id, "CREATE", "SALES", logFields);
 
       return successResponse(res, 201, "invoice created succesfully");
     } else {
@@ -213,6 +222,14 @@ module.exports.createSalesInvoice = async (req, res) => {
         gross_total,
         0
       );
+
+      const logFields = Object.keys(req.body).map((field) => ({
+        field,
+        oldValue: null,
+        newValue: req.body[field],
+      }));
+
+      await createSystemLog(req.decoded._id, "CREATE", "SALES", logFields);
 
       return successResponse(res, 201, "invoice created succesfully");
     }
@@ -365,6 +382,14 @@ module.exports.createCustomer = async (req, res) => {
       reference_details,
       user_id: _id,
     });
+
+    const logFields = Object.keys(req.body).map((field) => ({
+      field,
+      oldValue: null,
+      newValue: req.body[field],
+    }));
+
+    await createSystemLog(req.decoded._id, "CREATE", "SALES", logFields);
 
     return successResponse(res, 201, "scustomer added successfully");
   } catch (error) {
