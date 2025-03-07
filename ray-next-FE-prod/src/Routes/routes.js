@@ -5,6 +5,7 @@ import AccCustomerPage from "../Pages/AccountPage/AccountSubPage/CustomerPage/Cu
 import Dashboard from "../Pages/DashboardPage/Dashboard";
 import HomePage from "../Pages/HomePage/HomePage";
 import InventoryPage from "../Pages/InventoryPage/InventoryPage";
+import LogBook from "../Pages/LogBook/LogBook";
 import TemplateEditor from "../Pages/InvoiceGenerator/TemplateEditor";
 import LoginPage from "../Pages/LoginPage/LoginPage";
 import PurchasePage from "../Pages/PurchasePage/PurchasePage";
@@ -235,6 +236,13 @@ export const routes = [
   {
     path: "/reports",
     component: InventoryPage,
+    IsPrivet: true,
+    isSubRoute: true,
+    
+  },
+  {
+    path: "/logbook",
+    component: LogBook,
     IsPrivet: true,
     isSubRoute: true,
     
