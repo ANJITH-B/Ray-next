@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import BordedTable from "../../../../CommonComponents/Tables/BorderdTabel";
+import BorderTableLessEditoption from "../../../../CommonComponents/Tables/BorderTableLessEditoption";
 import avrt from "../../../../Assets/CommonImages/avtr.png";
 import { useGetInvoice } from "../../../../Queries/SalesQuery/SalesQuery";
 import Pagination from "../../../../CommonComponents/OtherComponent/Pagination";
@@ -135,7 +135,7 @@ const HistoryInvoiceTable = ({ tabIndex }) => {
 
   return (
     <div>
-      <BordedTable
+      <BorderTableLessEditoption
         loading={isLoading}
         columns={InvoiceColumns}
         data={invoiceData}
