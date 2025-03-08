@@ -134,7 +134,7 @@ const Dashboard = () => {
                 },
                 {
                   content: "Cost allocation",
-                  path:'#'
+                  path: "#",
                 },
                 {
                   content: "History",
@@ -179,11 +179,15 @@ const Dashboard = () => {
             />
             <MenuCard
               color={"bg-reciept-color"}
-              head={"Reciept"}
+              head={"Receipt"}
               image={reciept}
               subHead={"reciept generated"}
               value={"133"}
               links={[
+                {
+                  path: "/receipt",
+                  content: "Voucher Receipt",
+                },
                 {
                   path: "#",
                   content: "From customer",

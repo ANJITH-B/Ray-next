@@ -20,7 +20,7 @@ const AllHeadSection = ({ name, head, formik, id, isActive, toggleIsActive }) =>
     <div className="mb-8">
       <div className="flex items-baseline justify-between">
         <div className="flex items-baseline gap-2 ">
-          <p className="  text-xl 2xl:text-2xl text-dark-color font-semibold mr-3">{head}</p>
+          <div className="text-xl 2xl:text-2xl text-dark-color font-semibold mr-3">{head}</div>
           <div
             className={`${active.id ? "border-b-[1px] " : "border-none"
               } transition-all border-blue border-opacity-25 flex gap-3`}
@@ -38,7 +38,7 @@ const AllHeadSection = ({ name, head, formik, id, isActive, toggleIsActive }) =>
 
             <button
               onClick={() => setActive((pre) => ({ ...pre, id: !active.id }))}
-              className={` p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-all`}
+              className={` p-2 h-fit rounded-full hover:bg-slate-100 active:bg-slate-200 transition-all`}
               disabled
             >
               <svg

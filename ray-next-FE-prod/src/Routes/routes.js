@@ -31,6 +31,8 @@ import ItemArchive from "../Pages/InventoryPage/InventorySubPages/ItemArchivePag
 import WarehousePage from "../Pages/InventoryPage/InventorySubPages/WarehousePage/WarehousePage";
 import StockSummary from "../Pages/InventoryPage/InventorySubPages/StockSummaryPage/StockSummary";
 import MoveInventory from "../Pages/InventoryPage/InventorySubPages/MoveInventoryPage/MoveInventory";
+import ReceiptEntry from "../Pages/ReceiptPage/ReceiptSubPages/ReceiptVoucherPage/ReceiptEntry"
+
 export const routes = [
   {
     path: "login",
@@ -110,70 +112,66 @@ export const routes = [
     component: SalesPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/purchase",
     component: PurchasePage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/purchase/history",
     component: PurchaseHistory,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/purchase/supplier",
     component: SupplierPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/purchase/bill",
     component: PurchaseBillPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/purchase/return",
     component: PurchaseReturnPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/purchase/LPO",
     component: LPOPage,
     IsPrivet: true,
     isSubRoute: true,
-    
+  },
+  {
+    path: "/receipt",
+    component: ReceiptEntry,
+    IsPrivet: true,
+    isSubRoute: true,
   },
   {
     path: "/account",
     component: AccountPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/account/customer",
     component: AccCustomerPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/account/chart-of-account",
     component: ChartOfAccPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
 
   {
@@ -181,7 +179,6 @@ export const routes = [
     component: AccountBookPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
 
   {
@@ -189,62 +186,53 @@ export const routes = [
     component: InventoryPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/inventory/item-archive",
     component: ItemArchive,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/inventory/warehouse",
     component: WarehousePage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/inventory/move-inventory",
     component: MoveInventory,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/inventory/stock-summary",
     component: StockSummary,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/reports",
     component: InventoryPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/reports/financial-reports",
     component: FinancialReportPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/reports",
     component: InventoryPage,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
   {
     path: "/logbook",
     component: LogBook,
     IsPrivet: true,
     isSubRoute: true,
-    
   },
 ];
