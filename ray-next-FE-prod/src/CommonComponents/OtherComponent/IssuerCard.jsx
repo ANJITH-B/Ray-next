@@ -31,14 +31,31 @@ const CustomerCard = ({ item, formik, setCustomer }) => {
 const CustomDropdown = ({ formik, setCustomer }) => {
   const [customerOpen, setCustomerOpen] = useState(false);
   const { data } = useGetCustomer({ pageNo: 1 });
+   const [search, setSearch] = useState("");
+
+   const handleSearchChange = (event) => {
+    setSearch(event.target.value);
+  };
+
+  const filteredCustomers = data?.data?.data?.data?.filter((customer) => {
+    const name = customer.name || ""; 
+    const code = customer.warehouseCode || ""; 
+    return (
+      name.toLowerCase().includes(search.toLowerCase()) || 
+      code.toLowerCase().includes(search.toLowerCase())
+    );
+  });
 
   return (
     <div className="w-full max-h-[500px] relative flex flex-col justify-between bg-white rounded-[30px] shadow-lg mt-3 overflow-hidden">
       <div className="p-5 border-b-[1px] border-border-gray">
         <div className="bg-light-gray px-5 py-3 rounded-full flex items-center gap-3">
+         
           <input
             type="text"
             placeholder="Search"
+            value={search} 
+            onChange={handleSearchChange} 
             className="bg-transparent w-full placeholder:text-lg"
           />
           <svg
@@ -59,7 +76,7 @@ const CustomDropdown = ({ formik, setCustomer }) => {
         </div>
       </div>
       <div className="gap-3  overflow-auto flex flex-col dropdown-scroll">
-        {data?.data?.data?.data?.map((e) => {
+        {filteredCustomers?.map((e) => {
           return (
             <CustomerCard
               setCustomer={setCustomer}

@@ -10,6 +10,8 @@ const { salesreturnItemsSchema } = require("../Models/sales/salesReturnItems");
 const { salesQuotationSchema } = require("../Models/sales/salesQuot");
 const { salesOrderSchema } = require("../Models/sales/salesOrder");
 const { customerSchema } = require("../Models/sales/salesCustomer");
+const Receipt = require("../Models/receipt/voucherReceipt");
+
 const { DateAdderFunction } = require("../Utils/helperFunctions");
 const mongoose = require("mongoose");
 const { journalSchema } = require("../Models/accounts/journalModel");
@@ -56,8 +58,7 @@ module.exports.createSalesInvoice = async (req, res) => {
       //check if credit limit dont exceed invoice net amount
 
       const customerDetails = await customerSchema.findById(customer_id);
-
-      if (gross_total > customerDetails.credit_limit_amount) {
+      if (parseFloat(gross_total) > parseFloat(customerDetails.credit_limit_amount)) {
         return errorResponse(res, 401, "credit limit exceeded");
       }
 
@@ -105,6 +106,7 @@ module.exports.createSalesInvoice = async (req, res) => {
         net_amount,
         payment_status: false,
       });
+
 
       const modifiedItems = await sales_invoice_items.map((item) => ({
         ...item,
@@ -463,6 +465,22 @@ module.exports.getAllSalesInvoice = async (req, res) => {
   }
 };
 
+
+exports.getCustomerInvoices = async (req, res) => {
+  try {
+    const { customerId } = req.query;
+    if (!customerId) {
+      return res.status(400).json({ message: "Customer ID is required" }); 
+    }
+
+    const invoices = await salesInvoiceSchema.find({ customer_id: customerId,payment_type: "CREDIT"  }).sort({createdAt: -1});
+    // console.log('invoices',invoices);
+
+    res.status(200).json({ data: invoices });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching invoices", error });
+  }
+};
 // get single invoice
 
 module.exports.getInvoiceDetails = async (req, res) => {
@@ -902,14 +920,22 @@ module.exports.salesIDgenerator = async (req, res) => {
       return successResponse(res, 200, "success", {
         invoice_id: `INV${invoiceNumber}`,
       });
-    } else if (moduleName == "return") {
+    } else if (moduleName == "receipts") {
+      const allReturns = await Receipt.find({ user_id: _id });
+      const returnnumber = allReturns.length + 1;
+
+      return successResponse(res, 200, "success", {
+        receipt_id: `REC${returnnumber}`,
+      });
+    }else if (moduleName == "return") {
       const allReturns = await salesReturnSchema.find({ user_id: _id });
       const returnnumber = allReturns.length + 1;
 
       return successResponse(res, 200, "success", {
         return_id: `RET${returnnumber}`,
       });
-    } else if (moduleName == "quotation") {
+    }
+     else if (moduleName == "quotation") {
       const allInvoices = await salesQuotationSchema.find({ user_id: _id });
       const invoiceNumber = allInvoices.length + 1;
 

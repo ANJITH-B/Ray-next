@@ -197,6 +197,19 @@ const getOrders = async () => {
   }
 };
 
+
+
+const getCustomerInvoice = async (customerId) => {
+  try {
+    const response = await axiosInstance.get(
+      `sales/customer-invoices?customerId=${customerId}`
+    );
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export {
   getOrders,
   getSingleSalesRetuen,
@@ -211,4 +224,5 @@ export {
   getSalesReturn,
   addInvoice,
   getInvoice,
+  getCustomerInvoice
 };

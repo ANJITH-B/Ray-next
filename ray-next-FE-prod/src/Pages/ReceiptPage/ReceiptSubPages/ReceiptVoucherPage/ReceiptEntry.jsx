@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import AllHeadSection from "../../../../CommonComponents/OtherComponent/AllHeadSection";
 import IssueCard from "../../../../CommonComponents/OtherComponent/IssueCard";
 import IssuerCard from "../../../../CommonComponents/OtherComponent/IssuerCard";
@@ -8,177 +8,116 @@ import BorderlessSelect from "../../../../CommonComponents/FormInputs/Borderless
 import BorderLessInput from "../../../../CommonComponents/FormInputs/BorderLessInput";
 
 import printer from "../../../../Assets/CommonImages/printer.svg";
-import BorderdInput from "../../../../CommonComponents/FormInputs/BorderdInput";
 import * as Yup from "yup";
-
-import AdditionalDetialsModal from "../../../../CommonComponents/OtherComponent/AdditionalDetialsModal";
-import OtherChargesModal from "../../../../CommonComponents/OtherComponent/OtherChargesModal";
-import SettilemantModal from "../../../../CommonComponents/OtherComponent/SettilemantModal";
-import { useAddInvoice } from "../../../../Queries/SalesQuery/SalesQuery";
+import { useAddReceipt } from "../../../../Queries/ReceiptQuery/ReceiptQuery";
 import LoadingSpinner from "../../../../CommonComponents/UtilComponent/LoadingSpinner";
 import { toast } from "react-hot-toast";
 import { onlyNumbers } from "../../../../Utilities/inputRestrictions";
 import { useFormik } from "formik";
 import InvoiceTable from "./InvoiceTable";
 import { useGetID } from "../../../../Queries/OtherQuery/OtherQuery";
-import { Tooltip } from "antd";
 
-const invoiceValidation = () => {
+const receiptValidation = () => {
   return Yup.object().shape({
-    payment_type: Yup.string().required("Payment type is required"),
-    customer_id: Yup.string().required("Please select customer"),
-    sales_invoice_items: Yup.array()
-      .length(1, "Item mst have one item")
-      .required("Invoice items ID is required"),
-    discount_percentage_other: Yup.string().required(
-      "Other discount percentage is required"
-    ),
+    account_type: Yup.string().required("Account type is required"),
+    reference_number: Yup.string().required("Reference Number is required"),
+    customer_id: Yup.string().required("Please select a customer"),
+    receipt_items: Yup.array()
+      .min(1, "At least one invoice must be selected")
+      .required("Receipt items are required"),
+    received_amount: Yup.number().required("Received amount is required"),
   });
 };
 
+
 const ReceiptEntry = () => {
-  const [edit, setEdit] = useState(false);
-  const [additionOpen, setAdditionOpen] = useState(false);
-  const [otherCharges, setOtherCharges] = useState(false);
-  const [settilment, setSettilement] = useState(false);
-  const [item, setItem] = useState([]);
+  const [rif,setRif] = useState('');
   const { data: id, refetch } = useGetID({
     section: "sales",
-    module: "invoice",
+    module: "receipts",
   });
+
   const initialValues = useCallback(
     {
-      invoice_id: id?.data?.data?.invoice_id,
+      receipt_id: id?.data?.data?.receipt_id || "",
       issuing_date: Date.now(),
       customer_id: "",
-      discount_percentage_other: "",
-      discount_amount_other: "",
-      round_off: "",
-      gross_total: "",
-      payment_type: "",
-      po_number: "",
-      source: "",
+      received_amount: "",
+      account_type: "",
+      reference_number: "",
       description: "",
-      additional_details: "",
-      credit_point: "",
-      address: "",
-      notes: "",
-      other_discount_percentage: "",
-      other_discount_amount: "",
-      account: "",
-      method: "",
-      description_other: "",
-      amount: "",
-      narration: "",
-      settlements: "",
-      new_reference: "",
-      payment_terms: "",
-      summary: "",
-      recived: "",
-      balance: "",
-
-      sales_invoice_items: [],
+      receipt_items: [],
     },
     [id]
   );
+
   const formik = useFormik({
     initialValues,
     enableReinitialize: true,
-    validationSchema: invoiceValidation,
+    validationSchema: receiptValidation,
   });
-  const addItem = () => {
-    setItem((prev) => [
-      ...prev,
-      {
-        "Sl no.": 0 + prev.length + 1,
-        "Item code": "",
-        "Item description": "",
-        Remarks: "",
-        Units: "",
-        Quantity: "",
-        Rate: "",
-        "Gross amount": "",
-        "Discount %": "",
-        Discount: "",
-        "Net amount": "",
-        action: "",
-      },
-    ]);
-    setEdit(item?.length);
-  };
-  const totalAmount = formik?.values?.sales_invoice_items
-    ?.map((e) => e.net_amount)
-    .filter((e) => e !== undefined)
-    .reduce((a, b) => a + b, 0);
 
-  const { mutateAsync: addInvoice, isLoading } = useAddInvoice();
+  const { mutateAsync: addReceipt, isLoading } = useAddReceipt();
   const [clear, setClear] = useState(false);
 
   useEffect(() => {
     if (clear) {
       refetch().then((res) => {
         setClear(false);
-        setItem([]);
       });
     }
   }, [clear]);
 
   const handleSubmit = () => {
+    console.log('handleSubmit');
+
+    let totalReceived = 0;
+    console.log('formik.values.receipt_items', formik.values.receipt_items);
+    const updatedReceiptItems = formik.values.receipt_items.map((item) => {
+
+
+      totalReceived += item.settled_amount;
+      return {
+        invoice_id: item.invoice_id,
+        settled_amount: item.settled_amount,
+      };
+    }).filter(Boolean);
+
+    if (updatedReceiptItems.length === 0) return;
+
     const data = {
-      invoice_id: formik.values.invoice_id,
+      receipt_id: formik.values.receipt_id,
       issuing_date: formik.values.issuing_date,
       customer_id: formik.values.customer_id,
-      discount_percentage: formik.values.discount_percentage_other,
-      discount_amount:
-        (formik.values.discount_percentage_other / 100) * totalAmount,
-      round_off: 0,
-      gross_total: (
-        totalAmount -
-        (formik.values.discount_percentage_other / 100) * totalAmount
-      ).toFixed(0),
-
-      net_amount: formik.values?.sales_invoice_items
-        .map((e) => {
-          return e.net_amount;
-        })
-        ?.reduce((e, i) => {
-          return e + i;
-        }, 0),
-      payment_type: formik.values.payment_type || null,
-      po_number: formik.values.po_number,
-      source: "String",
-      description: "String",
-      additional_details: "String",
-      other_details: {
-        other_discount_percentage: formik.values.other_discount_percentage,
-        other_discount_amount: formik.values.other_discount_percentage,
-        other_charges: {
-          account: "String",
-          method: "String",
-          description: "String",
-          amount: formik.values.amount,
-        },
-        narration: "String",
-        ref_settlements: {
-          settlements: "String",
-          new_reference: "String",
-        },
-        payment_terms: "String",
-      },
-      summary: "String",
-      sales_invoice_items: formik.values.sales_invoice_items,
+      received_amount: totalReceived,
+      account_type: formik.values.account_type || null,
+      reference_number: formik.values.reference_number,
+      description: formik.values.description,
+      receipt_items: updatedReceiptItems,
     };
 
-    addInvoice(data)
+    addReceipt(data)
       .then((res) => {
-        if (res.status === 500) {
-          toast.error("Something went wrong");
-        }
-        toast.success("invoice created");
-        formik.resetForm();
+        
+        toast.success("Receipt created successfully");
+        setRif(res?.data?.data)
+
+        formik.resetForm({
+          values: {
+            receipt_id: id?.data?.data?.receipt_id || "",
+            issuing_date: Date.now(),
+            customer_id: "",
+            received_amount: "",
+            account_type: "",
+            reference_number: "",
+            description: "",
+            receipt_items: [],
+          },
+        });
         setClear(true);
+
       })
-      .catch((err) => {
+      .catch(() => {
         toast.error("Something went wrong");
       });
   };
@@ -188,8 +127,7 @@ const ReceiptEntry = () => {
       <div className="py-8 px-6 max-w-[1512px]   h-auto m-auto">
         <div>
           <AllHeadSection
-            // id={id?.data?.data?.invoice_id}
-            id={"VR01"}
+            id={id?.data?.data?.receipt_id}
             formik={formik}
             head={"Voucher Receipt"}
             name={"invoice_id"}
@@ -222,8 +160,9 @@ const ReceiptEntry = () => {
                             onInput={onlyNumbers}
                             placeholder="Enter ref"
                             onChange={formik.handleChange}
-                            name="ref_number"
-                            value={formik.values.ref_number}
+                            name="reference_number"
+                            error={formik.errors.reference_number}
+                            value={formik.values.reference_number}
                           />
                         </div>
                       </div>
@@ -234,7 +173,8 @@ const ReceiptEntry = () => {
                         <div className="w-[9rem]">
                           <BorderlessSelect
                             placeholder="Select Type"
-                            error={formik.errors.payment_type}
+                            error={formik.errors.account_type}
+                            value={formik.values.account_type}
                             options={[
                               { value: "DEBIT_CARD", label: "Debit card" },
                               { value: "CREDIT_CARD", label: "Credit card" },
@@ -243,7 +183,7 @@ const ReceiptEntry = () => {
                               { value: "PETTY_CASH", label: "Petty cash" },
                             ]}
                             onChange={(e) =>
-                              formik.setFieldValue("payment_type", e)
+                              formik.setFieldValue("account_type", e)
                             }
                           />
                         </div>
@@ -305,12 +245,8 @@ const ReceiptEntry = () => {
             </div>
           </div>
           <InvoiceTable
-            edit={edit}
             formik={formik}
-            item={item}
-            setEdit={setEdit}
-            setItem={setItem}
-            clear={clear}
+            rif={rif}
           />
         </div>
       </div>
