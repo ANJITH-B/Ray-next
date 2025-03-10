@@ -15,6 +15,7 @@ const {
   getAllSalesOrder,
   getSingleSalesOrder,
   salesIDgenerator,
+  getCustomerInvoices
 } = require("../Controllers/salesController");
 const authorization = require("../middlewares/authorization");
 const router = express.Router();
@@ -29,6 +30,7 @@ router.post(
 router.post("/v1/sales/order/", createSalesOrder);
 router.post("/v1/sales/customer", createCustomer);
 router.get("/v1/sales/invoice", getAllSalesInvoice);
+router.get("/v1/sales/customer-invoices", getCustomerInvoices);
 router.get(
   "/v1/sales/invoice/:invoice_id",
 

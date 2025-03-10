@@ -8,6 +8,7 @@ const accountRoutes = require("./accountRoutes")
 const reportRoutes = require("./reportRoutes")
 const notificationRoutes = require("./notificationRoutes");
 const logRoutes = require("./logRoutes");
+const receiptRoutes = require("./receiptRoutes")
 
 router.use('/api',authRoutes);
 router.use('/api',salesRoutes)
@@ -17,6 +18,7 @@ router.use('/api',accountRoutes)
 router.use('/api',reportRoutes)
 router.use("/api", notificationRoutes);
 router.use("/api", logRoutes);
+router.use("/api", receiptRoutes);
 
 
 module.exports = router;

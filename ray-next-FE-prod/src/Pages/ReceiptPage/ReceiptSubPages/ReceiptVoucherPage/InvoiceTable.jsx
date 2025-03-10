@@ -1,19 +1,38 @@
 import React, { useEffect, useState } from "react";
 import BorderTableLessEditoption from "../../../../CommonComponents/Tables/BorderTableLessEditoption";
-import { useGetInvoice } from "../../../../Queries/SalesQuery/SalesQuery";
+import { useGetCustomerInvoice } from "../../../../Queries/SalesQuery/SalesQuery";
 import dayjs from "dayjs";
 import BorderdInput from "../../../../CommonComponents/FormInputs/BorderdInput";
 import { onlyNumbers } from "../../../../Utilities/inputRestrictions";
 
-const InvoiceTable = ({ tabIndex }) => {
-  const [filter, setFilter] = useState({
-    pageNo: 1,
-    pageCount: 100,
-  });
-  const { data, isLoading, refetch } = useGetInvoice(filter);
+const InvoiceTable = ({ formik,rif }) => {
+  const { data, isLoading, refetch } = useGetCustomerInvoice(formik.values.customer_id);
+
+
   useEffect(() => {
-    refetch();
-  }, [tabIndex]);
+    if (formik.values.customer_id) {
+      refetch();
+    }
+  }, [formik.values.customer_id,rif]);
+
+
+  const handleCheckboxChange = (invoice) => {
+    const selectedInvoices = formik.values.receipt_items || [];
+    const exists = selectedInvoices.find((item) => item.invoice_id === invoice.Id);
+
+    if (exists) {
+      formik.setFieldValue(
+        "receipt_items",
+        selectedInvoices.filter((item) => item.invoice_id !== invoice.Id)
+      );
+    } else {
+      formik.setFieldValue("receipt_items", [
+        ...selectedInvoices,
+        { invoice_id: invoice.Id, settled_amount: 0 },
+      ]);
+    }
+  };
+
   const InvoiceColumns = [
     {
       title: "",
@@ -24,11 +43,11 @@ const InvoiceTable = ({ tabIndex }) => {
       render: (item, record) => {
         return (
           <div className="flex justify-center items-center">
+
             <input
-              id="default-checkbox"
               type="checkbox"
-              value={item}
-              className="w-4 h-4 bg-gray-100 border-gray-300 rounded-lg cursor-pointer"
+              checked={formik.values.receipt_items.some((item) => item.invoice_id === record.Id)}
+              onChange={() => handleCheckboxChange(record)}
             />
           </div>
         );
@@ -81,28 +100,92 @@ const InvoiceTable = ({ tabIndex }) => {
       key: "Settled Amount",
       className: "text-base ",
       dataIndex: "Settled Amount",
+      // render: (item, record, index) => {
+      //   return (
+      //     <div>
+      //       <BorderdInput
+      //         placeholder={"₹"}
+      //         defaultValue={record["Settled Amount"]}
+      //         onInput={onlyNumbers}
+      //       />
+
+      //     </div>
+      //   );
+      // },
+      // render: (item, record, index) => {
+      //   return (
+      //     <BorderdInput
+      //       placeholder="₹"
+      //       value={
+      //         formik.values.receipt_items.find((i) => i.invoice_id === record.Id)
+      //           ?.settled_amount || ""
+      //       }
+      //       onChange={(e) => {
+      //         const updatedItems = formik.values.receipt_items.map((inv) =>
+      //           inv.invoice_id === record.Id
+      //             ? { ...inv, settled_amount: Number(e.target.value) }
+      //             : inv
+      //         );
+      //         formik.setFieldValue("receipt_items", updatedItems);
+      //       }}
+      //       onInput={onlyNumbers}
+      //     />
+      //   )
+      // }
+
       render: (item, record, index) => {
-        return (
-          <div>
-            <BorderdInput
-              placeholder={"₹"}
-              defaultValue={record["Settled Amount"]}
-              onInput={onlyNumbers}
-            />
-          </div>
+        const selectedInvoice = formik.values.receipt_items.find(
+          (i) => i.invoice_id === record.Id
         );
-      },
+      
+        const settledAmount = selectedInvoice?.settled_amount || 0;
+        const pendingAmount = record["Pending Amount"];
+      
+        return settledAmount <= pendingAmount ? (
+          <BorderdInput
+            placeholder="₹"
+            value={settledAmount}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              if (value <= pendingAmount) {
+                const updatedItems = formik.values.receipt_items.map((inv) =>
+                  inv.invoice_id === record.Id
+                    ? { ...inv, settled_amount: value }
+                    : inv
+                );
+                formik.setFieldValue("receipt_items", updatedItems);
+              }
+            }}
+            onInput={onlyNumbers}
+          />
+        ) : (
+          <span className="text-red-500 text-sm">Amount exceeds pending balance</span>
+        );
+      }
+
     },
   ];
-  const invoiceData = data?.data?.data?.data?.map((e) => ({
+
+  // const invoiceData = data?.data?.data?.map((e) => ({
+  //   Id: e?._id,
+  //   Invoice: e?.invoice_id,
+  //   Date: dayjs(e.issuing_date).format("DD MMM YYYY"),
+  //   "Ref No": "-",
+  //   Description: "-",
+  //   "Amount Due": e?.received_amount,
+  //   "Prev Settled": 0,
+  //   "Pending Amount": e?.received_amount,
+  //   "Settled Amount": "",
+  // }));
+  const invoiceData = data?.data?.data?.map((e) => ({
     Id: e?._id,
     Invoice: e?.invoice_id,
     Date: dayjs(e.issuing_date).format("DD MMM YYYY"),
-    "Ref No": "-",
+    "Ref No": e?.po_number,
     Description: "-",
-    "Amount Due": e?.received_amount,
-    "Prev Settled": 0,
-    "Pending Amount": e?.received_amount,
+    "Amount Due": e?.gross_total,
+    "Prev Settled": e?.received_amount,
+    "Pending Amount": e?.balance_amount,
     "Settled Amount": "",
   }));
 

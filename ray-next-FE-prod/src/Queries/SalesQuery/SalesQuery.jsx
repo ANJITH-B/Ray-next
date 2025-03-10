@@ -9,6 +9,7 @@ import {
   getSalesQuotation,
   getSalesReturn,
   getSingleInvoice,
+  getCustomerInvoice
 } from "./salesUrl";
 
 const useGetInvoice = (data) => {
@@ -17,6 +18,18 @@ const useGetInvoice = (data) => {
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
+};
+
+const useGetCustomerInvoice = (customerId) => {
+  return useQuery(
+    ["getCustomerInvoice", customerId],
+    () => getCustomerInvoice(customerId),
+    {
+      enabled: !!customerId, // Only fetch when customerId is available
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
+  );
 };
 const useGetReturn = (data) => {
   return useQuery(["getReturn", data], () => getSalesReturn(data), {
@@ -97,5 +110,6 @@ export {
   useAddSalesOrder,
   useGetOrder,
   useAddQuatation,
-  useAddSalesReturn
+  useAddSalesReturn,
+  useGetCustomerInvoice 
 };
