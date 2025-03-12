@@ -9,6 +9,7 @@ import Button from "../FormInputs/Button";
 import RefrenceDetialsModal from "./RefrenceDetialsModal";
 import { useAddCustomer } from "../../Queries/CustomerQuery/CustomerQuery";
 import { toast } from "react-hot-toast";
+import * as Yup from "yup";
 
 const AddCustomerModal = ({ open, setOpen }) => {
   const [refrenceOpen, setRefrenceOpen] = useState(false);
@@ -35,12 +36,17 @@ const AddCustomerModal = ({ open, setOpen }) => {
     due_date: "",
     description: "",
     amount: "",
-    period:''
+    period: "",
   };
-
+  const customerValidation = () => {
+    return Yup.object().shape({
+      name: Yup.string().required("Name is required"),
+      account_code: Yup.string().required("account code is required"),
+    });
+  };
   const { mutateAsync: addCustomer, isLoading } = useAddCustomer();
 
-  const handleSubmit = (values,{resetForm}) => {
+  const handleSubmit = (values, { resetForm }) => {
     const data = {
       name: values.name,
       account_code: values.account_code,
@@ -79,12 +85,12 @@ const AddCustomerModal = ({ open, setOpen }) => {
           toast.error("Something went wrong");
         } else {
           toast.success("Customer Added");
-          resetForm()
+          resetForm();
           setOpen(false);
         }
       })
       .catch((err) => {
-        toast.error("Something went wrong");
+        toast.error(err?.message ?? "Something went wrong");
       });
   };
 
@@ -95,8 +101,12 @@ const AddCustomerModal = ({ open, setOpen }) => {
       setOpen={setOpen}
       open={open}
     >
-      <Formik onSubmit={handleSubmit} initialValues={initialValues}>
-        {({ setFieldValue, values }) => (
+      <Formik
+        onSubmit={handleSubmit}
+        initialValues={initialValues}
+        validationSchema={customerValidation}
+      >
+        {({ errors, setFieldValue, values }) => (
           <Form>
             <div className=" w-full  bg-white rounded-xl ">
               <div className="flex gap-12 w-full">
@@ -105,6 +115,7 @@ const AddCustomerModal = ({ open, setOpen }) => {
                     <p className="text-sm mb-2">Name</p>
                     <BorderdInput
                       formik={true}
+                      error={errors.name}
                       name="name"
                       id="name"
                       placeholder="Enter name"
@@ -116,6 +127,7 @@ const AddCustomerModal = ({ open, setOpen }) => {
                       <BorderdInput
                         formik={true}
                         name="account_code"
+                        error={errors.account_code}
                         id="code"
                         placeholder="#12345"
                       />
@@ -291,7 +303,9 @@ const AddCustomerModal = ({ open, setOpen }) => {
                             id="name"
                             name="address"
                             placeholder="Enter address"
-                            onChange={(e)=>setFieldValue('address',e.target.value)}
+                            onChange={(e) =>
+                              setFieldValue("address", e.target.value)
+                            }
                           />
                         </div>
                       </div>
